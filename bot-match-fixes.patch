@@ -1,0 +1,288 @@
+diff --git a/src/bot-timer-repro.test.jsx b/src/bot-timer-repro.test.jsx
+new file mode 100644
+index 0000000..19488ed
+--- /dev/null
++++ b/src/bot-timer-repro.test.jsx
+@@ -0,0 +1,98 @@
++import React, { useEffect, useState } from 'react';
++import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
++import { render, act } from '@testing-library/react';
++
++/*
++ * =====================================================
++ * إعادة إنتاج معزولة لنمط useEffect بتاع مؤقّت إجابة
++ * البوت في VsMatchPage.jsx (السطور ~210-231)، لإثبات/نفي
++ * فرضية: هل تغيير phase (لما اللاعب الإنسان يجاوب) بيلغي
++ * مؤقّت البوت المُجدوَل مسبقاً من غير ما يعيد جدولته؟
++ * =====================================================
++ */
++
++function BotTimerRepro({ phase, questionIndex, opponentAnswered, onBotAnswer }) {
++  useEffect(() => {
++    if (phase !== 'question') return;
++    if (opponentAnswered) return;
++
++    const timer = setTimeout(() => {
++      onBotAnswer(questionIndex);
++    }, 5000); // نفس فكرة الـ delay العشوائي بس رقم ثابت للاختبار
++
++    return () => clearTimeout(timer);
++    // نفس مصفوفة الاعتماديات بالظبط من الكود الحقيقي
++  }, [questionIndex, opponentAnswered, phase]);
++
++  return null;
++}
++
++function BotTimerFixed({ questionIndex, opponentAnswered, isBotMatch, onBotAnswer }) {
++  useEffect(() => {
++    if (!isBotMatch) return;
++    if (opponentAnswered) return;
++
++    const timer = setTimeout(() => {
++      onBotAnswer(questionIndex);
++    }, 5000);
++
++    return () => clearTimeout(timer);
++    // نفس الإصلاح الحقيقي في VsMatchPage.jsx: من غير phase في الشرط أو المصفوفة
++  }, [isBotMatch, questionIndex, opponentAnswered]);
++
++  return null;
++}
++
++describe('نمط مؤقّت إجابة البوت (إعادة إنتاج من VsMatchPage)', () => {
++  beforeEach(() => { vi.useFakeTimers(); });
++  afterEach(() => { vi.useRealTimers(); });
++
++  it('البوت بيجاوب لو محدش لمس الـ phase قبل ما المؤقّت يخلص', () => {
++    const onBotAnswer = vi.fn();
++    render(<BotTimerRepro phase="question" questionIndex={0} opponentAnswered={false} onBotAnswer={onBotAnswer} />);
++
++    act(() => { vi.advanceTimersByTime(5000); });
++
++    expect(onBotAnswer).toHaveBeenCalledWith(0);
++  });
++
++  it('🐛 لو الإنسان جاوب بسرعة (phase اتغيّر لـ waiting) قبل ما مؤقّت البوت يخلص، البوت مابيجاوبش أبداً — حتى لو استنينا لفترة طويلة بعد كده', () => {
++    const onBotAnswer = vi.fn();
++    const { rerender } = render(
++      <BotTimerRepro phase="question" questionIndex={0} opponentAnswered={false} onBotAnswer={onBotAnswer} />
++    );
++
++    // بعد ثانيتين بس (قبل الـ5 ثواني)، الإنسان جاوب — الـ phase بيتغيّر
++    act(() => { vi.advanceTimersByTime(2000); });
++    rerender(<BotTimerRepro phase="waiting" questionIndex={0} opponentAnswered={false} onBotAnswer={onBotAnswer} />);
++
++    // نستنى وقت طويل جداً كمان (30 ثانية) — لو المؤقّت كان لسه شغال كان
++    // المفروض يكون خلص من زمان. النتيجة: البوت أبداً ما بيجاوبش.
++    act(() => { vi.advanceTimersByTime(30000); });
++
++    expect(onBotAnswer).not.toHaveBeenCalled();
++  });
++
++  it('لو opponentAnswered=true من البداية (البوت جاوب فعلاً)، المؤقّت مايتجدولش أصلاً — سلوك متوقّع', () => {
++    const onBotAnswer = vi.fn();
++    render(<BotTimerRepro phase="question" questionIndex={0} opponentAnswered={true} onBotAnswer={onBotAnswer} />);
++    act(() => { vi.advanceTimersByTime(10000); });
++    expect(onBotAnswer).not.toHaveBeenCalled();
++  });
++
++  it('✅ بعد الإصلاح: نفس السيناريو (الإنسان جاوب بسرعة) — البوت لسه بيجاوب لأن المؤقّت مابقاش معتمد على phase', () => {
++    const onBotAnswer = vi.fn();
++    const { rerender } = render(
++      <BotTimerFixed questionIndex={0} opponentAnswered={false} isBotMatch={true} onBotAnswer={onBotAnswer} />
++    );
++
++    act(() => { vi.advanceTimersByTime(2000); });
++    // محاكاة تغييرات تانية غير متعلقة (زي phase) بتحصل من غير ما تلمس
++    // deps المؤقّت — مفروض المؤقّت يفضل شغال زي ما هو
++    rerender(<BotTimerFixed questionIndex={0} opponentAnswered={false} isBotMatch={true} onBotAnswer={onBotAnswer} />);
++
++    act(() => { vi.advanceTimersByTime(3000); }); // يوصل لـ 5000ms الإجمالي
++
++    expect(onBotAnswer).toHaveBeenCalledWith(0);
++  });
++});
+diff --git a/src/core-flows.test.jsx b/src/core-flows.test.jsx
+index 6d1ef4a..c417477 100644
+--- a/src/core-flows.test.jsx
++++ b/src/core-flows.test.jsx
+@@ -88,14 +88,29 @@ vi.mock('./lib/supabaseClient', () => {
+         signInWithPassword: () => Promise.resolve({ error: null }),
+         signOut: () => Promise.resolve({ error: null }),
+       },
+-      rpc: () => Promise.resolve({ error: null }),
++      rpc: (fnName, params) => {
++        if (fnName === 'submit_quiz_answer') {
++          const qs = state.questionsFor ? state.questionsFor(params.p_level_id, params.p_stage_id) : [];
++          const q = qs.find((x) => x.id === params.p_question_id);
++          if (!q) return Promise.resolve({ data: null, error: { message: 'question not found' } });
++          return Promise.resolve({
++            data: [{
++              is_correct: params.p_selected_index === q.correct_index,
++              correct_index: q.correct_index,
++              explanation: q.explanation || '',
++            }],
++            error: null,
++          });
++        }
++        return Promise.resolve({ error: null });
++      },
+       channel: () => ({ on: () => ({ subscribe: () => {} }) }),
+       removeChannel: () => {},
+       from: (table) => {
+         if (table === 'levels') {
+           return { select: () => ({ order: () => Promise.resolve({ data: state.levels || [], error: null }) }) };
+         }
+-        if (table === 'questions') {
++        if (table === 'questions_public') {
+           let levelId, stageId;
+           const builder = {
+             select: () => builder,
+diff --git a/src/pages/QuizPage.jsx b/src/pages/QuizPage.jsx
+index e430f1d..dcdbbd4 100644
+--- a/src/pages/QuizPage.jsx
++++ b/src/pages/QuizPage.jsx
+@@ -278,6 +278,43 @@ function QuizPage() {
+     loadQuestions();
+   }, [levelId, stageId]); // 🔑 يُعاد التحميل والتصفير عند تغيير أي منهما
+ 
++  /*
++   * handleBackPress - ضغطة زر "رجوع" في الهيدر (وزرار الرجوع
++   * الفيزيائي/gesture في أندرويد، مسجّلة تحت)
++   * أثناء الأسئلة: نعرض تأكيد الخروج (منعاً لفقدان التقدم بالخطأ)
++   * في شاشة النتيجة: لا يوجد تقدم لنخسره، فنرجع مباشرة
++   */
++  const handleBackPress = () => {
++    if (isFinished) {
++      goBack();
++    } else {
++      setShowExitConfirm(true);
++    }
++  };
++
++  const confirmExit = () => {
++    setShowExitConfirm(false);
++    goBack();
++  };
++
++  /*
++   * تسجيل نفس منطق handleBackPress لزرار الرجوع الفيزيائي/gesture في
++   * أندرويد (@capacitor/app، عبر AppContext) — من غيره كان هيرجع
++   * للسلوك الافتراضي (goBack فوري من غير تأكيد، ممكن يضيّع تقدّم
++   * اختبار شغال). بيتسجّل من جديد مع كل تغيّر في isFinished عشان
++   * يستخدم أحدث نسخة من handleBackPress دايماً.
++   *
++   * 🔒 لازم تكون هنا، قبل أي return مبكّر تحت (loading/error/no
++   * questions) — لو اتحطّت بعدهم، الأول-render وقت loading=true كان
++   * هيرجع قبل ما يوصلها، وrender تاني بعد ما التحميل يخلص كان هيوصلها
++   * فعلاً — عدد hooks مختلف بين renders، وده بيكسر React (اتصلحت
++   * فعلياً بعد ما ظهرت "Rendered more hooks than during the previous
++   * render" في الاختبارات).
++   */
++  useEffect(() => {
++    registerBackHandler(handleBackPress);
++    return () => registerBackHandler(null);
++  }, [isFinished]);
+ 
+   /*
+    * ===================================================
+@@ -519,36 +556,6 @@ function QuizPage() {
+     }
+   };
+ 
+-  /*
+-   * handleBackPress - ضغطة زر "رجوع" في الهيدر
+-   * أثناء الأسئلة: نعرض تأكيد الخروج (منعاً لفقدان التقدم بالخطأ)
+-   * في شاشة النتيجة: لا يوجد تقدم لنخسره، فنرجع مباشرة
+-   */
+-  const handleBackPress = () => {
+-    if (isFinished) {
+-      goBack();
+-    } else {
+-      setShowExitConfirm(true);
+-    }
+-  };
+-
+-  const confirmExit = () => {
+-    setShowExitConfirm(false);
+-    goBack();
+-  };
+-
+-  /*
+-   * تسجيل نفس منطق handleBackPress لزرار الرجوع الفيزيائي/gesture في
+-   * أندرويد (@capacitor/app، عبر AppContext) — من غيره كان هيرجع
+-   * للسلوك الافتراضي (goBack فوري من غير تأكيد، ممكن يضيّع تقدّم
+-   * اختبار شغال). بيتسجّل من جديد مع كل تغيّر في isFinished عشان
+-   * يستخدم أحدث نسخة من handleBackPress دايماً.
+-   */
+-  useEffect(() => {
+-    registerBackHandler(handleBackPress);
+-    return () => registerBackHandler(null);
+-  }, [isFinished]);
+-
+ 
+   /* --------------------------------------------------
+    * رسالة شاشة النتيجة - تختلف حسب نسبة الإجابات الصحيحة
+diff --git a/src/pages/VsMatchPage.jsx b/src/pages/VsMatchPage.jsx
+index 3769c45..30d2161 100644
+--- a/src/pages/VsMatchPage.jsx
++++ b/src/pages/VsMatchPage.jsx
+@@ -208,7 +208,7 @@ function VsMatchPage() {
+   // يحاكي وقت تفكير إنسان)، لكن الصح/الغلط بيتحسم في السيرفر
+   // (submit_bot_answer) مش هنا — عشان يفضل نفس مصدر الحقيقة الوحيد.
+   useEffect(() => {
+-    if (!matchState?.is_bot_match || phase !== 'question') return;
++    if (!matchState?.is_bot_match) return;
+     if (matchState.opponent_answered) return;
+ 
+     const deadline = matchState.question_started_at
+@@ -227,8 +227,19 @@ function VsMatchPage() {
+     }, delay);
+ 
+     return () => clearTimeout(timer);
++    /*
++     * 🔒 عمداً من غير phase هنا (كانت موجودة قبل كده): لو اللاعب
++     * الإنسان جاوب هو الأول قبل ما مؤقّت البوت يخلص، phase كانت
++     * بتتغيّر لـ 'waiting'، الـ effect ده كان يعيد التشغيل، الـ
++     * cleanup كان يلغي المؤقّت المُجدوَل، وبعدين الشرط القديم
++     * (phase !== 'question') كان يمنع إعادة الجدولة — فالبوت مايجاوبش
++     * على السؤال ده أبداً. اتأكد بمحاكاة React مباشرة (bot-timer-repro.test.jsx).
++     * الشرط الصحيح لتشغيل/إيقاف المؤقّت هو is_bot_match +
++     * current_question_index + opponent_answered بس — مش حالة واجهة
++     * اللاعب الإنسان.
++     */
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+-  }, [matchState?.is_bot_match, matchState?.current_question_index, matchState?.opponent_answered, phase, matchId]);
++  }, [matchState?.is_bot_match, matchState?.current_question_index, matchState?.opponent_answered, matchId]);
+ 
+   // إرسال الإجابة
+   const handleSubmit = useCallback(async (isTimeout = false) => {
+@@ -256,11 +267,18 @@ function VsMatchPage() {
+   //
+   // بتوقف تماماً لو الشاشة مش ظاهرة فعلياً (قفلت الموبايل، رحت
+   // تطبيق تاني) — وده بالظبط المطلوب: "مش active" بيتحسب غياب برضه
++  //
++  // 🔒 دي شغالة في مباريات البوت برضه (كانت بتتخطّاها قبل كده):
++  // مباراة البوت مالهاش خصم بيهتم بالـ presence بتاعي، بس last_seen
++  // بتاعي أنا نفسه هو اللي resolve_match_staleness بيقيس عليه —
++  // تخطّي النبضة كان معناه إنه أبداً مايتحدّثش بعد إنشاء المباراة،
++  // فأي مباراة بوت أطول من 30 ثانية إجمالاً كانت بتتقفل غلط كـ
++  // "متروكة" حتى لو اللاعب شغال فيها فعلياً (migration 011 صلّحتها
++  // من ناحية السيرفر، وده الإصلاح المطابق في الواجهة).
+   // =====================================================
+   useEffect(() => {
+     if (matchId == null) return;
+     if (phase !== 'question' && phase !== 'waiting') return;
+-    if (matchState?.is_bot_match) return; // مفيش انسحاب/نبضة مطلوبة ضد بوت
+ 
+     let cancelled = false;
+     const tick = async () => {
+@@ -285,7 +303,7 @@ function VsMatchPage() {
+       document.removeEventListener('visibilitychange', onVisible);
+     };
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+-  }, [matchId, phase, matchState?.is_bot_match, touchMatchPresence, fetchState]);
++  }, [matchId, phase, touchMatchPresence, fetchState]);
+ 
+   // تِك بصري كل ثانية بس عشان عدّاد "الخصم غير نشط منذ..." يتحرّك بسلاسة
+   // من غير ما يحتاج طلب شبكة جديد كل ثانية — بيعيد حساب الفرق من

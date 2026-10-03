@@ -1,0 +1,1989 @@
+diff --git a/package-lock.json b/package-lock.json
+index 0321ee1..17eefce 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -9,6 +9,7 @@
+       "version": "0.1.0",
+       "dependencies": {
+         "@capacitor/android": "^8.5.0",
++        "@capacitor/local-notifications": "^8.3.1",
+         "@flaticon/flaticon-uicons": "^3.3.1",
+         "@supabase/supabase-js": "^2.110.8",
+         "dotenv": "^17.4.2",
+@@ -909,6 +910,15 @@
+         "tslib": "^2.1.0"
+       }
+     },
++    "node_modules/@capacitor/local-notifications": {
++      "version": "8.3.1",
++      "resolved": "https://registry.npmjs.org/@capacitor/local-notifications/-/local-notifications-8.3.1.tgz",
++      "integrity": "sha512-F7zu/+p/mIR958YP4axOkeI5hBKRaXDyYjbNPrAil2wWfd7OxScPSTvP9t85NpQ0eULVRu0/sntoxOg6ck477A==",
++      "license": "MIT",
++      "peerDependencies": {
++        "@capacitor/core": ">=8.0.0"
++      }
++    },
+     "node_modules/@cspotcode/source-map-support": {
+       "version": "0.8.1",
+       "resolved": "https://registry.npmjs.org/@cspotcode/source-map-support/-/source-map-support-0.8.1.tgz",
+@@ -1396,6 +1406,24 @@
+         "node": ">=12"
+       }
+     },
++    "node_modules/@esbuild/netbsd-arm64": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/netbsd-arm64/-/netbsd-arm64-0.28.2.tgz",
++      "integrity": "sha512-sSATRjPeDBg3pdgHoQfoYBob11Kk1FGa9lui5RIHZCoCkJa9QKlvl3/vKz2usCmYYjs7ymJR/2Nnsqe+Hjt5nw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "netbsd"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
+     "node_modules/@esbuild/netbsd-x64": {
+       "version": "0.21.5",
+       "resolved": "https://registry.npmjs.org/@esbuild/netbsd-x64/-/netbsd-x64-0.21.5.tgz",
+@@ -1413,6 +1441,24 @@
+         "node": ">=12"
+       }
+     },
++    "node_modules/@esbuild/openbsd-arm64": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/openbsd-arm64/-/openbsd-arm64-0.28.2.tgz",
++      "integrity": "sha512-AL2qJILH7lNjrDmCQDvdxMfAUIv8KMNZOvrwAQ8i8//ntL9FflhOyMJ8OZSMBb8/AWXe3/5v5S20y3zCoZWKoQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "openbsd"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
+     "node_modules/@esbuild/openbsd-x64": {
+       "version": "0.21.5",
+       "resolved": "https://registry.npmjs.org/@esbuild/openbsd-x64/-/openbsd-x64-0.21.5.tgz",
+@@ -1430,6 +1476,24 @@
+         "node": ">=12"
+       }
+     },
++    "node_modules/@esbuild/openharmony-arm64": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/openharmony-arm64/-/openharmony-arm64-0.28.2.tgz",
++      "integrity": "sha512-WkhYDmpTjLvGlScA1rwjRUmhl4k8oXR3cIbtqWmELgU/dFeHHlEllxDvdWcNJV9rbzCexB5vz8gtNewWLgCT7Q==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "openharmony"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
+     "node_modules/@esbuild/sunos-x64": {
+       "version": "0.21.5",
+       "resolved": "https://registry.npmjs.org/@esbuild/sunos-x64/-/sunos-x64-0.21.5.tgz",
+@@ -9552,6 +9616,420 @@
+         }
+       }
+     },
++    "node_modules/vitest/node_modules/@esbuild/aix-ppc64": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/aix-ppc64/-/aix-ppc64-0.28.2.tgz",
++      "integrity": "sha512-XExcO+dvLKvVtNTibSTBej1NCAbaGhWn9Ww1ZPx80qsahhPFe/8jgWP0IchNe0F3HwkU7n8ejhH8bjonqht8mQ==",
++      "cpu": [
++        "ppc64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "aix"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/android-arm": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/android-arm/-/android-arm-0.28.2.tgz",
++      "integrity": "sha512-kXXoiPVVGQcnIYGOeaovwOURpniDBpSq4A03qkQ+BMQqtGG6HYap3xne9C1O1yo4TR3qxlCX5IqqmX6fFo2Lqg==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/android-arm64": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/android-arm64/-/android-arm64-0.28.2.tgz",
++      "integrity": "sha512-5YfKeeI8qWfBZIX+u2xZC3Zlb3Os/gLS2sbEKM+I4ZOcsWmHS2WLysCcQZDAFRslDUU5Oiq44gf6PYN1vGwG5A==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/android-x64": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/android-x64/-/android-x64-0.28.2.tgz",
++      "integrity": "sha512-O387ite7SzUyCcy3JQX4P4bLtEA7bLLkx+esve5JHnyYfNTxcVpXZo9jhdB0lTKN44gztELTdU7nS8Nr16Fs1Q==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/darwin-arm64": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.28.2.tgz",
++      "integrity": "sha512-n4KqkOQrraxHJcgjM1RvwbigfQKIKJVpM7xp+KsxiyUSrRdIXnt73VhrPAx0fV44hgfmIVKjxMN9J1t5jySVkw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/darwin-x64": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.28.2.tgz",
++      "integrity": "sha512-uq6suIWYP37qzGddBKPw5QEQPi6HiLGsO7UmkpfyaYNQ3D+rN6w6WfwH+nuqcGXWvawGwxOEroO4YGnFh95azw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/freebsd-arm64": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/freebsd-arm64/-/freebsd-arm64-0.28.2.tgz",
++      "integrity": "sha512-n+I0BTSRIoy+d6RPKnEVwql5UwBJolytvY4mAOIEJorKlqgPII8ix6slVVrfZ5Tnj7glIZvloylbB/EJPMWEXw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/freebsd-x64": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/freebsd-x64/-/freebsd-x64-0.28.2.tgz",
++      "integrity": "sha512-78XJTJkvPs0kz2w61301PJjXl4g7q3JqiYMZ/M/yVI73EHBrCRTgkhu9oqG7vPqq+a/yadEW8aD+agKlk5xrmg==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/linux-arm": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/linux-arm/-/linux-arm-0.28.2.tgz",
++      "integrity": "sha512-XlDnu2q5yoqems+xay6wSAcg9DDD7K9RLKZEBOMZm3ckNpJBvOX20tSfby8KfrrhINDyv9V2YVZKY/SpoGJI8w==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/linux-arm64": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.28.2.tgz",
++      "integrity": "sha512-pW4AC0P3it8c7do9MVM4p51FzHzdM/TZrerurgRcHJ2WTa1VQ1CIq18xncfpBJw4ojkiZZrKW2yIBWBP92j6Ug==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/linux-ia32": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/linux-ia32/-/linux-ia32-0.28.2.tgz",
++      "integrity": "sha512-CYbnj78HsIeA+DhgUKgFCfvNsTHFhMMrinUrMZpDXJXKN8T3XViTZ/+wtHeVxEWY8ewSzTFN+nRmSwO2tZaLUQ==",
++      "cpu": [
++        "ia32"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/linux-loong64": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/linux-loong64/-/linux-loong64-0.28.2.tgz",
++      "integrity": "sha512-buwkd8nsph4R+ajRvw0qM5Hja/TXQow3ptzWO2EbG/cqcIkHloRrdlBtQlshyYGTNFvfkfJ5tpPLVkY4DtsPfQ==",
++      "cpu": [
++        "loong64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/linux-mips64el": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/linux-mips64el/-/linux-mips64el-0.28.2.tgz",
++      "integrity": "sha512-ZVykbDyk7519VwiNb9Lcj9m8XM6v5V9uKPvrEMkkEedVewf+0itkhahp4HDpgERXhwLRpWFypsGbG/J8s0QjJA==",
++      "cpu": [
++        "mips64el"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/linux-ppc64": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/linux-ppc64/-/linux-ppc64-0.28.2.tgz",
++      "integrity": "sha512-CAXl+Dtd9UUuJd8pKKdwh6MLm3MUMiqMPmhZ3tTSXPqfyQ3vDl6R5hZdZ/kYojK4ofXtdfSv1tFq8XzWx3heNQ==",
++      "cpu": [
++        "ppc64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/linux-riscv64": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/linux-riscv64/-/linux-riscv64-0.28.2.tgz",
++      "integrity": "sha512-GeXCej4IQtU1B+QlDV8W/RRvbzI3O/Stss+/bCXv4lZls5WGRtu2a+3JkA3i4qIUlMXpcHebWpF8AkJhATowuA==",
++      "cpu": [
++        "riscv64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/linux-s390x": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/linux-s390x/-/linux-s390x-0.28.2.tgz",
++      "integrity": "sha512-3H1weTYZPxt/WOhByszQZybS9w5lKzUn1FDMsgEChbHWQwHYQQRfBxgCcZvPhjHfKyJjIievvMmEUawJrdY9Dg==",
++      "cpu": [
++        "s390x"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/linux-x64": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.28.2.tgz",
++      "integrity": "sha512-4xTZr1FUmSoQW4XIWmit3tzQrUTZM+N3P0XV8xROKYF50XfI7xeO90+1bZvNwxIufQ9hDQVRJH5YhgPVF8A/HQ==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/netbsd-x64": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/netbsd-x64/-/netbsd-x64-0.28.2.tgz",
++      "integrity": "sha512-lqnzCV+mM0gIADaKihiCg6ifgfU2L3h5E33rNQBN1Y4MaVGnzryzmvvf7UHxprpQdE8hpqLolJ9Rl+SkIRDpyw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "netbsd"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/openbsd-x64": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/openbsd-x64/-/openbsd-x64-0.28.2.tgz",
++      "integrity": "sha512-QtiuPytchRyC4rwUKhexJdQKvDuZ6hWloi3igqPQNUJCS1/v9EiO3UTOXR6A3FoMo4fnAKbWJdqaIwhOzh8qEw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "openbsd"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/sunos-x64": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/sunos-x64/-/sunos-x64-0.28.2.tgz",
++      "integrity": "sha512-GPMSkTOtMnv2U2F8gxe4Io6qmVs+YKyp832Etqqxr0hFngmXQ3rzwytelm3GIn7T4VviRUlf3sOgBOiTdvaf7g==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "sunos"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/win32-arm64": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/win32-arm64/-/win32-arm64-0.28.2.tgz",
++      "integrity": "sha512-PIhhEkE9uPBleRBrQEJpUn7MBnibZzbGzYWPmY3x+YoVg/95zbjB4CxPPOQ8l5tYYM4mMaCthF8/1DIfBQQyWQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/win32-ia32": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/win32-ia32/-/win32-ia32-0.28.2.tgz",
++      "integrity": "sha512-YmJbfTlvU7Sdn9BB+4PRES4oB6pxgS37MAONj+hBr/cpXS1aBPKXxNnDbu+QCWPj0o9dgyxeq79g6c5P8KeuYA==",
++      "cpu": [
++        "ia32"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
++    "node_modules/vitest/node_modules/@esbuild/win32-x64": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.28.2.tgz",
++      "integrity": "sha512-5ebpxr3nWMzrL/rnUI755Jkuee0bHL/Gq0WTF9lvcpv73wAp5eu8MfBUgWK9bhWvZjj7yX8etf/8tI8Ney695g==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">=18"
++      }
++    },
+     "node_modules/vitest/node_modules/@vitest/mocker": {
+       "version": "4.1.10",
+       "resolved": "https://registry.npmjs.org/@vitest/mocker/-/mocker-4.1.10.tgz",
+@@ -9579,6 +10057,50 @@
+         }
+       }
+     },
++    "node_modules/vitest/node_modules/esbuild": {
++      "version": "0.28.2",
++      "resolved": "https://registry.npmjs.org/esbuild/-/esbuild-0.28.2.tgz",
++      "integrity": "sha512-HKVLS8dvII+xoKW9kmqxbRKrnWEXfJJr/FZhhJmiqIB0e053QNYFqOBouTMO/k5sID4MvCiUCvv8b9M4h32wIA==",
++      "dev": true,
++      "hasInstallScript": true,
++      "license": "MIT",
++      "optional": true,
++      "peer": true,
++      "bin": {
++        "esbuild": "bin/esbuild"
++      },
++      "engines": {
++        "node": ">=18"
++      },
++      "optionalDependencies": {
++        "@esbuild/aix-ppc64": "0.28.2",
++        "@esbuild/android-arm": "0.28.2",
++        "@esbuild/android-arm64": "0.28.2",
++        "@esbuild/android-x64": "0.28.2",
++        "@esbuild/darwin-arm64": "0.28.2",
++        "@esbuild/darwin-x64": "0.28.2",
++        "@esbuild/freebsd-arm64": "0.28.2",
++        "@esbuild/freebsd-x64": "0.28.2",
++        "@esbuild/linux-arm": "0.28.2",
++        "@esbuild/linux-arm64": "0.28.2",
++        "@esbuild/linux-ia32": "0.28.2",
++        "@esbuild/linux-loong64": "0.28.2",
++        "@esbuild/linux-mips64el": "0.28.2",
++        "@esbuild/linux-ppc64": "0.28.2",
++        "@esbuild/linux-riscv64": "0.28.2",
++        "@esbuild/linux-s390x": "0.28.2",
++        "@esbuild/linux-x64": "0.28.2",
++        "@esbuild/netbsd-arm64": "0.28.2",
++        "@esbuild/netbsd-x64": "0.28.2",
++        "@esbuild/openbsd-arm64": "0.28.2",
++        "@esbuild/openbsd-x64": "0.28.2",
++        "@esbuild/openharmony-arm64": "0.28.2",
++        "@esbuild/sunos-x64": "0.28.2",
++        "@esbuild/win32-arm64": "0.28.2",
++        "@esbuild/win32-ia32": "0.28.2",
++        "@esbuild/win32-x64": "0.28.2"
++      }
++    },
+     "node_modules/vitest/node_modules/picomatch": {
+       "version": "4.0.5",
+       "resolved": "https://registry.npmjs.org/picomatch/-/picomatch-4.0.5.tgz",
+diff --git a/package.json b/package.json
+index dfe29bf..8413a3b 100644
+--- a/package.json
++++ b/package.json
+@@ -11,6 +11,7 @@
+   },
+   "dependencies": {
+     "@capacitor/android": "^8.5.0",
++    "@capacitor/local-notifications": "^8.3.1",
+     "@flaticon/flaticon-uicons": "^3.3.1",
+     "@supabase/supabase-js": "^2.110.8",
+     "dotenv": "^17.4.2",
+diff --git a/src/App.jsx b/src/App.jsx
+index 0cb2201..11652f5 100644
+--- a/src/App.jsx
++++ b/src/App.jsx
+@@ -47,15 +47,24 @@ import ProfilePage     from './pages/ProfilePage';
+ import VsLobbyPage         from './pages/VsLobbyPage';
+ import VsMatchPage         from './pages/VsMatchPage';
+ import DeveloperInfoPage   from './pages/DeveloperInfoPage';
++import LoadingAnkh          from './components/shared/LoadingAnkh';
+ 
+-/* شاشة تحميل بسيطة أثناء فحص الجلسة/البروفايل */
++/*
++ * شاشة تحميل بسيطة أثناء فحص الجلسة/البروفايل
++ * ⬅️ كانت إيموجي 🏺 ثابت (شكله بيختلف حسب نظام التشغيل/المتصفح)،
++ *   استُبدلت بعنخ SVG متحرك (نفس هوية شعار التطبيق) بتوهّج ولمعة
++ *   ذهبية، بدل تدوير كامل (شكل العنخ غير متماثل).
++ * ⬅️ min-h-screen (=100vh) كانت بتُقصّ جزء من الشاشة على متصفحات
++ *   الموبايل — نفس الباگ اللي اتصلّح في AppWrapper سابقاً، فات هنا
++ *   واتصلّح دلوقتي.
++ */
+ function SplashLoader() {
+   return (
+     <div
+-      className="min-h-screen w-full flex items-center justify-center"
++      className="min-h-dvh w-full flex items-center justify-center"
+       style={{ backgroundColor: '#0F2D18' }}
+     >
+-      <div className="text-5xl animate-pulse">🏺</div>
++      <LoadingAnkh size={72} />
+     </div>
+   );
+ }
+diff --git a/src/components/home/HeroSection.jsx b/src/components/home/HeroSection.jsx
+index 99ebcff..97a82bb 100644
+--- a/src/components/home/HeroSection.jsx
++++ b/src/components/home/HeroSection.jsx
+@@ -1,152 +1,133 @@
+ /*
+  * =====================================================
+- * HeroSection.jsx - قسم الترحيب (Hero) في الصفحة الرئيسية
++ * HeroSection.jsx - قسم الترحيب (Hero) المضغوط في الصفحة الرئيسية
+  * =====================================================
+- *
+- * هذا المكوّن هو أول ما يراه المستخدم.
+- * يتكون من:
+- * ┌────────────────────────────────────────────────┐
+- * │         [شعار ميسوري - القوس الفرعوني]        │
+- * │                   Mesori                       │
+- * │                  ميسوري                        │
+- * │   مرحباً بك في ميسوري  [شخصية المستكشف]      │
+- * │   اختر معرفتك بالتاريخ المصري القديم!         │
+- * └────────────────────────────────────────────────┘
+- *
+- * التصميم يستخدم Flexbox لمحاذاة:
+- * - الشعار في المنتصف
+- * - النص والشخصية جنباً إلى جنب (row)
++ * ⬅️ أُعيد تصميمه ليكون مضغوطاً بما يكفي لظهور الصفحة الرئيسية
++ *   كاملة (Hero + المستويات + التقدّم) بدون تمرير على شاشة هاتف
++ *   عادية — بدل الشعار الكبير (155px) + عنوانين منفصلين (Mesori +
++ *   شارة "ميسوري" الكبيرة) + بطاقة ترحيب منفصلة كانت بتاخد وحدها
++ *   أكتر من ثلث ارتفاع الشاشة. الاسمين دلوقتي بجانب الشعار في عمود
++ *   واحد مضغوط، وبطاقة الترحيب والشخصية في صف واحد جنبهم.
++ * ⬅️ الشعار دلوقتي متحرك: توهّج ذهبي نابض (pulse-gold، مُعرّف
++ *   بالفعل في tailwind.config.js) + طفو خفيف لأعلى/أسفل عبر
++ *   framer-motion، بدل ما كان صورة ثابتة تماماً. يحترم
++ *   prefers-reduced-motion.
++ * ⬅️ flex-shrink-0 على عمود الشعار والشخصية، min-w-0 على النص
++ *   المرن بينهم — نفس درس إصلاح صف رأس LeaderboardPage (راجع
++ *   LeaderboardPage.jsx): بدونهم، نص طويل ممكن يفرض عرض أدنى يدفع
++ *   عناصر تانية بره الإطار على شاشة ضيّقة.
+  * =====================================================
+  */
+ 
+ import React from 'react';
+-import logoImage from '../shared/EgyptianLogo.png'; // ⬅️ استيراد صورة اللوجو (عدّل المسار حسب مشروعك)
++import { motion, useReducedMotion } from 'framer-motion';
++import logoImage from '../shared/EgyptianLogo.png';
+ import ExplorerCharacter from '../shared/ExplorerCharacter';
+ import { useApp } from '../../context/AppContext';
+ 
++/* الشعار المتحرك: توهّج + طفو خفيف (بدل تدوير كامل — شكله غير متماثل) */
++function AnimatedLogo({ size = 50 }) {
++  const prefersReducedMotion = useReducedMotion();
++
++  return (
++    <div
++      className="relative flex items-center justify-center flex-shrink-0"
++      style={{ width: size * 1.2, height: size * 1.2 }}
++    >
++      <div
++        className={prefersReducedMotion ? '' : 'animate-pulse-gold'}
++        style={{
++          position: 'absolute',
++          width: size * 1.05,
++          height: size * 1.05,
++          borderRadius: '9999px',
++          backgroundColor: 'rgba(200,146,42,0.3)',
++        }}
++      />
++      <motion.img
++        src={logoImage}
++        alt="شعار ميسوري"
++        width={size}
++        height={size}
++        className="drop-shadow-lg relative"
++        style={{ display: 'block' }}
++        animate={prefersReducedMotion ? {} : { y: [0, -3, 0] }}
++        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
++      />
++    </div>
++  );
++}
++
+ function HeroSection() {
+ 
+-  /*
+-   * نجلب بيانات المستخدم من Context
+-   * character = 'boy' أو 'girl' لتحديد شخصية المستكشف
+-   */
+   const { userProfile } = useApp();
+ 
+   return (
+-    /*
+-     * قسم الترحيب الكامل
+-     * bg-hero-pattern: تدرج لوني خفيف من الأسفل
+-     * pt-2, pb-4, px-5: مسافات داخلية
+-     * animate-fade-in-up: يظهر بتأثير انبثاق من الأسفل
+-     */
+-    <section className="pt-2 pb-6 px-5 animate-fade-in-up">
++    <section className="pt-2 pb-2 px-4 animate-fade-in-up flex-shrink-0">
+ 
+-      {/* ===== الشعار الفرعوني في المنتصف ===== */}
+-      <div className="flex justify-center mb-3">
+-        {/* ⬇️ تم استبدال <EgyptianLogo /> بصورة مباشرة */}
+-        <img
+-          src={logoImage}
+-          alt="شعار ميسوري"
+-          width={155}
+-          height={155}
+-          className="drop-shadow-lg"
+-        />
+-      </div>
+-
+-      {/* ===== اسم التطبيق ===== */}
+-
+-      {/* الاسم بالإنجليزية "Mesori" */}
+-      <h1
+-        className="text-center font-black"
+-        style={{
+-          fontFamily: "'Cinzel', serif",   /* خط روماني نبيل للاسم الإنجليزي */
+-          fontSize:   '38px',
+-          color:      '#3D2B1F',           /* بني داكن */
+-          letterSpacing: '1px',
+-          textShadow: '0 2px 4px rgba(61,43,31,0.15)',
+-          lineHeight: 1.1,
+-        }}
+-      >
+-        Mesori
+-      </h1>
++      <div className="flex items-center gap-2.5">
+ 
+-      {/* الاسم بالعربية "ميسوري" داخل شارة خضراء */}
+-      <div className="flex justify-center mt-1 mb-3">
+-        <div
+-          className="px-5 py-1.5 rounded-full"
+-          style={{ backgroundColor: '#3D2B1F' }}
+-        >
++        {/* ===== الشعار المتحرك + الاسمين (عمود ثابت العرض) ===== */}
++        <div className="flex flex-col items-center flex-shrink-0" style={{ width: 74 }}>
++          <AnimatedLogo size={50} />
+           <span
+-            className="font-black text-xl"
++            className="font-black mt-0.5"
+             style={{
+-              fontFamily: "'Cairo', sans-serif",
+-              color:      '#C8922A',         /* ذهبي */
++              fontFamily: "'Cinzel', serif",
++              fontSize: '14px',
++              color: '#3D2B1F',
++              letterSpacing: '0.5px',
++              lineHeight: 1.1,
+             }}
++          >
++            Mesori
++          </span>
++          <span
++            className="font-bold"
++            style={{ fontFamily: "'Cairo', sans-serif", fontSize: '10px', color: '#805D1B', lineHeight: 1.2 }}
+           >
+             ميسوري
+           </span>
+         </div>
+-      </div>
+-
+-      {/* ===== صف النص والشخصية ===== */}
+-      {/*
+-        * هنا نضع النص الترحيبي والشخصية جنباً إلى جنب
+-        * items-end: محاذاة العناصر من الأسفل
+-        */}
+-      <div className="flex items-end justify-between gap-2">
+ 
+-        {/* النص الترحيبي */}
++        {/* ===== بطاقة الترحيب + الشخصية (تملأ الباقي، نصها ينكمش بأمان) ===== */}
+         <div
+-          className="flex-1 rounded-2xl p-4"
++          className="flex-1 min-w-0 rounded-2xl px-3 py-2 flex items-center gap-2"
+           style={{
+-            /* خلفية بيضاء شفافة */
+             backgroundColor: 'rgba(255,255,255,0.7)',
+-            border:          '1.5px solid rgba(200,146,42,0.25)',
+-            backdropFilter:  'blur(4px)',
++            border: '1.5px solid rgba(200,146,42,0.25)',
++            backdropFilter: 'blur(4px)',
+           }}
+         >
+-          {/* نجوم زخرفية */}
+-          <div className="flex gap-1 mb-1.5">
+-            <span style={{ color: '#C8922A', fontSize: '14px' }}>✦</span>
+-            <span style={{ color: '#C8922A', fontSize: '10px', marginTop:'2px' }}>✦</span>
+-          </div>
+-
+-          {/* النص الترحيبي الرئيسي */}
+           <p
+-            className="font-semibold leading-relaxed"
++            className="flex-1 min-w-0 font-semibold"
+             style={{
+               fontFamily: "'Cairo', sans-serif",
+-              fontSize:   '14px',
+-              color:      '#3D2B1F',
+-              lineHeight: '1.6',
++              fontSize: '12px',
++              color: '#3D2B1F',
++              lineHeight: '1.45',
+             }}
+           >
+-            مرحباً بك في ميسوري
+-            <br />
+-            <span style={{ color: '#8B4513', fontWeight: 700 }}>
+-              اختر معرفتك
+-            </span>
+-            {' '}بالتاريخ المصري القديم!
++            اختر معرفتك{' '}
++            <span style={{ color: '#8B4513', fontWeight: 700 }}>بتاريخ مصر القديم!</span>
+           </p>
+-        </div>
+ 
+-        {/* شخصية المستكشف على اليمين */}
+-        {/*
+-          * أسباب استخدام negative margin-bottom:
+-          * نريد الشخصية أن "تطفو" قليلاً فوق الحاوية
+-          * مما يعطي إحساساً بالحيوية والتفاعل
+-          */}
+-        <div className="flex-shrink-0" style={{ marginBottom: '-8px' }}>
+-          <ExplorerCharacter
+-            size={100}
+-            gender={userProfile.character}
+-          />
++          <div className="flex-shrink-0" style={{ marginBottom: '-6px' }}>
++            <ExplorerCharacter size={46} gender={userProfile.character} />
++          </div>
+         </div>
+ 
+       </div>
+ 
++      {/* فاصل بصري صغير (نقاط ذهبية) */}
++      <div className="flex items-center justify-center gap-2 mt-2 opacity-40">
++        <span style={{ color: '#C8922A', fontSize: '7px' }}>◆</span>
++        <span style={{ color: '#C8922A', fontSize: '10px' }}>◆</span>
++        <span style={{ color: '#C8922A', fontSize: '7px' }}>◆</span>
++      </div>
++
+     </section>
+   );
+ }
+ 
+-export default HeroSection;
+\ No newline at end of file
++export default HeroSection;
+diff --git a/src/components/home/LevelCard.jsx b/src/components/home/LevelCard.jsx
+index e545281..6188211 100644
+--- a/src/components/home/LevelCard.jsx
++++ b/src/components/home/LevelCard.jsx
+@@ -2,13 +2,23 @@
+  * =====================================================
+  * LevelCard.jsx - بطاقة المستوى الواحد (مع تأثيرات طيفية)
+  * =====================================================
++ * ⬅️ أُعيد تنظيم الطبقة الداخلية (h-full flex flex-col) عشان
++ *   البطاقة تملأ أي ارتفاع تدّيهولها الشبكة (LevelsGrid) بالظبط —
++ *   بدل ارتفاع حر مبني على حجم الأيقونة الثابت (كان 108px) اللي
++ *   كان بياخد مساحة أكبر من اللازم ويمنع الصفحة من الاتظبط بدون
++ *   تمرير. الأيقونة دلوقتي بتتقلص/تكبر مع المساحة المتاحة فعلياً
++ *   (max-width/max-height + object-contain) بدل حجم ثابت، وصفّي
++ *   الإحصائيات (اختبارات/نقاط) بقوا صف واحد بدل اتنين. تأثيرات
++ *   الطيف/اللمعان/التموّج (spectralStyles) واستجابة النقر (ripple)
++ *   لم تتغيّر إطلاقاً.
++ * =====================================================
+  */
+ 
+ import React, { useRef, useState } from 'react';
+ import { useApp } from '../../context/AppContext';
+ 
+ /* ============================================================
+-   أنماط CSS للتأثيرات (حقن مرة واحدة)
++   أنماط CSS للتأثيرات (حقن مرة واحدة) - بدون أي تغيير عن الأصل
+    ============================================================ */
+ const spectralStyles = `
+   @keyframes spectralBorderFlow {
+@@ -79,7 +89,7 @@ const spectralStyles = `
+ 
+   .card-inner {
+     position: relative;
+-    border-radius: 16px;  /* يناسب rounded-2xl */
++    border-radius: 16px;
+     overflow: hidden;
+     z-index: 2;
+     box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+@@ -152,7 +162,6 @@ const spectralStyles = `
+       rippleEcho 1s cubic-bezier(0.1, 0.5, 0.3, 1) forwards;
+   }
+ 
+-  /* تأثير أيقونة المستوى عند التحويم */
+   .spectral-card-wrapper:hover .level-icon-img {
+     transform: scale(1.08) translateY(-3px);
+     filter: drop-shadow(0 8px 16px rgba(0,0,0,0.35)) brightness(1.1);
+@@ -169,7 +178,6 @@ const spectralStyles = `
+ function LevelCard({ level }) {
+   const { navigateTo } = useApp();
+ 
+-  /* --- حالة التموجات (Ripples) --- */
+   const [ripples, setRipples] = useState([]);
+   const rippleIdRef = useRef(0);
+ 
+@@ -208,7 +216,6 @@ function LevelCard({ level }) {
+     }, 1000);
+   };
+ 
+-  /* استخراج ألوان الطيف من لون المستوى */
+   const hexToRgb = (hex) => {
+     if (!hex || !hex.startsWith('#')) return { r: 180, g: 140, b: 60 };
+     const h = hex.replace('#', '');
+@@ -249,21 +256,20 @@ function LevelCard({ level }) {
+     <>
+       <style>{spectralStyles}</style>
+ 
+-      {/* غلاف الطيف الخارجي */}
++      {/* غلاف الطيف الخارجي — h-full عشان يملأ ارتفاع خانة الشبكة بالظبط */}
+       <div
+-        className="spectral-card-wrapper"
++        className="spectral-card-wrapper h-full"
+         style={{
+           background: spectralBorderGradient,
+           ...glowCSSVars,
+         }}
+         onClick={handlePress}
+       >
+-        {/* الكرت الداخلي – يحافظ على كل التنسيق الأصلي */}
++        {/* الكرت الداخلي – flex عمودي يملأ الارتفاع كامل */}
+         <div
+-          className="card-inner rounded-2xl overflow-hidden"
++          className="card-inner rounded-2xl overflow-hidden h-full flex flex-col"
+           style={{ backgroundColor: level.bgColor }}
+         >
+-          {/* طبقات التأثير */}
+           <div className="shimmer-overlay" />
+           <div className="shimmer-flash" />
+           <div className="ripple-container">
+@@ -285,17 +291,14 @@ function LevelCard({ level }) {
+             ))}
+           </div>
+ 
+-          {/* ===== رأس البطاقة (التنسيق الأصلي محفوظ) ===== */}
++          {/* ===== رأس البطاقة (أقصر شوية من قبل: py-1.5 بدل py-2.5) ===== */}
+           <div
+-            className="px-3 py-2.5 flex items-center justify-between"
+-            style={{ backgroundColor: level.headerBg, height: 35 }}
++            className="px-2.5 py-1.5 flex items-center justify-between flex-shrink-0"
++            style={{ backgroundColor: level.headerBg }}
+           >
+             <span
+-              className="font-bold text-white tracking-wide"
+-              style={{
+-                fontFamily: "'Cinzel', serif",
+-                fontSize: '13px',
+-              }}
++              className="font-bold text-white tracking-wide truncate"
++              style={{ fontFamily: "'Cinzel', serif", fontSize: '11px' }}
+             >
+               {level.nameEn}
+             </span>
+@@ -304,83 +307,59 @@ function LevelCard({ level }) {
+               <img
+                 src="/assets/icons/badges/lock.png"
+                 alt="مقفول"
+-                width={27.5}
+-                height={27.5}
+-                style={{ margin: 0 }}
+-                className="opacity-80"
++                width={18}
++                height={18}
++                className="opacity-80 flex-shrink-0"
+               />
+             )}
+           </div>
+ 
+-          {/* ===== منتصف البطاقة (التنسيق الأصلي محفوظ) ===== */}
+-          <div className="flex flex-col items-center justify-center px-3 py-3 gap-1.5">
++          {/* ===== منطقة الأيقونة — تملأ المساحة المتبقية وتتقلص/تكبر معها ===== */}
++          <div className="flex-1 min-h-0 flex items-center justify-center px-2 py-1">
+             <img
+-              className="level-icon-img"
++              className="level-icon-img max-w-[62%] max-h-full w-auto h-auto"
+               src={level.iconSrc}
+               alt={level.nameAr}
+-              width={108}
+-              height={108}
+               style={{ objectFit: 'contain' }}
+             />
++          </div>
+ 
++          {/* ===== اسم المستوى ===== */}
++          <div className="px-1 pb-1 flex-shrink-0">
+             <span
+-              className="font-black text-center"
+-              style={{
+-                fontFamily: "'Cairo', sans-serif",
+-                fontSize: '15px',
+-                color: level.textColor,
+-              }}
++              className="font-black text-center block truncate"
++              style={{ fontFamily: "'Cairo', sans-serif", fontSize: '13px', color: level.textColor }}
+             >
+               {level.nameAr}
+             </span>
+           </div>
+ 
+-          {/* ===== أسفل البطاقة (التنسيق الأصلي محفوظ) ===== */}
++          {/* ===== صف واحد للإحصائيات (بدل صفّين سابقاً) ===== */}
+           <div
+-            className="px-3 py-2 space-y-1.5"
++            className="px-2 py-1.5 flex items-center justify-center gap-3 flex-shrink-0"
+             style={{ backgroundColor: level.badgeBg }}
+           >
+-            {/* إحصائية: عدد الاختبارات */}
+-            <div className="flex items-center gap-1.5">
+-              <div
+-                className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+-                style={{ backgroundColor: level.badgeText }}
+-              >
+-                <svg width="11" height="11" viewBox="0 0 24 24" fill="white">
+-                  <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v1.2c0 .7.5 1.2 1.2 1.2h16.8c.7 0 1.2-.5 1.2-1.2v-1.2c0-3.2-6.4-4.8-9.6-4.8z"/>
+-                </svg>
+-              </div>
++            <div className="flex items-center gap-1 min-w-0">
++              <svg width="9" height="9" viewBox="0 0 24 24" fill={level.badgeText} className="flex-shrink-0">
++                <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v1.2c0 .7.5 1.2 1.2 1.2h16.8c.7 0 1.2-.5 1.2-1.2v-1.2c0-3.2-6.4-4.8-9.6-4.8z" />
++              </svg>
+               <span
+-                className="font-semibold"
+-                style={{
+-                  fontFamily: "'Cairo', sans-serif",
+-                  fontSize: '11px',
+-                  color: level.badgeText,
+-                }}
++                className="font-semibold truncate"
++                style={{ fontFamily: "'Cairo', sans-serif", fontSize: '9px', color: level.badgeText }}
+               >
+                 {level.quizCount} اختبارات
+               </span>
+             </div>
+ 
+-            {/* إحصائية: النقاط الممكنة */}
+-            <div className="flex items-center gap-1.5">
+-              <div
+-                className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+-                style={{ backgroundColor: level.badgeText }}
+-              >
+-                <svg width="11" height="11" viewBox="0 0 24 24" fill="white">
+-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+-                </svg>
+-              </div>
++            <div className="flex items-center gap-1 min-w-0">
++              <svg width="9" height="9" viewBox="0 0 24 24" fill={level.badgeText} className="flex-shrink-0">
++                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
++              </svg>
+               <span
+-                className="font-semibold"
+-                style={{
+-                  fontFamily: "'Cairo', sans-serif",
+-                  fontSize: '11px',
+-                  color: level.badgeText,
+-                }}
++                className="font-semibold truncate"
++                style={{ fontFamily: "'Cairo', sans-serif", fontSize: '9px', color: level.badgeText }}
+               >
+-                {level.maxPoints} نقطة ممكنة
++                {level.maxPoints} نقطة
+               </span>
+             </div>
+           </div>
+@@ -390,4 +369,4 @@ function LevelCard({ level }) {
+   );
+ }
+ 
+-export default LevelCard;
+\ No newline at end of file
++export default LevelCard;
+diff --git a/src/components/home/LevelsGrid.jsx b/src/components/home/LevelsGrid.jsx
+index c0bc421..30366de 100644
+--- a/src/components/home/LevelsGrid.jsx
++++ b/src/components/home/LevelsGrid.jsx
+@@ -2,20 +2,18 @@
+  * =====================================================
+  * LevelsGrid.jsx - شبكة المستويات الخمسة
+  * =====================================================
+- *
+- * يعرض هذا المكوّن المستويات الخمسة في تنسيق شبكي:
+- *
+- * ┌─────────┬─────────┬─────────┐
+- * │ Level 1 │ Level 2 │ Level 3 │   ← صف 3 عناصر
+- * └─────────┴─────────┴─────────┘
+- * ┌──────────────┬──────────────┐
+- * │   Level 4    │   Level 5    │   ← صف 2 عناصر (أعرض)
+- * └──────────────┴──────────────┘
+- *
+- * لماذا هذا التنسيم؟
+- * - 3 بطاقات في الصف الأول تتناسب مع عرض الموبايل
+- * - 2 بطاقات في الصف الثاني تكون أعرض قليلاً
+- *   مما يميزها بصرياً كمستويات أصعب وأهم
++ * ⬅️ الصفّان (3 ثم 2) موجودان زي الأصل، لكن دلوقتي كل الكروت
++ *   الخمسة بنفس المقاس بالظبط: الصف الأول grid-cols-3 عادي، لكن
++ *   الصف الثاني بقى صف flex بعرض بطاقة محسوب بنفس معادلة عمود
++ *   الشبكة في الصف الأول calc((100% - gap) / 3)، بدل grid-cols-2
++ *   القديم اللي كان بيمدّد الكرتين ليصيروا أعرض من كروت الصف
++ *   الأول (كان ده متعمّد أصلاً في الكود القديم "لتمييز المستويات
++ *   الأصعب" — لكن عمر بيفضّل شكل موحّد ومنظّم دلوقتي). النتيجة:
++ *   نفس ترتيب "3 فوق، 2 تحت متمركزة" لكن بمقاس واحد لكل الكروت.
++ * ⬅️ القسم كله flex-1 min-h-0 عشان ياخد بالظبط المساحة المتبقية
++ *   بعد HeroSection وProgressSection (بدل ارتفاع حر بيكبر بحجم
++ *   محتواه) — وده اللي بيخلي الصفحة الرئيسية كلها تتظبط في ارتفاع
++ *   الشاشة من غير تمرير.
+  * =====================================================
+  */
+ 
+@@ -27,55 +25,25 @@ function LevelsGrid() {
+ 
+   const { levelsData } = useApp();
+ 
+-  /*
+-   * نقسم المستويات إلى صفّين:
+-   *
+-   * firstRow  = المستويات 1, 2, 3 (أول 3 عناصر من المصفوفة)
+-   * secondRow = المستويات 4, 5   (آخر عنصرين)
+-   *
+-   * slice(0, 3) = أخذ العناصر من index 0 إلى 2 (3 عناصر)
+-   * slice(3)    = أخذ كل العناصر من index 3 للنهاية
+-   */
+   const firstRow  = levelsData.slice(0, 3);
+   const secondRow = levelsData.slice(3);
+ 
+   return (
+-    /*
+-     * الغلاف الخارجي للقسم
+-     * px-4: مسافة أفقية من حواف الشاشة
+-     * mb-4: مسافة سفلية قبل قسم التقدم
+-     */
+-    <section className="px-4 mb-6">
++    <section className="px-4 flex-1 min-h-0 flex flex-col gap-2">
+ 
+       {/* ===== الصف الأول: المستويات 1, 2, 3 ===== */}
+-      {/*
+-        * grid-cols-3 = تقسيم المساحة لـ 3 أعمدة متساوية
+-        * gap-2.5    = مسافة 10px بين البطاقات
+-        */}
+-      <div className="grid grid-cols-3 gap-2.5 mb-2.5">
++      <div className="grid grid-cols-3 gap-2 flex-1 min-h-0">
+         {firstRow.map((level) => (
+-          /*
+-           * key={level.id}: مطلوب من React لتتبع العناصر في القائمة
+-           * يجب أن يكون فريداً بين الأخوة (siblings)
+-           */
+-          <LevelCard
+-            key={level.id}
+-            level={level}
+-          />
++          <LevelCard key={level.id} level={level} />
+         ))}
+       </div>
+ 
+-      {/* ===== الصف الثاني: المستويات 4, 5 ===== */}
+-      {/*
+-        * grid-cols-2 = عمودان فقط، فتكون البطاقات أعرض
+-        * هذا يعطي تمييزاً بصرياً للمستويات الأصعب
+-        */}
+-      <div className="grid grid-cols-2 gap-2.5">
++      {/* ===== الصف الثاني: المستويات 4, 5 — نفس عرض كروت الصف الأول، متمركزة ===== */}
++      <div className="flex justify-center gap-2 flex-1 min-h-0">
+         {secondRow.map((level) => (
+-          <LevelCard
+-            key={level.id}
+-            level={level}
+-          />
++          <div key={level.id} className="h-full" style={{ width: 'calc((100% - 1rem) / 3)' }}>
++            <LevelCard level={level} />
++          </div>
+         ))}
+       </div>
+ 
+diff --git a/src/components/home/ProgressSection.jsx b/src/components/home/ProgressSection.jsx
+index 982a229..dcd4f19 100644
+--- a/src/components/home/ProgressSection.jsx
++++ b/src/components/home/ProgressSection.jsx
+@@ -2,24 +2,12 @@
+  * =====================================================
+  * ProgressSection.jsx - قسم التقدم الكلي
+  * =====================================================
+- *
+- * يعرض هذا المكوّن تقدم المستخدم الإجمالي، بنفس تصميم صورة
+- * الموافقة (Home.png) بالضبط:
+- *
+- * ┌──────────────────────────────────────────┐
+- * │        التقدم الإجمالي: 300 نقطة         │   ← نص فوق الشريط، بدون بطاقة/حدود
+- * │  ████████████░░░░░░░░░░░░░░░░░░░░░░░░░░  │   ← شريط بسيط بلونين فقط
+- * └──────────────────────────────────────────┘
+- *
+- * حساب النسبة المئوية:
+- * ────────────────────────────────────────────
+- * نقاط المستخدم = 300
+- * أقصى نقاط ممكنة = 5 مستويات × 100 = 500
+- * النسبة = (300 / 500) × 100 = 60%
+- *
+- * ملاحظة: الشريط يمتلئ دائماً من اليسار لليمين (dir="ltr")
+- * بغض النظر عن اتجاه الصفحة RTL، لأن هذا هو المعيار البصري
+- * المتعارف عليه لأشرطة التقدم (كما في الصورة المرجعية)
++ * ⬅️ هوامش وأحجام مخفّضة شوية (mb-4→pb-1، النص 15px→13px، شريط
++ *   التقدّم 12px→10px ارتفاع) كجزء من ضغط الصفحة الرئيسية عشان
++ *   تتظبط بدون تمرير — main في HomePage.jsx بيحجز مسافة BottomNav
++ *   بنفسه أصلاً (paddingBottom)، فمش محتاجة هامش سفلي إضافي هنا.
++ *   flex-shrink-0 عشان ياخد حجمه الطبيعي بس ضمن العمود الرأسي
++ *   الجديد في HomePage (Hero + Grid + Progress).
+  * =====================================================
+  */
+ 
+@@ -28,51 +16,31 @@ import { useApp } from '../../context/AppContext';
+ 
+ function ProgressSection() {
+ 
+-  /*
+-   * نجلب من Context:
+-   * userProfile.totalPoints = النقاط الحالية للمستخدم
+-   * progressPercentage      = النسبة المئوية (0-100) محسوبة مسبقاً في Context
+-   */
+   const { userProfile, progressPercentage } = useApp();
+ 
+-  /*
+-   * لون الشريط يتدرّج مع التقدم (لمسة بسيطة، لا تغيّر شكل التصميم المطابق للصورة)
+-   * < 40%  → ذهبي
+-   * < 70%  → أخضر فاتح
+-   * >= 70% → أخضر داكن (نفس أخضر الصورة المرجعية تقريباً)
+-   */
+   const barColor =
+     progressPercentage < 40 ? '#C8922A' :
+     progressPercentage < 70 ? '#4CAF50' :
+     '#2D8A46';
+ 
+   return (
+-    <section className="px-4 mb-4 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
++    <section className="px-4 pt-1 pb-1 flex-shrink-0 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+ 
+-      {/* ===== النص أعلى الشريط ===== */}
+       <p
+-        className="text-center font-bold mb-2"
+-        style={{
+-          fontFamily: "'Cairo', sans-serif",
+-          fontSize:   '15px',
+-          color:      '#3D2B1F',
+-        }}
++        className="text-center font-bold mb-1.5"
++        style={{ fontFamily: "'Cairo', sans-serif", fontSize: '13px', color: '#3D2B1F' }}
+       >
+         التقدم الإجمالي: {userProfile.totalPoints} نقطة
+       </p>
+ 
+-      {/* ===== شريط التقدم (مسار فاتح + جزء ممتلئ ملوّن) ===== */}
+       <div
+         dir="ltr"
+-        className="w-full h-3 rounded-full overflow-hidden"
++        className="w-full h-2.5 rounded-full overflow-hidden"
+         style={{ backgroundColor: 'rgba(61,43,31,0.15)' }}
+       >
+         <div
+           className="h-full rounded-full transition-all duration-700 ease-out"
+-          style={{
+-            width:           `${progressPercentage}%`,
+-            backgroundColor: barColor,
+-          }}
++          style={{ width: `${progressPercentage}%`, backgroundColor: barColor }}
+         />
+       </div>
+ 
+diff --git a/src/components/leaderboard/RankChangeBadge.jsx b/src/components/leaderboard/RankChangeBadge.jsx
+new file mode 100644
+index 0000000..cbf7ab4
+--- /dev/null
++++ b/src/components/leaderboard/RankChangeBadge.jsx
+@@ -0,0 +1,41 @@
++/*
++ * =====================================================
++ * RankChangeBadge.jsx - شارة صغيرة متحركة بجانب ترتيبك
++ * =====================================================
++ * تظهر فقط في صف المستخدم الحالي بصفحة الليدربورد، وتعرض التغيّر
++ * منذ آخر زيارة: أخضر + سهم لأعلى (تحسّن)، أحمر + سهم لأسفل (حد
++ * تخطاك). لا تعرض حاجة لو مفيش تغيير (rankDelta = 0/undefined).
++ *
++ * سهم SVG بسيط (مثلث) بدل خط أيقونات خارجي — عشان نضمن ظهوره
++ * صح دايماً بدل الاعتماد على اسم كلاس أيقونة معيّن.
++ */
++import React from 'react';
++import { motion } from 'framer-motion';
++
++function RankChangeBadge({ rankDelta }) {
++  if (!rankDelta) return null;
++  const isUp = rankDelta > 0;
++
++  return (
++    <motion.div
++      initial={{ opacity: 0, scale: 0.5, y: isUp ? 6 : -6 }}
++      animate={{ opacity: 1, scale: 1, y: 0 }}
++      transition={{ type: 'spring', stiffness: 400, damping: 18, delay: 0.3 }}
++      className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full absolute -top-1.5 -right-1.5"
++      style={{
++        backgroundColor: isUp ? '#2D6A3F' : '#B91C1C',
++        boxShadow: `0 2px 6px ${isUp ? 'rgba(45,106,63,0.5)' : 'rgba(185,28,28,0.5)'}`,
++      }}
++      aria-label={isUp ? `ترتيبك ارتفع ${rankDelta} مركز` : `ترتيبك نزل ${Math.abs(rankDelta)} مركز`}
++    >
++      <svg width="8" height="8" viewBox="0 0 24 24" style={{ display: 'block', transform: isUp ? 'none' : 'rotate(180deg)' }}>
++        <path d="M12 5L19 15H5Z" fill="white" />
++      </svg>
++      <span className="font-black text-white" style={{ fontSize: '9px', fontFamily: "'Cairo', sans-serif" }}>
++        {Math.abs(rankDelta)}
++      </span>
++    </motion.div>
++  );
++}
++
++export default RankChangeBadge;
+diff --git a/src/components/shared/LoadingAnkh.jsx b/src/components/shared/LoadingAnkh.jsx
+new file mode 100644
+index 0000000..9417320
+--- /dev/null
++++ b/src/components/shared/LoadingAnkh.jsx
+@@ -0,0 +1,84 @@
++/*
++ * =====================================================
++ * LoadingAnkh.jsx - أيقونة تحميل متحركة (عنخ ذهبي)
++ * =====================================================
++ * تحل محل إيموجي 🏺 القديم في شاشة التحميل (SplashLoader في
++ * App.jsx). إيموجي نظام التشغيل بيتقلّب شكله من جهاز لآخر (Android
++ * وiOS ومتصفحات مختلفة بيرسموه بأسلوب مختلف تماماً)، فبقى SVG
++ * حقيقي بنفس شكل عنخ الشعار الأساسي (public/ankh.svg، وهو نفسه
++ * الأيقونة المفضّلة/favicon للتطبيق في index.html) — هوية بصرية
++ * واحدة متسقة بدل إيموجي عشوائي الشكل.
++ *
++ * توهّج ذهبي نابض (نفس keyframe الـ pulse-gold المُعرّف بالفعل في
++ * tailwind.config.js) + لمعة تمر فوقه + تنفّس خفيف بالحجم، بدل
++ * تدوير كامل 360° — شكل العنخ غير متماثل (حلقة أعلى + ذراعين)
++ * فتدويره بالكامل بيبان غريب بصرياً وقت ما يبقى مقلوب أو مايل.
++ *
++ * تحترم إعداد "تقليل الحركة" (prefers-reduced-motion) عبر
++ * useReducedMotion من framer-motion (مكتبة مُستخدمة بالفعل في
++ * عدة مكوّنات أخرى بالمشروع).
++ */
++
++import React from 'react';
++import { motion, useReducedMotion } from 'framer-motion';
++
++function LoadingAnkh({ size = 72 }) {
++  const prefersReducedMotion = useReducedMotion();
++
++  return (
++    <div
++      className="relative flex items-center justify-center"
++      style={{ width: size * 1.8, height: size * 1.8 }}
++    >
++      {/* توهّج ذهبي نابض خلف العنخ */}
++      <div
++        className={prefersReducedMotion ? '' : 'animate-pulse-gold'}
++        style={{
++          position: 'absolute',
++          width: size * 1.3,
++          height: size * 1.3,
++          borderRadius: '9999px',
++          backgroundColor: 'rgba(200,146,42,0.28)',
++        }}
++      />
++
++      {/* العنخ نفسه: تنفّس خفيف بالحجم/الشفافية بدل دوران كامل */}
++      <motion.div
++        animate={prefersReducedMotion ? {} : { scale: [1, 1.07, 1], opacity: [0.92, 1, 0.92] }}
++        transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
++        style={{ position: 'relative', width: size, height: size, overflow: 'hidden', borderRadius: '10px' }}
++      >
++        {/*
++          * نفس هندسة public/ankh.svg بالظبط (حلقة + ذراع رأسي + ذراع
++          * أفقي)، لكن بلون ذهبي فاتح (pharaoh.gold-pale = #F0D080)
++          * بدل الذهبي الأساسي #C8922A — تباين أفضل فوق خلفية شاشة
++          * التحميل الداكنة (#0F2D18) من الشاشة الفاتحة اللي صُمم لها
++          * اللون الأساسي أصلاً.
++          */}
++        <svg viewBox="0 0 64 64" width={size} height={size} style={{ display: 'block' }}>
++          <circle cx="32" cy="14" r="10" fill="none" stroke="#F0D080" strokeWidth="7" />
++          <rect x="28.5" y="22" width="7" height="42" rx="3.5" fill="#F0D080" />
++          <rect x="18" y="27" width="28" height="7" rx="3.5" fill="#F0D080" />
++        </svg>
++
++        {/* لمعة تمر فوق العنخ بشكل دوري */}
++        {!prefersReducedMotion && (
++          <motion.div
++            initial={{ x: '-120%' }}
++            animate={{ x: '120%' }}
++            transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 1.4, ease: 'easeInOut' }}
++            style={{
++              position: 'absolute',
++              inset: 0,
++              background: 'linear-gradient(100deg, transparent 30%, rgba(255,255,255,0.6) 50%, transparent 70%)',
++              mixBlendMode: 'overlay',
++              pointerEvents: 'none',
++            }}
++          />
++        )}
++      </motion.div>
++    </div>
++  );
++}
++
++export default LoadingAnkh;
+diff --git a/src/lib/notifications.js b/src/lib/notifications.js
+new file mode 100644
+index 0000000..4a072bc
+--- /dev/null
++++ b/src/lib/notifications.js
+@@ -0,0 +1,67 @@
++/*
++ * =====================================================
++ * notifications.js - إشعارات محلية عبر Capacitor
++ * =====================================================
++ * تمهيد لإشعارات "حد تخطاك في الترتيب" على أندرويد.
++ *
++ * ⚠️ حدود متعمّدة — مهم تعرفها قبل ما تعتمد عليها بالكامل:
++ * الدالة دي بتشتغل بس لما المستخدم يفتح صفحة الليدربورد فعلياً
++ * (بتكتشف إنه اتخطى منذ آخر زيارة، وتطلق إشعار محلي فوري وقتها).
++ * ده تمهيد حقيقي شغّال فعلاً — منطق الاكتشاف وحلقة الاتصال بـ
++ * Capacitor جاهزين تماماً — لكنه مختلف عن إشعار push حقيقي يوصلك
++ * وانت مقفل التطبيق من كذا يوم من غير ما تفتحه خالص. ده محتاج
++ * مشروع منفصل: Firebase Cloud Messaging + Supabase Edge Function
++ * مجدولة تقارن الترتيب دورياً على السيرفر + استبدال
++ * @capacitor/local-notifications بـ @capacitor/push-notifications.
++ * الجزء اللي هنا (نقطة استدعاء واحدة واضحة عند اكتشاف overtaken)
++ * هيفضل هو نفسه لما تضيف الطبقة دي لاحقاً — بس هتستبدل جوّاها
++ * LocalNotifications.schedule بإرسال فعلي للسيرفر.
++ */
++
++import { LocalNotifications } from '@capacitor/local-notifications';
++import { Capacitor } from '@capacitor/core';
++
++let permissionChecked = false;
++
++async function ensurePermission() {
++  // على المتصفح العادي (مش تطبيق Capacitor مُغلّف) مفيش إشعارات نظام حقيقية
++  if (!Capacitor.isNativePlatform()) return false;
++  if (permissionChecked) return true;
++
++  try {
++    const { display } = await LocalNotifications.checkPermissions();
++    if (display !== 'granted') {
++      const requested = await LocalNotifications.requestPermissions();
++      if (requested.display !== 'granted') return false;
++    }
++    permissionChecked = true;
++    return true;
++  } catch (err) {
++    console.error('❌ فشل التحقق من إذن الإشعارات:', err);
++    return false;
++  }
++}
++
++/*
++ * تُستدعى من LeaderboardPage عند اكتشاف overtaken: true (حد نزّل
++ * ترتيبك). newRank/previousRank أرقام الترتيب الجديد والقديم.
++ */
++export async function notifyRankOvertaken({ newRank, previousRank }) {
++  const granted = await ensurePermission();
++  if (!granted) return;
++
++  try {
++    await LocalNotifications.schedule({
++      notifications: [
++        {
++          id: Date.now() % 1000000,
++          title: 'حد تخطاك في الترتيب! 🏆',
++          body: `نزل ترتيبك من المركز ${previousRank} للمركز ${newRank} — ارجع العب وخد مكانك تاني!`,
++          schedule: { at: new Date(Date.now() + 500) },
++        },
++      ],
++    });
++  } catch (err) {
++    console.error('❌ فشل إطلاق إشعار تخطي الترتيب:', err);
++  }
++}
+diff --git a/src/lib/rankTracking.js b/src/lib/rankTracking.js
+new file mode 100644
+index 0000000..4c9484f
+--- /dev/null
++++ b/src/lib/rankTracking.js
+@@ -0,0 +1,65 @@
++/*
++ * =====================================================
++ * rankTracking.js - تتبّع تغيّر الترتيب والنقاط بين الزيارات
++ * =====================================================
++ * يقارن ترتيب/نقاط المستخدم الحاليين بآخر قيم محفوظة محلياً
++ * (localStorage) من آخر مرة فتح فيها صفحة الليدربورد، عشان نظهر
++ * تأثير "طلعت / نزلت في الترتيب" لحظة الدخول — بدون أي تغيير في
++ * السيرفر أو جدول الـ leaderboard نفسه.
++ *
++ * ⚠️ حدود هذا النظام (مهم تعرفها): بيكتشف الفرق بين زيارتين
++ * لصفحة الليدربورد فقط — مش تتبّع لحظي وانت التطبيق مقفول. راجع
++ * notifications.js للتفاصيل الكاملة عن الفرق بين ده وبين إشعار
++ * push حقيقي.
++ *
++ * التخزين مفتاحه user_id (مش تخزين عام) عشان لو أكتر من حساب
++ * استخدم نفس الجهاز، كل حساب له "آخر ترتيب معروف" منفصل.
++ */
++
++const STORAGE_PREFIX = 'mesori:lastSeenRank:';
++
++/** يرجع { rank, points, savedAt } من آخر زيارة، أو null لو أول مرة */
++export function getLastSeenRank(userId) {
++  if (!userId) return null;
++  try {
++    const raw = localStorage.getItem(STORAGE_PREFIX + userId);
++    return raw ? JSON.parse(raw) : null;
++  } catch {
++    return null; // localStorage غير متاح (وضع تصفّح خاص مثلاً) — تجاهل بأمان
++  }
++}
++
++/** يحفظ الترتيب/النقاط الحاليين كأساس للمقارنة في الزيارة الجاية */
++export function saveLastSeenRank(userId, { rank, points }) {
++  if (!userId || rank == null) return;
++  try {
++    localStorage.setItem(
++      STORAGE_PREFIX + userId,
++      JSON.stringify({ rank, points, savedAt: Date.now() })
++    );
++  } catch {
++    /* تجاهل بأمان لو التخزين غير متاح */
++  }
++}
++
++/*
++ * يحسب الفرق بين آخر حالة محفوظة (previous) والحالة الحالية
++ * (current: { rank, points }).
++ * - rankDelta موجب  = تحسّن (رقم الترتيب قلّ، مثلاً من 5 لـ 3 → +2)
++ * - rankDelta سالب  = تراجع (حد تخطاك فعلياً، مثلاً من 3 لـ 5 → -2)
++ * يرجع null لو مفيش زيارة سابقة (أول مرة) أو مفيش تغيير خالص.
++ */
++export function computeRankChange(previous, current) {
++  if (!previous || current?.rank == null) return null;
++
++  const rankDelta = previous.rank - current.rank;
++  const pointsDelta = (current.points ?? 0) - (previous.points ?? 0);
++
++  if (rankDelta === 0 && pointsDelta === 0) return null;
++
++  return {
++    rankDelta,
++    pointsDelta,
++    overtaken: rankDelta < 0,
++  };
++}
+diff --git a/src/pages/HomePage.jsx b/src/pages/HomePage.jsx
+index f643912..6d50cbf 100644
+--- a/src/pages/HomePage.jsx
++++ b/src/pages/HomePage.jsx
+@@ -3,26 +3,32 @@
+  * HomePage.jsx - الصفحة الرئيسية للتطبيق
+  * =====================================================
+  *
+- * هذه الصفحة هي "البوابة" الرئيسية للتطبيق.
+- * تجمع كل المكوّنات الفرعية في تسلسل منطقي:
+- *
+  * ┌─────────────────────────────────────────────────┐
+  * │  AppWrapper (حاوية التطبيق الكاملة)             │
+  * │  ┌───────────────────────────────────────────┐  │
+- * │  │  Header (🔇 صوت | ⚙️ إعدادات)            │  │
++ * │  │  Header (🔔 إشعارات | ⚔️ 1ضد1 | ⚙️ إعدادات) │  │
+  * │  ├───────────────────────────────────────────┤  │
+- * │  │  main (منطقة التمرير)                     │  │
+- * │  │  ├── HeroSection   (الشعار + الترحيب)    │  │
+- * │  │  ├── LevelsGrid    (بطاقات المستويات)    │  │
+- * │  │  └── ProgressSection (شريط التقدم)       │  │
++ * │  │  main (flex-col يملأ المساحة المتبقية)     │  │
++ * │  │  ├── HeroSection     (ثابت الحجم، مضغوط)  │  │
++ * │  │  ├── LevelsGrid      (flex-1 — يملأ الباقي)│  │
++ * │  │  └── ProgressSection (ثابت الحجم)         │  │
+  * │  ├───────────────────────────────────────────┤  │
+  * │  │  BottomNav (INFO | 🏠 | LEADERBOARD)      │  │
+  * │  └───────────────────────────────────────────┘  │
+  * └─────────────────────────────────────────────────┘
+  *
+- * ملاحظة حول التمرير:
+- * - الـ main يتمرر بشكل مستقل (overflow-y: auto)
+- * - paddingBottom = 96px لتجنب أن يختبئ المحتوى خلف BottomNav الثابت
++ * ⬅️ main بقى flex flex-col بدل تدفّق عادي: HeroSection
++ *   وProgressSection بحجمهم الطبيعي (flex-shrink-0 داخلهم)،
++ *   وLevelsGrid ياخد كل المساحة المتبقية (flex-1 min-h-0) وتتقلّص/
++ *   تكبر كروته معاها. الهدف: الصفحة كلها تتظبط في ارتفاع الشاشة
++ *   على أي هاتف عادي من غير تمرير، وده بيتحقق تلقائياً على أي
++ *   ارتفاع شاشة (مش مضبوط على جهاز واحد بعينه) لأن القسم المرن
++ *   هو اللي بياخد أو يسيب المساحة الزيادة/الناقصة.
++ * ⬅️ overflow-y-auto اتسابت كـ"شبكة أمان" بس، مش اتشالت خالص —
++ *   لو جهاز نادر جداً (شاشة قصيرة جداً/تكبير خط النظام لأقصى حد)
++ *   لسه محتاج بكسلات زيادة، هيقدر يعمل سكرول خفيف بدل ما يختفي
++ *   جزء من المحتوى (كرت كامل مثلاً) نهائياً بلا داعي. في الاستخدام
++ *   العادي على أي هاتف حديث مفيش حاجة تتمرّر أصلاً.
+  * =====================================================
+  */
+ 
+@@ -40,75 +46,19 @@ import ProgressSection from '../components/home/ProgressSection';
+ 
+ function HomePage() {
+   return (
+-
+-    /*
+-     * AppWrapper يوفر:
+-     * - حاوية max-w-md للموبايل
+-     * - خلفية رملية فرعونية
+-     * - توسيط على الشاشات الكبيرة
+-     * - الزخارف الجانبية
+-     */
+     <AppWrapper>
+ 
+-      {/*
+-        * Header مع إظهار جرس الإشعارات وأيقونة "1 ضد 1"
+-        * showNotifications={true} → يعرض جرس الإشعارات بدلاً من زر الرجوع
+-        * showVsIcon={true}        → يعرض أيقونة "1 ضد 1" في المنتصف
+-        * في الصفحة الرئيسية لا يوجد "رجوع"
+-        */}
+       <Header showNotifications={true} showVsIcon={true} />
+ 
+-      {/*
+-        * المنطقة القابلة للتمرير
+-        * ─────────────────────────────────────────
+-        * overflow-y: auto  = يُمكّن التمرير العمودي
+-        * flex-1            = تأخذ كل المساحة المتبقية
+-        *                     بين Header و BottomNav
+-        * paddingBottom 96px= مسافة تمنع المحتوى من
+-        *                     الاختباء خلف BottomNav الثابت
+-        *                     (ارتفاع BottomNav ≈ 80-96px)
+-        * app-scroll        = كلاس CSS لشريط تمرير مخصص
+-        *                     (تعريفه في index.css)
+-        */}
+       <main
+-        className="flex-1 overflow-y-auto app-scroll"
++        className="flex-1 min-h-0 overflow-y-auto app-scroll flex flex-col"
+         style={{ paddingBottom: 'calc(96px + env(safe-area-inset-bottom, 0px))' }}
+       >
+-
+-        {/*
+-          * HeroSection - القسم الأول
+-          * يعرض: الشعار + اسم التطبيق + الترحيب + الشخصية
+-          */}
+         <HeroSection />
+-
+-        {/*
+-          * فاصل بصري خفيف بين الأقسام
+-          * نقاط ذهبية زخرفية
+-          */}
+-        <div className="flex items-center justify-center gap-2 mb-2 opacity-40">
+-          <span style={{ color: '#C8922A', fontSize: '8px' }}>◆</span>
+-          <span style={{ color: '#C8922A', fontSize: '12px' }}>◆</span>
+-          <span style={{ color: '#C8922A', fontSize: '8px' }}>◆</span>
+-        </div>
+-
+-        {/*
+-          * LevelsGrid - بطاقات المستويات الخمسة
+-          * يعرض: 3 بطاقات في الصف الأول، 2 في الثاني
+-          */}
+         <LevelsGrid />
+-
+-        {/*
+-          * ProgressSection - شريط التقدم الكلي
+-          * يعرض: مجموع النقاط + شريط تصاعدي + لقب المستخدم
+-          */}
+         <ProgressSection />
+-
+       </main>
+ 
+-      {/*
+-        * BottomNav - شريط التنقل السفلي الثابت
+-        * activePage='home' = يُضيء زر الصفحة الرئيسية
+-        */}
+       <BottomNav activePage="home" />
+ 
+     </AppWrapper>
+diff --git a/src/pages/LeaderboardPage.jsx b/src/pages/LeaderboardPage.jsx
+index 9e783d9..ddbabed 100644
+--- a/src/pages/LeaderboardPage.jsx
++++ b/src/pages/LeaderboardPage.jsx
+@@ -5,6 +5,29 @@
+  *
+  * تعرض ترتيب جميع اللاعبين حسب النقاط.
+  * المستخدم الحالي (isCurrentUser: true) يُبرز بلون أخضر.
++ *
++ * ⬅️ إصلاح صف الرأس (شعار + عنوان + شخصية): كان بلا أي حماية من
++ *   الانكماش (flex-shrink-0 / min-w-0)، فعلى شاشة هاتف بعرض عادي
++ *   كان إجمالي عرض العناصر الثلاثة (شعار 110 + شخصية 80 + عمود
++ *   عنوان بعرضه الأدنى الطبيعي بسبب "Leaderboard" الكبيرة ووصف
++ *   سطرين) يتخطى عرض الحاوية الفعلي. ومع overflow-x-hidden على
++ *   AppWrapper، الجزء الزايد كان بيتقص بصمت بدل ما يعمل سكرول —
++ *   وبما إن الصفحة كلها RTL وشخصية المستكشف هي آخر عنصر DOM (يعني
++ *   أقصى يسار الصفحة في RTL)، هي اللي كانت بتتقص وتظهر "خارج
++ *   الإطار من ناحية اليسار" بالظبط زي ما وصف عمر، وده نفسه سبب
++ *   شكل الصفحة "المايل لليسار" (وزن العناصر الظاهرة بيبقى متجمّع
++ *   ناحية اليمين). الحل: flex-shrink-0 على الشعار والشخصية (يمنعهم
++ *   من التصارع على المساحة)، min-w-0 على عمود العنوان الأوسط (يسمح
++ *   لنصّه ينكمش/يلف بدل ما يفرض عرض أدنى كبير)، وتصغير الحجمين
++ *   الأساسيين (110→82 / 80→62) + عنوان أصغر (text-2xl→text-xl)
++ *   كهامش أمان إضافي على الشاشات الأضيق.
++ *
++ * ⬅️ إضافة: شارة صغيرة متحركة (RankChangeBadge) بجانب ترتيب
++ *   المستخدم الحالي، تقارن ترتيبه/نقاطه الحاليين بآخر زيارة محفوظة
++ *   محلياً (rankTracking.js) — أخضر لو تحسّن، أحمر لو حد تخطاه.
++ *   لو "تخطاه حد فعلاً" (rankDelta < 0)، تُطلق أيضاً إشعار محلي
++ *   عبر Capacitor (notifications.js) — تمهيد لإشعارات أندرويد
++ *   (راجع التعليقات في الملفين للحدود المتعمّدة لهذا النظام).
+  * =====================================================
+  */
+ 
+@@ -18,13 +41,10 @@ import { useApp }        from '../context/AppContext';
+ import { supabase }      from '../lib/supabaseClient';
+ import { AvatarDisplay } from '../data/avatars';
+ import PlayerProfileModal from '../components/leaderboard/PlayerProfileModal';
++import RankChangeBadge   from '../components/leaderboard/RankChangeBadge';
++import { getLastSeenRank, saveLastSeenRank, computeRankChange } from '../lib/rankTracking';
++import { notifyRankOvertaken } from '../lib/notifications';
+ 
+-/*
+- * مكوّن صغير لأيقونة الكوب حسب نوعه
+- * أيقونات Flaticon Uicons (نمط solid) بدلاً من صور PNG فارغة:
+- * ميدالية مذهّبة/فضية/برونزية لكل مركز، بلون وظل (drop-shadow)
+- * مناسبين — بنفس أسلوب أيقونات BottomNav.jsx
+- */
+ const TROPHY_STYLES = {
+   gold:   { iconClass: 'fi-sr-first-medal',  color: '#F5B700', label: 'المركز الأول'  },
+   silver: { iconClass: 'fi-sr-second-medal', color: '#A8A8B3', label: 'المركز الثاني' },
+@@ -40,11 +60,7 @@ function TrophyIcon({ type }) {
+       className={`fi ${iconClass}`}
+       role="img"
+       aria-label={label}
+-      style={{
+-        fontSize: '28px',
+-        color,
+-        filter: `drop-shadow(0 2px 3px ${color}66)`,
+-      }}
++      style={{ fontSize: '28px', color, filter: `drop-shadow(0 2px 3px ${color}66)` }}
+     />
+   );
+ }
+@@ -56,6 +72,7 @@ function LeaderboardPage() {
+   const [players, setPlayers] = useState([]);
+   const [loading, setLoading] = useState(true);
+   const [selectedPlayer, setSelectedPlayer] = useState(null);
++  const [rankChange, setRankChange] = useState(null);
+ 
+   useEffect(() => {
+     async function loadLeaderboard() {
+@@ -85,6 +102,23 @@ function LeaderboardPage() {
+         isCurrentUser: row.id === session?.user?.id,
+       })));
+       setLoading(false);
++
++      /*
++       * تتبّع تغيّر الترتيب/النقاط منذ آخر زيارة لهذه الصفحة —
++       * راجع rankTracking.js لتفاصيل الحدود المتعمّدة لهذا النظام
++       */
++      const mine = (data || []).find(row => row.id === session?.user?.id);
++      if (mine) {
++        const previous = getLastSeenRank(session.user.id);
++        const change = computeRankChange(previous, { rank: mine.rank, points: mine.total_points });
++        if (change) {
++          setRankChange(change);
++          if (change.overtaken) {
++            notifyRankOvertaken({ newRank: mine.rank, previousRank: previous.rank });
++          }
++        }
++        saveLastSeenRank(session.user.id, { rank: mine.rank, points: mine.total_points });
++      }
+     }
+ 
+     loadLeaderboard();
+@@ -99,22 +133,21 @@ function LeaderboardPage() {
+         style={{ paddingBottom: 'calc(96px + env(safe-area-inset-bottom, 0px))' }}
+       >
+ 
+-        {/* قسم الرأس */}
+-        <div className="flex items-end justify-between px-4 pt-2">
++        {/* قسم الرأس — flex-shrink-0 على الطرفين، min-w-0 على المنتصف */}
++        <div className="flex items-end justify-between px-4 pt-2 gap-2">
+           <img
+             src={EgyptianLogo}
+             alt="شعار ميسوري"
+-            width={110}
+-            height={110}
+-            className="drop-shadow-lg"
++            width={82}
++            height={82}
++            className="drop-shadow-lg flex-shrink-0"
+           />
+ 
+-          <div className="flex-1 flex flex-col items-center pb-2">
+-            {/* العنوان بالإنجليزية */}
++          <div className="flex-1 min-w-0 flex flex-col items-center pb-2">
+             <div className="flex items-center gap-2 mb-1">
+               <span style={{ color: '#C8922A', fontSize: '14px' }}>✦</span>
+               <h1
+-                className="font-black text-2xl"
++                className="font-black text-xl truncate"
+                 style={{ fontFamily: "'Cinzel', serif", color: '#3D2B1F' }}
+               >
+                 Leaderboard
+@@ -122,7 +155,6 @@ function LeaderboardPage() {
+               <span style={{ color: '#C8922A', fontSize: '14px' }}>✦</span>
+             </div>
+ 
+-            {/* العنوان بالعربية */}
+             <span
+               className="font-bold text-base"
+               style={{ fontFamily: "'Cairo', sans-serif", color: '#805D1B' }}
+@@ -130,9 +162,8 @@ function LeaderboardPage() {
+               قائمة المتصدرين
+             </span>
+ 
+-            {/* الوصف */}
+             <p
+-              className="text-center text-xs mt-2 px-2"
++              className="text-center text-xs mt-2 px-1"
+               style={{ fontFamily: "'Cairo', sans-serif", color: '#8B4513', lineHeight: 1.6 }}
+             >
+               هنا يمكنك الاطلاع على أفضل اللاعبين
+@@ -140,14 +171,15 @@ function LeaderboardPage() {
+             </p>
+           </div>
+ 
+-          <ExplorerCharacter size={80} gender={userProfile.character} />
++          <div className="flex-shrink-0">
++            <ExplorerCharacter size={62} gender={userProfile.character} />
++          </div>
+         </div>
+ 
+ 
+         {/* جدول المتصدرين */}
+         <div className="px-4 mt-4">
+ 
+-          {/* رأس الجدول */}
+           <div
+             className="grid grid-cols-3 px-4 py-2 rounded-t-xl mb-1"
+             style={{ backgroundColor: '#3D2B1F' }}
+@@ -163,29 +195,18 @@ function LeaderboardPage() {
+             ))}
+           </div>
+ 
+-          {/* صفوف اللاعبين */}
+           {loading ? (
+-            <p
+-              className="text-center text-sm py-8"
+-              style={{ fontFamily: "'Cairo', sans-serif", color: '#8B5A2B' }}
+-            >
++            <p className="text-center text-sm py-8" style={{ fontFamily: "'Cairo', sans-serif", color: '#8B5A2B' }}>
+               جاري تحميل الترتيب...
+             </p>
+           ) : players.length === 0 ? (
+-            <p
+-              className="text-center text-sm py-8"
+-              style={{ fontFamily: "'Cairo', sans-serif", color: '#8B5A2B' }}
+-            >
++            <p className="text-center text-sm py-8" style={{ fontFamily: "'Cairo', sans-serif", color: '#8B5A2B' }}>
+               لسه محدش ظهر في الترتيب — كن أول اللاعبين!
+             </p>
+           ) : (
+           <div className="space-y-1.5">
+             {players.map((player) => {
+ 
+-              /*
+-               * isCurrentUser = صحيح للمستخدم الحالي
+-               * يُغير التمييز البصري للصف
+-               */
+               const isMe = player.isCurrentUser;
+ 
+               return (
+@@ -195,48 +216,36 @@ function LeaderboardPage() {
+                   className="rounded-xl px-3 py-3 flex items-center press-effect no-tap-highlight"
+                   style={{
+                     backgroundColor: isMe
+-                      ? '#2D6A3F'           /* أخضر للمستخدم الحالي */
++                      ? '#2D6A3F'
+                       : player.rank <= 3
+-                        ? 'rgba(200,146,42,0.08)'  /* ذهبي خفيف للمراكز الأولى */
++                        ? 'rgba(200,146,42,0.08)'
+                         : 'white',
+                     cursor: isMe ? 'default' : 'pointer',
+-                    border: isMe
+-                      ? '2px solid #4ADE80'
+-                      : '1px solid rgba(200,146,42,0.15)',
++                    border: isMe ? '2px solid #4ADE80' : '1px solid rgba(200,146,42,0.15)',
+                     boxShadow: isMe ? '0 0 12px rgba(45,106,63,0.3)' : 'none',
+                   }}
+                 >
+ 
+-                  {/* عمود الترتيب */}
+-                  <div className="w-1/5 flex justify-center">
++                  {/* عمود الترتيب — relative عشان يستضيف شارة التغيّر */}
++                  <div className="w-1/5 flex justify-center relative">
+                     {player.trophy ? (
+                       <TrophyIcon type={player.trophy} />
+                     ) : (
+                       <span
+                         className="font-black text-lg"
+-                        style={{
+-                          fontFamily: "'Cairo', sans-serif",
+-                          color: isMe ? 'white' : '#3D2B1F',
+-                        }}
++                        style={{ fontFamily: "'Cairo', sans-serif", color: isMe ? 'white' : '#3D2B1F' }}
+                       >
+                         {player.rank}
+                       </span>
+                     )}
++                    {isMe && <RankChangeBadge rankDelta={rankChange?.rankDelta} />}
+                   </div>
+ 
+                   {/* عمود اللاعب */}
+                   <div className="flex-1 flex items-center gap-2.5">
+-                    {/*
+-                      * صورة رمزية دائرية — نفس صور الشخصية المُستخدَمة في باقي التطبيق
+-                      * (Character1_Pic / Character2_Pic)، لكن مقصوصة على الوجه أعلى
+-                      * الصورة باستخدام object-fit: cover بدل الجسم الكامل
+-                      * overflow-hidden على الحاوية الدائرية هو ما يعمل "القص"
+-                      */}
+                     <div
+                       className="rounded-full flex-shrink-0 overflow-hidden"
+-                      style={{
+-                        border: `2px solid ${isMe ? 'rgba(255,255,255,0.4)' : 'rgba(200,146,42,0.3)'}`,
+-                      }}
++                      style={{ border: `2px solid ${isMe ? 'rgba(255,255,255,0.4)' : 'rgba(200,146,42,0.3)'}` }}
+                     >
+                       <AvatarDisplay avatarKey={player.avatar} size={40} />
+                     </div>
+@@ -244,19 +253,13 @@ function LeaderboardPage() {
+                     <div>
+                       <p
+                         className="font-bold text-sm"
+-                        style={{
+-                          fontFamily: "'Cairo', sans-serif",
+-                          color: isMe ? 'white' : '#3D2B1F',
+-                        }}
++                        style={{ fontFamily: "'Cairo', sans-serif", color: isMe ? 'white' : '#3D2B1F' }}
+                       >
+                         {player.name}
+                       </p>
+                       <p
+                         className="text-xs"
+-                        style={{
+-                          fontFamily: "'Cairo', sans-serif",
+-                          color: isMe ? 'rgba(255,255,255,0.7)' : '#8B5A2B',
+-                        }}
++                        style={{ fontFamily: "'Cairo', sans-serif", color: isMe ? 'rgba(255,255,255,0.7)' : '#8B5A2B' }}
+                       >
+                         Level {player.levelReached}
+                       </p>
+@@ -267,20 +270,13 @@ function LeaderboardPage() {
+                   <div className="w-1/5 text-center">
+                     <p
+                       className="font-black text-base"
+-                      style={{
+-                        fontFamily: "'Cairo', sans-serif",
+-                        color: isMe ? '#FBBF24' : '#C8922A',
+-                      }}
++                      style={{ fontFamily: "'Cairo', sans-serif", color: isMe ? '#FBBF24' : '#C8922A' }}
+                     >
+                       {player.points}
+                     </p>
+                     <p
+                       className="text-xs"
+-                      style={{
+-                        fontFamily: "'Cairo', sans-serif",
+-                        color: isMe ? 'rgba(255,255,255,0.7)' : '#8B5A2B',
+-                        fontSize: '10px',
+-                      }}
++                      style={{ fontFamily: "'Cairo', sans-serif", color: isMe ? 'rgba(255,255,255,0.7)' : '#8B5A2B', fontSize: '10px' }}
+                     >
+                       نقطة
+                     </p>
