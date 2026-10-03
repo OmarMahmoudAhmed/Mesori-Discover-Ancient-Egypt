@@ -1,0 +1,193 @@
+diff --git a/package.json b/package.json
+index 7675641..50ffb16 100644
+--- a/package.json
++++ b/package.json
+@@ -9,8 +9,9 @@
+     "preview": "vite preview"
+   },
+   "dependencies": {
+-    "react":     "^18.2.0",
+-    "react-dom": "^18.2.0"
++    "@flaticon/flaticon-uicons": "^3.3.1",
++    "react":                     "^18.2.0",
++    "react-dom":                 "^18.2.0"
+   },
+   "devDependencies": {
+     "@vitejs/plugin-react": "^4.2.1",
+diff --git a/Public/Assets/Backgrounds/app-background.png b/public/assets/backgrounds/app-background.png
+similarity index 100%
+rename from Public/Assets/Backgrounds/app-background.png
+rename to public/assets/backgrounds/app-background.png
+diff --git a/src/components/layout/BottomNav.jsx b/src/components/layout/BottomNav.jsx
+index 3cda11b..27991bb 100644
+--- a/src/components/layout/BottomNav.jsx
++++ b/src/components/layout/BottomNav.jsx
+@@ -54,10 +54,10 @@ function BottomNav({ activePage = 'home' }) {
+       iconBgActive:   '#1A7F8E',
+       iconBgInactive: '#2A6070',
+       /*
+-       * 🖼️ صورة مطلوبة: /assets/icons/nav/info.png (22×22px، يُفضَّل أبيض/فاتح اللون
+-       * لأنها ستوضع فوق دائرة ملونة)
++       * أيقونة Flaticon Uicons (fi fi-rr-info) بدلاً من صورة PNG
++       * اللون أبيض لأنها توضع فوق دائرة ملونة
+        */
+-      iconSrc: '/assets/icons/nav/info.png',
++      iconClass: 'fi fi-rr-info',
+     },
+ 
+     /* ---- زر الصفحة الرئيسية (في المنتصف) ---- */
+@@ -70,9 +70,9 @@ function BottomNav({ activePage = 'home' }) {
+       iconBgActive:   '#8B5A2B',
+       iconBgInactive: '#6B4020',
+       /*
+-       * 🖼️ صورة مطلوبة: /assets/icons/nav/home.png (22×22px، أبيض/فاتح اللون)
++       * أيقونة Flaticon Uicons (fi fi-rr-home) بدلاً من صورة PNG
+        */
+-      iconSrc: '/assets/icons/nav/home.png',
++      iconClass: 'fi fi-rr-home',
+     },
+ 
+     /* ---- زر قائمة المتصدرين (أقصى اليمين في RTL = يمين بصري) ---- */
+@@ -85,9 +85,9 @@ function BottomNav({ activePage = 'home' }) {
+       iconBgActive:   '#C8922A',
+       iconBgInactive: '#9A6A1A',
+       /*
+-       * 🖼️ صورة مطلوبة: /assets/icons/nav/leaderboard.png (22×22px، أبيض/فاتح اللون)
++       * أيقونة Flaticon Uicons (fi fi-rr-leaderboard) بدلاً من صورة PNG
+        */
+-      iconSrc: '/assets/icons/nav/leaderboard.png',
++      iconClass: 'fi fi-rr-leaderboard',
+     },
+ 
+   ];
+@@ -153,15 +153,17 @@ function BottomNav({ activePage = 'home' }) {
+                 }}
+               >
+                 {/*
+-                  * عرض أيقونة PNG للعنصر
++                  * عرض أيقونة Flaticon Uicons للعنصر
+                   * opacity تتغيّر حسب حالة النشاط (نفس منطق السابق)
+                   */}
+-                <img
+-                  src={item.iconSrc}
+-                  alt={item.labelAr}
+-                  width={22}
+-                  height={22}
+-                  style={{ opacity: isActive ? 1 : 0.8 }}
++                <i
++                  className={item.iconClass}
++                  aria-hidden="true"
++                  style={{
++                    fontSize: '22px',
++                    color:    '#FFFFFF',
++                    opacity:  isActive ? 1 : 0.8,
++                  }}
+                 />
+               </div>
+ 
+diff --git a/src/components/layout/Header.jsx b/src/components/layout/Header.jsx
+index 2ab3858..9a60321 100644
+--- a/src/components/layout/Header.jsx
++++ b/src/components/layout/Header.jsx
+@@ -65,9 +65,9 @@ function Header({ showBack = false, showSound = false, onBack = null }) {
+         >
+           {/*
+             * سهم الرجوع (متجه لليمين، مناسب لـ RTL)
+-            * 🖼️ صورة مطلوبة: /assets/icons/header/back-arrow.png (22×22px)
++            * أيقونة Flaticon Uicons (fi fi-rr-arrow-right) بدلاً من صورة PNG
+             */}
+-          <img src="/assets/icons/header/back-arrow.png" alt="رجوع" width={22} height={22} />
++          <i className="fi fi-rr-arrow-right" aria-hidden="true" style={{ fontSize: '22px', color: '#3D2B1F' }} />
+         </button>
+ 
+       ) : showSound ? (
+@@ -87,14 +87,14 @@ function Header({ showBack = false, showSound = false, onBack = null }) {
+         >
+           {/*
+             * أيقونة الصوت (تتغيّر حسب isSoundOn)
+-            * 🖼️ صور مطلوبة (22×22px لكل منهما):
+-            *   - /assets/icons/header/sound-on.png
+-            *   - /assets/icons/header/sound-off.png
++            * أيقونتا Flaticon Uicons بدلاً من صور PNG:
++            *   - fi fi-rr-volume       (صوت مفعّل)
++            *   - fi fi-rr-volume-mute  (صوت مكتوم)
+             */}
+           {isSoundOn ? (
+-            <img src="/assets/icons/header/sound-on.png" alt="كتم الصوت" width={22} height={22} />
++            <i className="fi fi-rr-volume" aria-hidden="true" style={{ fontSize: '22px', color: '#3D2B1F' }} />
+           ) : (
+-            <img src="/assets/icons/header/sound-off.png" alt="تشغيل الصوت" width={22} height={22} />
++            <i className="fi fi-rr-volume-mute" aria-hidden="true" style={{ fontSize: '22px', color: '#3D2B1F' }} />
+           )}
+         </button>
+ 
+@@ -118,9 +118,9 @@ function Header({ showBack = false, showSound = false, onBack = null }) {
+       >
+         {/*
+           * أيقونة الإعدادات (الترس)
+-          * 🖼️ صورة مطلوبة: /assets/icons/header/settings.png (22×22px)
++          * أيقونة Flaticon Uicons (fi fi-rr-settings) بدلاً من صورة PNG
+           */}
+-        <img src="/assets/icons/header/settings.png" alt="الإعدادات" width={22} height={22} />
++        <i className="fi fi-rr-settings" aria-hidden="true" style={{ fontSize: '22px', color: '#3D2B1F' }} />
+       </button>
+     </header>
+   );
+diff --git a/src/main.jsx b/src/main.jsx
+index cca1c5e..7b157b2 100644
+--- a/src/main.jsx
++++ b/src/main.jsx
+@@ -13,6 +13,7 @@ import React    from 'react';
+ import ReactDOM from 'react-dom/client';
+ import App      from './App.jsx';
+ import './index.css'; /* استيراد الأنماط العامة */
++import '@flaticon/flaticon-uicons/css/regular/rounded.css'; /* أيقونات Flaticon Uicons (نمط regular-rounded) المُستخدَمة داخل الأزرار */
+ 
+ /* البحث عن العنصر div#root في index.html وحقن التطبيق فيه */
+ ReactDOM.createRoot(document.getElementById('root')).render(
+diff --git a/src/pages/ProfilePage.jsx b/src/pages/ProfilePage.jsx
+index e5f5e6c..fb6acf5 100644
+--- a/src/pages/ProfilePage.jsx
++++ b/src/pages/ProfilePage.jsx
+@@ -34,8 +34,8 @@ function ProfileField({ icon, label, value, onEdit }) {
+         "
+         style={{ backgroundColor: '#F4E2BC', border: '1px solid rgba(200,146,42,0.3)' }}
+       >
+-        {/* 🖼️ صورة مطلوبة: /assets/icons/profile/edit-pencil.png (14×14px) */}
+-        <img src="/assets/icons/profile/edit-pencil.png" alt="تعديل" width={14} height={14} />
++        {/* أيقونة Flaticon Uicons (fi fi-rr-pencil) بدلاً من صورة PNG */}
++        <i className="fi fi-rr-pencil" aria-hidden="true" style={{ fontSize: '14px', color: '#8B5A2B' }} />
+       </button>
+ 
+       {/* اسم الحقل */}
+@@ -210,13 +210,13 @@ function ProfilePage() {
+                       <ExplorerCharacter size={60} gender={key} />
+                     </div>
+ 
+-                    {/* علامة الاختيار — 🖼️ صورة مطلوبة: /assets/icons/profile/checkmark.png (12×12px، أبيض) */}
++                    {/* علامة الاختيار — أيقونة Flaticon Uicons (fi fi-rr-check) بدلاً من صورة PNG */}
+                     {isSelected && (
+                       <div
+                         className="absolute -top-1 -left-1 w-6 h-6 rounded-full flex items-center justify-center"
+                         style={{ backgroundColor: '#2D6A3F' }}
+                       >
+-                        <img src="/assets/icons/profile/checkmark.png" alt="مُختار" width={12} height={12} />
++                        <i className="fi fi-rr-check" aria-hidden="true" style={{ fontSize: '12px', color: '#FFFFFF' }} />
+                       </div>
+                     )}
+                   </div>
+diff --git a/src/pages/QuizGroupPage.jsx b/src/pages/QuizGroupPage.jsx
+index 6c17f93..948e7fd 100644
+--- a/src/pages/QuizGroupPage.jsx
++++ b/src/pages/QuizGroupPage.jsx
+@@ -303,8 +303,8 @@ function QuizGroupPage() {
+                   onClick={(e) => { e.stopPropagation(); handleStartStage(stage); }}
+                 >
+                   ابدأ
+-                  {/* 🖼️ صورة مطلوبة: /assets/icons/quiz-group/start-arrow.png (14×14px، أبيض) */}
+-                  <img src="/assets/icons/quiz-group/start-arrow.png" alt="" width={14} height={14} />
++                  {/* أيقونة Flaticon Uicons (fi fi-rr-arrow-small-right) بدلاً من صورة PNG */}
++                  <i className="fi fi-rr-arrow-small-right" aria-hidden="true" style={{ fontSize: '14px', color: '#FFFFFF' }} />
+                 </button>
+               ) : (
+                 <div

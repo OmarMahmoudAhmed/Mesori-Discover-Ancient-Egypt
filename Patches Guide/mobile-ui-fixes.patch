@@ -1,0 +1,668 @@
+diff --git a/index.html b/index.html
+index 4925fa9..603e90d 100644
+--- a/index.html
++++ b/index.html
+@@ -4,7 +4,7 @@
+     <meta charset="UTF-8" />
+     <link rel="icon" type="image/svg+xml" href="/ankh.svg" />
+     <link rel="manifest" href="/manifest.webmanifest" />
+-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
++    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+     <meta name="theme-color" content="#F4E2BC" />
+     <meta name="description" content="ميسوري - اكتشف تاريخ مصر القديمة وأثبت معرفتك!" />
+ 
+diff --git a/src/components/layout/AppWrapper.jsx b/src/components/layout/AppWrapper.jsx
+index fabeee6..c6f51bb 100644
+--- a/src/components/layout/AppWrapper.jsx
++++ b/src/components/layout/AppWrapper.jsx
+@@ -39,7 +39,7 @@ function AppWrapper({ children }) {
+      * min-h-screen: يضمن ملء الشاشة كاملاً
+      */
+     <div
+-      className="min-h-screen w-full flex justify-center"
++      className="min-h-dvh w-full flex justify-center"
+       style={{ backgroundColor: '#1a1a1a' }}
+     >
+ 
+@@ -48,7 +48,9 @@ function AppWrapper({ children }) {
+         *
+         * w-full       = يأخذ العرض الكامل على الموبايل
+         * max-w-md     = الحد الأقصى 448px (مثالي للموبايل والتابلت)
+-        * min-h-screen = على الأقل بطول شاشة كاملة
++        * min-h-dvh    = ارتفاع الشاشة الفعلي المرئي (مش 100vh القديمة،
++        *                اللي بتتحسب كأن شريط عنوان المتصفح مختفي دايماً
++        *                وبتقص جزء من أسفل الشاشة فعلياً على الموبايل)
+         * flex flex-col= ترتيب عمودي: Header + Main + BottomNav
+         * relative     = لتمكين العناصر المُحددة الموقع داخله
+         * overflow-x-hidden = يمنع التمرير الأفقي العرضي
+@@ -56,7 +58,7 @@ function AppWrapper({ children }) {
+       <div
+         className="
+           w-full max-w-md
+-          min-h-screen
++          min-h-dvh
+           flex flex-col
+           relative
+           overflow-x-hidden
+@@ -66,10 +68,10 @@ function AppWrapper({ children }) {
+ 
+           /*
+            * 🖼️ صورة الخلفية الكاملة للتطبيق (أعمدة + عين حورس + هيروغليفية + مويجات + كثبان)
+-           * سيتم إضافتها لاحقاً على المسار: /assets/backgrounds/app-background.png
+-           * راجع README.md لتفاصيل المقاس المقترح وطريقة عملها مع الصفحات الطويلة
++           * WebP بدل PNG — نفس الشكل بالظبط، 456KB → 11KB (كانت بتتحمّل
++           * مع كل صفحة لأنها هنا في AppWrapper المشترك)
+            */
+-          backgroundImage:    'url(/assets/backgrounds/app-background.png)',
++          backgroundImage:    'url(/assets/backgrounds/app-background.webp)',
+           backgroundRepeat:   'repeat-y',   /* تتكرر عمودياً إن كان المحتوى أطول من الصورة (الصفحة قابلة للتمرير) */
+           backgroundPosition: 'top center',
+           backgroundSize:     '100% auto', /* تمتد بعرض التطبيق كاملاً */
+diff --git a/src/components/layout/BottomNav.jsx b/src/components/layout/BottomNav.jsx
+index b861061..ae69e0a 100644
+--- a/src/components/layout/BottomNav.jsx
++++ b/src/components/layout/BottomNav.jsx
+@@ -37,7 +37,10 @@ function BottomNav({ activePage = 'home' }) {
+         boxShadow: '0 -4px 12px rgba(62, 39, 35, 0.12)',
+       }}
+     >
+-      <div className="flex items-center justify-around px-2 py-1.5 pb-safe">
++      <div
++        className="flex items-center justify-around px-2 pt-1.5"
++        style={{ paddingBottom: 'calc(0.375rem + env(safe-area-inset-bottom, 0px))' }}
++      >
+         {navItems.map((item) => {
+           const isActive = activePage === item.id;
+ 
+@@ -68,7 +71,12 @@ function BottomNav({ activePage = 'home' }) {
+                 aria-hidden="true"
+                 style={{
+                   fontSize: '22px',
+-                  color: isActive ? '#C8922A' : '#A3906C',
++                  /* اللونين القديمين (C8922A / A3906C) كانوا بيفشلوا حتى حد
++                     تباين الأيقونات (3:1) فوق شريط الزجاج شبه الشفاف —
++                     اتقاسوا بالتركيب الفعلي مش تخمين. النسخة الجديدة داكنة
++                     كفاية إنها تتقرا، والدائرة الزجاجية + التكبير الخفيف +
++                     الظل بيفرّقوا النشط عن الباقي برضه مش بس اللون */
++                  color: isActive ? '#A87B23' : '#938261',
+                   filter: isActive ? 'drop-shadow(0 1px 3px rgba(200, 146, 42, 0.3))' : 'none',
+                   zIndex: 1,
+                   transition: 'all 0.2s ease',
+diff --git a/src/components/layout/Header.jsx b/src/components/layout/Header.jsx
+index 173917c..a813718 100644
+--- a/src/components/layout/Header.jsx
++++ b/src/components/layout/Header.jsx
+@@ -44,9 +44,10 @@ function Header({ showBack = false, showNotifications = false, showVsIcon = fals
+       dir="ltr"
+       className="
+         flex items-center justify-between
+-        px-4 py-3
++        px-4 pb-3
+         relative z-10
+       "
++      style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 0.75rem)' }}
+     >
+       {/* ===== الزر الأيسر (رجوع أو جرس الإشعارات) ===== */}
+       {showBack ? (
+diff --git a/src/components/layout/NotificationBell.jsx b/src/components/layout/NotificationBell.jsx
+index 94dc8f9..a3729b8 100644
+--- a/src/components/layout/NotificationBell.jsx
++++ b/src/components/layout/NotificationBell.jsx
+@@ -34,7 +34,7 @@ function NotificationBell() {
+         style={{ backgroundColor: 'rgba(200,146,42,0.12)' }}
+         aria-label="الإشعارات"
+       >
+-        <i className="fi fi-rr-bell" aria-hidden="true" style={{ fontSize: '18px', color: '#C8922A' }} />
++        <i className="fi fi-rr-bell" aria-hidden="true" style={{ fontSize: '18px', color: '#805D1B' }} />
+         {unreadCount > 0 && (
+           <span
+             className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center text-[10px] font-black text-white"
+@@ -72,7 +72,7 @@ function NotificationBell() {
+                   <button
+                     onClick={markAllNotificationsRead}
+                     className="text-xs font-bold"
+-                    style={{ fontFamily: "'Cairo', sans-serif", color: '#C8922A' }}
++                    style={{ fontFamily: "'Cairo', sans-serif", color: '#805D1B' }}
+                   >
+                     علّم الكل كمقروء
+                   </button>
+@@ -100,7 +100,7 @@ function NotificationBell() {
+                     <i
+                       className={`fi ${n.type === 'badge' ? 'fi-sr-medal' : n.type === 'match_invite' || n.type === 'match_result' ? 'fi-sr-sword' : 'fi-sr-envelope'}`}
+                       aria-hidden="true"
+-                      style={{ fontSize: '14px', color: '#C8922A', marginTop: '2px' }}
++                      style={{ fontSize: '14px', color: '#805D1B', marginTop: '2px' }}
+                     />
+                     <div className="flex-1 min-w-0">
+                       <p className="font-bold text-xs" style={{ fontFamily: "'Cairo', sans-serif", color: '#3D2B1F' }}>
+@@ -111,7 +111,7 @@ function NotificationBell() {
+                           {n.body}
+                         </p>
+                       )}
+-                      <p className="text-[10px] mt-1" style={{ fontFamily: "'Cairo', sans-serif", color: '#A8A29E' }}>
++                      <p className="text-[10px] mt-1" style={{ fontFamily: "'Cairo', sans-serif", color: '#686462' }}>
+                         {timeAgo(n.created_at)}
+                       </p>
+                     </div>
+diff --git a/src/components/layout/SettingsDropdown.jsx b/src/components/layout/SettingsDropdown.jsx
+index 0deb174..2efee2c 100644
+--- a/src/components/layout/SettingsDropdown.jsx
++++ b/src/components/layout/SettingsDropdown.jsx
+@@ -81,7 +81,7 @@ function SettingsDropdown({ isOpen, onClose }) {
+                 onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(200,146,42,0.08)'; }}
+                 onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+               >
+-                <i className={`fi ${item.icon}`} aria-hidden="true" style={{ fontSize: '18px', color: '#C8922A' }} />
++                <i className={`fi ${item.icon}`} aria-hidden="true" style={{ fontSize: '18px', color: '#805D1B' }} />
+                 <span className="font-bold text-sm" style={{ fontFamily: "'Cairo', sans-serif", color: '#3D2B1F' }}>
+                   {item.label}
+                 </span>
+diff --git a/src/components/leaderboard/PlayerProfileModal.jsx b/src/components/leaderboard/PlayerProfileModal.jsx
+index e7907ea..f0babf7 100644
+--- a/src/components/leaderboard/PlayerProfileModal.jsx
++++ b/src/components/leaderboard/PlayerProfileModal.jsx
+@@ -95,7 +95,7 @@ function PlayerProfileModal({ player, onClose }) {
+                   <span className="text-xs font-bold" style={{ color: '#8B5A2B' }}>
+                     المستوى {player.levelReached}
+                   </span>
+-                  <span className="text-xs font-bold" style={{ color: '#C8922A' }}>
++                  <span className="text-xs font-bold" style={{ color: '#805D1B' }}>
+                     {player.points} نقطة
+                   </span>
+                 </div>
+diff --git a/src/components/shared/BadgeIcon.jsx b/src/components/shared/BadgeIcon.jsx
+index dedcf87..cc2b251 100644
+--- a/src/components/shared/BadgeIcon.jsx
++++ b/src/components/shared/BadgeIcon.jsx
+@@ -27,7 +27,7 @@ export function BadgeIcon({ icon, size = 28, color = '#C8922A', locked = false }
+     <i
+       className={`fi ${icon || 'fi-sr-medal'}`}
+       aria-hidden="true"
+-      style={{ fontSize: size, color: locked ? '#A8A29E' : color }}
++      style={{ fontSize: size, color: locked ? '#686462' : color }}
+     />
+   );
+ }
+diff --git a/src/context/AppContext.jsx b/src/context/AppContext.jsx
+index e94cda9..409de2d 100644
+--- a/src/context/AppContext.jsx
++++ b/src/context/AppContext.jsx
+@@ -652,6 +652,21 @@ export function AppProvider({ children }) {
+     return { isCorrect: data, error };
+   }, []);
+ 
++  // بعد 25-30 ثانية بحث من غير خصم حقيقي: يستبدله بوت (اللاعب ميعرفش)
++  const requestBotMatch = useCallback(async () => {
++    const { data, error } = await supabase.rpc('request_bot_match');
++    return { matchId: data, error };
++  }, []);
++
++  // بيتقال من عميل اللاعب الإنسان نفسه على مؤقّت عشوائي (محاكاة البوت) —
++  // الصح/الغلط بيتحسم في السيرفر برضه، مش هنا
++  const submitBotAnswer = useCallback(async (matchId, questionIndex) => {
++    const { data, error } = await supabase.rpc('submit_bot_answer', {
++      p_match_id: matchId, p_question_index: questionIndex,
++    });
++    return { isCorrect: data, error };
++  }, []);
++
+   const forfeitMatch = useCallback(async (matchId) => {
+     const { error } = await supabase.rpc('forfeit_abandoned_match', { p_match_id: matchId });
+     return { error };
+@@ -792,6 +807,8 @@ export function AppProvider({ children }) {
+     getMatchQuestion,
+     getCurrentMatchState,
+     submitMatchAnswer,
++    requestBotMatch,
++    submitBotAnswer,
+     forfeitMatch,
+     isSoundOn,
+     toggleSound,
+diff --git a/src/index.css b/src/index.css
+index 0f19039..d597003 100644
+--- a/src/index.css
++++ b/src/index.css
+@@ -43,6 +43,8 @@ body {
+ 
+   /* Cairo هو الخط الرئيسي للنصوص العربية */
+   font-family: 'Cairo', sans-serif;
++  -webkit-font-smoothing: antialiased;
++  text-rendering: optimizeLegibility;
+ 
+   /* dir=rtl في index.html يتحكم باتجاه الكتابة
+      لكن نُضيفه هنا أيضاً للتأكيد */
+@@ -50,8 +52,34 @@ body {
+ 
+   /* نمنع ظهور شريط التمرير الأفقي */
+   overflow-x: hidden;
++
++  /* منع تأثير "المطاط" (rubber-band) عند السحب فوق أول/آخر الصفحة —
++     بيخلي التطبيق يحس أكتر إنه تطبيق حقيقي مش موقع جوه إطار */
++  overscroll-behavior-y: contain;
++
++  /* احتياطي عام: أي عنصر تفاعلي نسي كلاس no-tap-highlight برضه
++     مايظهرش عليه فلاش أزرق/رمادي افتراضي عند اللمس */
++  -webkit-tap-highlight-color: transparent;
+ }
+ 
++/* =====================================================
++ * منع تكبير iOS التلقائي عند التركيز على أي حقل إدخال
++ * =====================================================
++ * لو الخط أقل من 16px، سفاري على iOS (وWKWebView اللي Capacitor
++ * شغّال عليه على iPhone) بيكبّر الصفحة كلها تلقائياً لما المستخدم
++ * يدوس على أي input — وبعدين المستخدم مضطر يزوّم يدوي تاني بعد
++ * ما يخلّص الكتابة. ده حالياً بيحصل فعلياً في فورم الدخول
++ * (.input-field__input عندها 0.95rem)، والبحث عن صديق وOnboarding
++ * (كلاهم text-sm = 14px). !important هنا مقصودة: أي كلاس Tailwind
++ * زي text-sm/text-xs على input معيّن أولويته أعلى من سيلكتور
++ * العنصر العادي، فمن غيرها القاعدة دي مش هتتطبّق فعلياً على أي
++ * حقل حدد حجم خط بنفسه.
++ */
++input, select, textarea {
++  font-size: 16px !important;
++}
++
++
+ 
+ /* =====================================================
+  * شريط التمرير المخصص (Custom Scrollbar)
+diff --git a/src/pages/DeveloperInfoPage.jsx b/src/pages/DeveloperInfoPage.jsx
+index be5c7fc..bfa9e6a 100644
+--- a/src/pages/DeveloperInfoPage.jsx
++++ b/src/pages/DeveloperInfoPage.jsx
+@@ -20,7 +20,7 @@ function DeveloperInfoPage() {
+     <AppWrapper>
+       <Header showBack={true} />
+ 
+-      <main className="flex-1 px-6 pb-24">
++      <main className="flex-1 px-6" style={{ paddingBottom: 'calc(96px + env(safe-area-inset-bottom, 0px))' }}>
+         <div className="text-center mb-6">
+           <div className="text-5xl mb-3">🏺</div>
+           <h1 className="text-xl font-black" style={{ fontFamily: "'Cairo', sans-serif", color: '#3D2B1F' }}>
+@@ -42,13 +42,13 @@ function DeveloperInfoPage() {
+           className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl press-effect no-tap-highlight mb-3"
+           style={{ backgroundColor: 'white', border: '1px solid rgba(200,146,42,0.2)' }}
+         >
+-          <i className="fi fi-rr-envelope" aria-hidden="true" style={{ fontSize: '16px', color: '#C8922A' }} />
++          <i className="fi fi-rr-envelope" aria-hidden="true" style={{ fontSize: '16px', color: '#805D1B' }} />
+           <span className="font-bold text-sm" style={{ fontFamily: "'Cairo', sans-serif", color: '#3D2B1F' }}>
+             تواصل معنا
+           </span>
+         </a>
+ 
+-        <p className="text-center text-xs mt-4" style={{ fontFamily: "'Cairo', sans-serif", color: '#A8A29E' }}>
++        <p className="text-center text-xs mt-4" style={{ fontFamily: "'Cairo', sans-serif", color: '#686462' }}>
+           الإصدار 1.4
+         </p>
+       </main>
+diff --git a/src/pages/HomePage.jsx b/src/pages/HomePage.jsx
+index 56bff23..f643912 100644
+--- a/src/pages/HomePage.jsx
++++ b/src/pages/HomePage.jsx
+@@ -72,7 +72,7 @@ function HomePage() {
+         */}
+       <main
+         className="flex-1 overflow-y-auto app-scroll"
+-        style={{ paddingBottom: '96px' }}
++        style={{ paddingBottom: 'calc(96px + env(safe-area-inset-bottom, 0px))' }}
+       >
+ 
+         {/*
+diff --git a/src/pages/LeaderboardPage.jsx b/src/pages/LeaderboardPage.jsx
+index 3ee87d4..9e783d9 100644
+--- a/src/pages/LeaderboardPage.jsx
++++ b/src/pages/LeaderboardPage.jsx
+@@ -96,7 +96,7 @@ function LeaderboardPage() {
+ 
+       <main
+         className="flex-1 overflow-y-auto app-scroll"
+-        style={{ paddingBottom: '96px' }}
++        style={{ paddingBottom: 'calc(96px + env(safe-area-inset-bottom, 0px))' }}
+       >
+ 
+         {/* قسم الرأس */}
+@@ -125,7 +125,7 @@ function LeaderboardPage() {
+             {/* العنوان بالعربية */}
+             <span
+               className="font-bold text-base"
+-              style={{ fontFamily: "'Cairo', sans-serif", color: '#C8922A' }}
++              style={{ fontFamily: "'Cairo', sans-serif", color: '#805D1B' }}
+             >
+               قائمة المتصدرين
+             </span>
+diff --git a/src/pages/OnboardingPage.jsx b/src/pages/OnboardingPage.jsx
+index 96cea16..b654e22 100644
+--- a/src/pages/OnboardingPage.jsx
++++ b/src/pages/OnboardingPage.jsx
+@@ -67,7 +67,7 @@ function OnboardingPage() {
+           <h1 className="text-2xl font-black mb-2" style={{ color: '#F4E2BC' }}>
+             أهلاً بيك في ميسوري!
+           </h1>
+-          <p className="text-sm" style={{ color: '#C8922A' }}>
++          <p className="text-sm" style={{ color: '#805D1B' }}>
+             قبل ما نبدأ رحلتك في مصر القديمة، عايزين نعرفك أكتر
+           </p>
+         </div>
+diff --git a/src/pages/ProfilePage.jsx b/src/pages/ProfilePage.jsx
+index b3e09a3..150e5a5 100644
+--- a/src/pages/ProfilePage.jsx
++++ b/src/pages/ProfilePage.jsx
+@@ -156,7 +156,7 @@ function ProfilePage() {
+ 
+       <main
+         className="flex-1 overflow-y-auto app-scroll"
+-        style={{ paddingBottom: '96px' }}
++        style={{ paddingBottom: 'calc(96px + env(safe-area-inset-bottom, 0px))' }}
+       >
+ 
+         {/* قسم الرأس */}
+@@ -173,7 +173,7 @@ function ProfilePage() {
+             {/* النجوم الزخرفية */}
+             <div className="flex gap-1 mb-1">
+               {['✦', '✦', '✦'].map((s, i) => (
+-                <span key={i} style={{ color: '#C8922A', fontSize: '12px' }}>{s}</span>
++                <span key={i} style={{ color: '#805D1B', fontSize: '12px' }}>{s}</span>
+               ))}
+             </div>
+ 
+@@ -291,7 +291,7 @@ function ProfilePage() {
+               className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+               style={{ backgroundColor: 'rgba(200,146,42,0.12)' }}
+             >
+-              <i className="fi fi-rr-medal" aria-hidden="true" style={{ fontSize: '16px', color: '#C8922A' }} />
++              <i className="fi fi-rr-medal" aria-hidden="true" style={{ fontSize: '16px', color: '#805D1B' }} />
+             </div>
+           </div>
+ 
+@@ -313,12 +313,12 @@ function ProfilePage() {
+                   </div>
+                   <span
+                     className="text-[10px] font-bold leading-tight"
+-                    style={{ fontFamily: "'Cairo', sans-serif", color: earned ? '#3D2B1F' : '#A8A29E' }}
++                    style={{ fontFamily: "'Cairo', sans-serif", color: earned ? '#3D2B1F' : '#686462' }}
+                   >
+                     {badge.title_ar}
+                   </span>
+                   {!badge.is_active && (
+-                    <span className="text-[9px]" style={{ fontFamily: "'Cairo', sans-serif", color: '#A8A29E' }}>
++                    <span className="text-[9px]" style={{ fontFamily: "'Cairo', sans-serif", color: '#686462' }}>
+                       قريباً
+                     </span>
+                   )}
+@@ -356,7 +356,7 @@ function ProfilePage() {
+               className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+               style={{ backgroundColor: 'rgba(200,146,42,0.12)' }}
+             >
+-              <i className="fi fi-rr-id-badge" aria-hidden="true" style={{ fontSize: '15px', color: '#C8922A' }} />
++              <i className="fi fi-rr-id-badge" aria-hidden="true" style={{ fontSize: '15px', color: '#805D1B' }} />
+             </div>
+           </div>
+ 
+@@ -380,7 +380,7 @@ function ProfilePage() {
+           {/* الجنس — منفصل عن اختيار الأفاتار، زرّين مباشرين بدل نافذة التعديل */}
+           <div className="flex items-center gap-3 py-3" style={{ borderBottom: '1px solid rgba(200,146,42,0.1)' }}>
+             <div className="flex items-center gap-2 w-24 flex-shrink-0">
+-              <i className="fi fi-rr-venus-mars" aria-hidden="true" style={{ fontSize: '15px', color: '#C8922A' }} />
++              <i className="fi fi-rr-venus-mars" aria-hidden="true" style={{ fontSize: '15px', color: '#805D1B' }} />
+               <span className="font-semibold text-sm" style={{ fontFamily: "'Cairo', sans-serif", color: '#8B4513' }}>
+                 الجنس
+               </span>
+@@ -407,7 +407,7 @@ function ProfilePage() {
+           <div style={{ borderBottom: 'none' }}>
+             <div className="flex items-center gap-3 py-3">
+               <div className="flex items-center gap-2 w-24 flex-shrink-0">
+-                <i className="fi fi-rr-envelope" aria-hidden="true" style={{ fontSize: '15px', color: '#C8922A' }} />
++                <i className="fi fi-rr-envelope" aria-hidden="true" style={{ fontSize: '15px', color: '#805D1B' }} />
+                 <span className="font-semibold text-sm" style={{ fontFamily: "'Cairo', sans-serif", color: '#8B4513' }}>
+                   البريد
+                 </span>
+@@ -472,7 +472,7 @@ function ProfilePage() {
+               className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+               style={{ backgroundColor: 'rgba(200,146,42,0.12)' }}
+             >
+-              <i className="fi fi-rr-chart-histogram" aria-hidden="true" style={{ fontSize: '14px', color: '#C8922A' }} />
++              <i className="fi fi-rr-chart-histogram" aria-hidden="true" style={{ fontSize: '14px', color: '#805D1B' }} />
+             </div>
+           </div>
+ 
+diff --git a/src/pages/QuizGroupPage.jsx b/src/pages/QuizGroupPage.jsx
+index fe5725b..0d7d03b 100644
+--- a/src/pages/QuizGroupPage.jsx
++++ b/src/pages/QuizGroupPage.jsx
+@@ -71,7 +71,7 @@ function QuizGroupPage() {
+ 
+       <main
+         className="flex-1 overflow-y-auto app-scroll"
+-        style={{ paddingBottom: '96px' }}
++        style={{ paddingBottom: 'calc(96px + env(safe-area-inset-bottom, 0px))' }}
+       >
+ 
+         {/* ===== قسم الرأس: الشعار والشخصية ===== */}
+diff --git a/src/pages/QuizPage.jsx b/src/pages/QuizPage.jsx
+index 2441c8d..7f96251 100644
+--- a/src/pages/QuizPage.jsx
++++ b/src/pages/QuizPage.jsx
+@@ -331,7 +331,7 @@ function QuizPage() {
+           className="flex-1 flex flex-col items-center justify-center gap-3 px-8 text-center"
+           style={{ paddingBottom: '48px' }}
+         >
+-          <i className="fi fi-rr-hourglass-start" aria-hidden="true" style={{ fontSize: '46px', color: '#C8922A' }} />
++          <i className="fi fi-rr-hourglass-start" aria-hidden="true" style={{ fontSize: '46px', color: '#805D1B' }} />
+           <h2 className="font-black text-xl" style={{ fontFamily: "'Cairo', sans-serif", color: '#3D2B1F' }}>
+             هذا الاختبار غير متاح بعد
+           </h2>
+@@ -550,7 +550,7 @@ function QuizPage() {
+               className="flex items-center gap-2 px-5 py-2.5 rounded-full mb-8"
+               style={{ backgroundColor: '#FDF3E3', border: '1px solid rgba(200,146,42,0.3)' }}
+             >
+-              <i className="fi fi-rr-star" aria-hidden="true" style={{ fontSize: '15px', color: '#C8922A' }} />
++              <i className="fi fi-rr-star" aria-hidden="true" style={{ fontSize: '15px', color: '#805D1B' }} />
+               <span
+                 className="font-bold text-sm"
+                 style={{ fontFamily: "'Cairo', sans-serif", color: '#3D2B1F' }}
+diff --git a/src/pages/VsLobbyPage.jsx b/src/pages/VsLobbyPage.jsx
+index ab50b18..b7f6576 100644
+--- a/src/pages/VsLobbyPage.jsx
++++ b/src/pages/VsLobbyPage.jsx
+@@ -15,13 +15,17 @@ import { useApp }  from '../context/AppContext';
+ import { supabase } from '../lib/supabaseClient';
+ 
+ function VsLobbyPage() {
+-  const { userProfile, findRandomMatch, cancelMatchmaking, searchUsers, inviteFriendlyMatch, navigateTo } = useApp();
++  const { userProfile, findRandomMatch, cancelMatchmaking, requestBotMatch, searchUsers, inviteFriendlyMatch, navigateTo } = useApp();
+ 
+   const [mode, setMode] = useState('menu'); // menu | searching | friendly
+   const [searchQuery, setSearchQuery] = useState('');
+   const [searchResults, setSearchResults] = useState([]);
+   const [inviteSentTo, setInviteSentTo] = useState(null);
+   const pollRef = useRef(null);
++  const timeoutRef = useRef(null); // مؤقّت الـ30 ثانية قبل تفعيل البوت
++
++  // بعد المدة دي من غير خصم حقيقي، اللاعب ياخد بوت بدل ما يفضل مستني
++  const MATCHMAKING_TIMEOUT_MS = 30000;
+ 
+   // بحث عن أصدقاء بالاسم (مع تأخير بسيط عشان ما نضربش الخادم بكل حرف)
+   useEffect(() => {
+@@ -44,22 +48,47 @@ function VsLobbyPage() {
+       navigateTo('vs-match', { matchId });
+       return;
+     }
+-    // لسه بيدوّر: استمع لأي مباراة جديدة أنا طرف فيها عبر Realtime
++
++    const goToMatch = (id) => {
++      if (pollRef.current) { supabase.removeChannel(pollRef.current); pollRef.current = null; }
++      if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null; }
++      navigateTo('vs-match', { matchId: id });
++    };
++
++    // لسه بيدوّر: استمع لأي مباراة جديدة أنا طرف فيها عبر Realtime.
++    // ملحوظة: find_or_create_match بتحط اللاعب المنتظر (أنا دلوقتي)
++    // كـ player_1_id، واللاعب اللي بيلاقيه لاحقاً كـ player_2_id — فلازم
++    // نسمع على العمودين مع بعض، مش player_2_id بس (كان ده سبب إن
++    // المطابقة الحقيقية ما توصلش أبداً للاعب اللي دخل الطابور الأول).
+     const channel = supabase
+       .channel(`matchmaking-${userProfile.id}`)
++      .on('postgres_changes', {
++        event: 'INSERT', schema: 'public', table: 'matches',
++        filter: `player_1_id=eq.${userProfile.id}`,
++      }, (payload) => goToMatch(payload.new.id))
+       .on('postgres_changes', {
+         event: 'INSERT', schema: 'public', table: 'matches',
+         filter: `player_2_id=eq.${userProfile.id}`,
+-      }, (payload) => {
+-        supabase.removeChannel(channel);
+-        navigateTo('vs-match', { matchId: payload.new.id });
+-      })
++      }, (payload) => goToMatch(payload.new.id))
+       .subscribe();
+     pollRef.current = channel;
++
++    // بعد 30 ثانية من غير خصم حقيقي: بوت تلقائي، من غير ما اللاعب يحس
++    timeoutRef.current = setTimeout(async () => {
++      const { matchId: botMatchId, error: botError } = await requestBotMatch();
++      if (botError) {
++        // على الأغلب يعني إن مباراة حقيقية اتلقّت في نفس اللحظة تقريباً —
++        // سيب قناة الـ Realtime تتصرف عادي، من غير ما نوقف البحث بالغلط
++        console.warn('⏳ تفعيل البوت اتأجّل:', botError.message);
++        return;
++      }
++      if (botMatchId) goToMatch(botMatchId);
++    }, MATCHMAKING_TIMEOUT_MS);
+   };
+ 
+   const cancelSearch = async () => {
+     if (pollRef.current) { supabase.removeChannel(pollRef.current); pollRef.current = null; }
++    if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null; }
+     await cancelMatchmaking();
+     setMode('menu');
+   };
+@@ -67,6 +96,7 @@ function VsLobbyPage() {
+   useEffect(() => () => {
+     if (pollRef.current) supabase.removeChannel(pollRef.current);
+     if (inviteChannelRef.current) supabase.removeChannel(inviteChannelRef.current);
++    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+   }, []);
+ 
+   const inviteChannelRef = useRef(null);
+@@ -97,7 +127,7 @@ function VsLobbyPage() {
+     <AppWrapper>
+       <Header showBack={true} />
+ 
+-      <main className="flex-1 flex flex-col px-6 pb-24" style={{ fontFamily: "'Cairo', sans-serif" }}>
++      <main className="flex-1 flex flex-col px-6" style={{ fontFamily: "'Cairo', sans-serif", paddingBottom: 'calc(96px + env(safe-area-inset-bottom, 0px))' }}>
+ 
+         {mode === 'menu' && (
+           <div className="flex flex-col items-center justify-center flex-1 gap-4 text-center">
+@@ -115,12 +145,12 @@ function VsLobbyPage() {
+               <i className="fi fi-sr-shuffle" aria-hidden="true" style={{ fontSize: '16px' }} />
+               <span>مباراة عشوائية</span>
+             </button>
+-            <p className="text-[11px] -mt-2" style={{ color: '#A8A29E' }}>خصم عشوائي، فوز يكسبك نقاط ورصيد إضافي</p>
++            <p className="text-[11px] -mt-2" style={{ color: '#686462' }}>خصم عشوائي، فوز يكسبك نقاط ورصيد إضافي</p>
+ 
+             <button
+               onClick={() => setMode('friendly')}
+               className="w-full max-w-xs flex items-center justify-center gap-2 py-4 rounded-2xl font-bold press-effect no-tap-highlight"
+-              style={{ backgroundColor: 'white', border: '2px solid #C8922A', color: '#C8922A' }}
++              style={{ backgroundColor: 'white', border: '2px solid #C8922A', color: '#805D1B' }}
+             >
+               <i className="fi fi-rr-user-add" aria-hidden="true" style={{ fontSize: '16px' }} />
+               <span>مباراة ودّية مع صديق</span>
+diff --git a/src/pages/VsMatchPage.jsx b/src/pages/VsMatchPage.jsx
+index 5c13fd0..b2ed42d 100644
+--- a/src/pages/VsMatchPage.jsx
++++ b/src/pages/VsMatchPage.jsx
+@@ -21,9 +21,10 @@ import AppWrapper from '../components/layout/AppWrapper';
+ import Header      from '../components/layout/Header';
+ import { useApp }  from '../context/AppContext';
+ import { supabase } from '../lib/supabaseClient';
++import { AvatarDisplay } from '../data/avatars';
+ 
+ function VsMatchPage() {
+-  const { pageData, userProfile, navigateTo, getCurrentMatchState, submitMatchAnswer, acceptFriendlyMatch, declineFriendlyMatch } = useApp();
++  const { pageData, userProfile, navigateTo, getCurrentMatchState, submitMatchAnswer, submitBotAnswer, acceptFriendlyMatch, declineFriendlyMatch } = useApp();
+   const matchId = pageData?.matchId;
+ 
+   const [phase, setPhase] = useState('loading');
+@@ -114,6 +115,33 @@ function VsMatchPage() {
+     return () => supabase.removeChannel(channel);
+   }, [matchId, opponentId, getCurrentMatchState, fetchState]);
+ 
++  // محاكاة إجابة البوت — فقط لو المباراة ضد بوت. مفيش عميل تاني يمثّله،
++  // فعميل اللاعب نفسه هو اللي بيحدد "امتى" البوت يجاوب (تأخير عشوائي
++  // يحاكي وقت تفكير إنسان)، لكن الصح/الغلط بيتحسم في السيرفر
++  // (submit_bot_answer) مش هنا — عشان يفضل نفس مصدر الحقيقة الوحيد.
++  useEffect(() => {
++    if (!matchState?.is_bot_match || phase !== 'question') return;
++    if (matchState.opponent_answered) return;
++
++    const deadline = matchState.question_started_at
++      ? new Date(matchState.question_started_at).getTime() + matchState.question_time_limit_seconds * 1000
++      : Date.now() + matchState.question_time_limit_seconds * 1000;
++    const remainingMs = Math.max(1000, deadline - Date.now());
++
++    // بين 1.5 ثانية و(الوقت المتبقي - نص ثانية أمان)، عشان يحس طبيعي
++    // ومايجاوبش بالظبط في نفس اللحظة كل مرة
++    const minDelay = 1500;
++    const maxDelay = Math.max(minDelay + 400, remainingMs - 500);
++    const delay = minDelay + Math.random() * (maxDelay - minDelay);
++
++    const timer = setTimeout(() => {
++      submitBotAnswer(matchId, matchState.current_question_index);
++    }, delay);
++
++    return () => clearTimeout(timer);
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, [matchState?.is_bot_match, matchState?.current_question_index, matchState?.opponent_answered, phase, matchId]);
++
+   // إرسال الإجابة
+   const handleSubmit = useCallback(async (isTimeout = false) => {
+     if (hasSubmittedRef.current) return;
+@@ -178,6 +206,18 @@ function VsMatchPage() {
+         <main className="flex-1 flex flex-col items-center justify-center gap-3 text-center px-6" style={{ fontFamily: "'Cairo', sans-serif" }}>
+           <div className="text-4xl animate-pulse">⏳</div>
+           <p className="font-bold text-sm" style={{ color: '#3D2B1F' }}>خلّصت أسئلتك! مستني خصمك يخلّص...</p>
++          {matchState.opponent_username && (
++            <div className="flex items-center gap-2.5 mt-2 px-4 py-2.5 rounded-2xl" style={{ backgroundColor: 'white', border: '1px solid rgba(200,146,42,0.2)' }}>
++              <AvatarDisplay avatarKey={matchState.opponent_character} size={36} />
++              <div className="text-right">
++                <p className="text-xs font-bold" style={{ color: '#3D2B1F' }}>{matchState.opponent_username}</p>
++                <p className="text-[10px]" style={{ color: '#8B5A2B' }}>
++                  {matchState.opponent_correct_count} / {matchState.total_questions} صح
++                  {matchState.opponent_answered && (matchState.opponent_correct ? ' · جاوب ✅' : ' · جاوب ❌')}
++                </p>
++              </div>
++            </div>
++          )}
+         </main>
+       </AppWrapper>
+     );
+@@ -242,6 +282,28 @@ function VsMatchPage() {
+           />
+         </div>
+ 
++        {/* هوية الخصم + نتيجته الحية — بتشتغل بنفس الشكل للبوت والإنسان،
++            لأن الاتنين صفوف profiles حقيقية من نفس الشكل بالظبط */}
++        {matchState.opponent_username && (
++          <div className="flex items-center justify-between mb-4 px-3 py-2 rounded-xl" style={{ backgroundColor: 'rgba(200,146,42,0.06)' }}>
++            <div className="flex items-center gap-2">
++              <AvatarDisplay avatarKey={matchState.opponent_character} size={30} />
++              <div className="text-right">
++                <p className="text-[11px] font-bold leading-tight" style={{ color: '#3D2B1F' }}>{matchState.opponent_username}</p>
++                <p className="text-[9px] leading-tight" style={{ color: '#8B5A2B' }}>تصنيف {matchState.opponent_rating}</p>
++              </div>
++            </div>
++            <div className="flex items-center gap-1.5">
++              <span className="text-xs font-black" style={{ color: '#2D6A3F', fontVariantNumeric: 'tabular-nums' }}>
++                {matchState.opponent_correct_count}/{matchState.total_questions}
++              </span>
++              {matchState.opponent_answered && (
++                <span className="text-sm">{matchState.opponent_correct ? '✅' : '❌'}</span>
++              )}
++            </div>
++          </div>
++        )}
++
+         {matchState.question && (
+           <>
+             <div className="rounded-2xl p-4 mb-4" style={{ backgroundColor: 'white', border: '1px solid rgba(200,146,42,0.2)' }}>

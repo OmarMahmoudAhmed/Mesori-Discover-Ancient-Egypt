@@ -1,0 +1,34 @@
+diff --git a/src/pages/VsMatchPage.jsx b/src/pages/VsMatchPage.jsx
+--- a/src/pages/VsMatchPage.jsx
++++ b/src/pages/VsMatchPage.jsx
+@@ -374,7 +374,8 @@
+ 
+   if (phase === 'result') {
+     const won = matchState.winner_id === userProfile.id;
+-    const isDraw = !matchState.winner_id && matchState.status === 'finished';
++    const isVoid = matchState.end_reason === 'void';
++    const isDraw = !matchState.winner_id && matchState.status === 'finished' && !isVoid;
+     const isForfeit = matchState.end_reason === 'forfeit';
+     const myChange = isPlayer1 ? matchState.player_1_rating_change : matchState.player_2_rating_change;
+ 
+@@ -383,6 +384,11 @@
+     let subtitle = null;
+     if (matchState.status === 'declined') {
+       icon = '😕'; title = 'الدعوة اتّرفضت';
++    } else if (isVoid) {
++      // مفيش خصم حقيقي استحق الفوز فعلياً (مباراة بوت اتسابت، أو
++      // الطرفين غايبين مع بعض) — مفيش فايز ولا خاسر ولا تأثير تصنيف
++      icon = '🤷'; title = 'اتلغت المباراة';
++      subtitle = 'الطرفين ما كملوش، فمفيش تأثير على تصنيفك';
+     } else if (isForfeit) {
+       icon = won ? '🏳️' : '🚪';
+       title = won ? 'فزت بالتحدي!' : 'انتهى التحدي';
+@@ -402,7 +408,7 @@
+           {subtitle && (
+             <p className="text-xs font-semibold" style={{ color: '#8B5A2B' }}>{subtitle}</p>
+           )}
+-          {myChange != null && (
++          {myChange != null && !isVoid && (
+             <p className="text-sm font-bold" style={{ color: myChange >= 0 ? '#2D6A3F' : '#DC2626' }}>
+               التصنيف: {myChange >= 0 ? '+' : ''}{myChange}
+             </p>

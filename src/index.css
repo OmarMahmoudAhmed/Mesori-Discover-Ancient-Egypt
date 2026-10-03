@@ -1,0 +1,192 @@
+/* =====================================================
+ * index.css - الأنماط الأساسية لتطبيق ميسوري
+ * =====================================================
+ *
+ * هذا الملف يحتوي على:
+ * 1. طبقات Tailwind CSS الثلاث الأساسية
+ * 2. إعادة تعيين الأنماط الافتراضية (Reset)
+ * 3. أنماط جسم الصفحة (Body)
+ * 4. Keyframe Animations مخصصة
+ * 5. كلاسات مساعدة إضافية
+ * ===================================================== */
+
+/* --- الطبقة الأولى: إعادة تعيين أنماط المتصفح الافتراضية --- */
+@tailwind base;
+
+/* --- الطبقة الثانية: كلاسات المكونات الجاهزة من Tailwind --- */
+@tailwind components;
+
+/* --- الطبقة الثالثة: كلاسات المساعدة (الأكثر استخداماً) --- */
+@tailwind utilities;
+
+
+/* =====================================================
+ * إعادة ضبط أنماط عالمية (Global Reset)
+ * ===================================================== */
+
+/* box-sizing: border-box يجعل width تشمل padding وborder
+   وهذا يسهل حسابات المقاسات كثيراً */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* =====================================================
+ * تصحيح التوسيط الرأسي لأيقونات Flaticon UIcons (fi fi-*)
+ * =====================================================
+ * Tailwind Preflight بيضبط line-height: 1.5 على كل عنصر (موروث من
+ * html)، لكن Flaticon بتضبط line-height: 1 فقط على العنصر الوهمي
+ * ::before اللي بيحمل شكل الأيقونة. الفرق ده بيخلي صندوق السطر
+ * الخاص بـ <i> نفسه أطول من الأيقونة اللي جواه، فتظهر الأيقونة
+ * مش متوسطة رأسياً داخل الأزرار (زر الإعدادات، الإشعارات، شريط
+ * التنقل السفلي...) رغم إن الزرار نفسه فيه flex items-center.
+ * الحل: نوحّد line-height على <i> نفسها بحيث تطابق الأيقونة تمام. */
+i.fi {
+  line-height: 1;
+  display: inline-block;
+}
+
+
+/* =====================================================
+ * أنماط الجسم الرئيسي
+ * ===================================================== */
+body {
+  /* خلفية داكنة خارج حاوية التطبيق - تظهر على الشاشات الكبيرة
+     (على الموبايل لن تُرى لأن التطبيق يملأ الشاشة كاملاً) */
+  background-color: #1a1a1a;
+
+  /* Cairo هو الخط الرئيسي للنصوص العربية */
+  font-family: 'Cairo', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+
+  /* dir=rtl في index.html يتحكم باتجاه الكتابة
+     لكن نُضيفه هنا أيضاً للتأكيد */
+  direction: rtl;
+
+  /* نمنع ظهور شريط التمرير الأفقي */
+  overflow-x: hidden;
+
+  /* منع تأثير "المطاط" (rubber-band) عند السحب فوق أول/آخر الصفحة —
+     بيخلي التطبيق يحس أكتر إنه تطبيق حقيقي مش موقع جوه إطار */
+  overscroll-behavior-y: contain;
+
+  /* احتياطي عام: أي عنصر تفاعلي نسي كلاس no-tap-highlight برضه
+     مايظهرش عليه فلاش أزرق/رمادي افتراضي عند اللمس */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* =====================================================
+ * منع تكبير iOS التلقائي عند التركيز على أي حقل إدخال
+ * =====================================================
+ * لو الخط أقل من 16px، سفاري على iOS (وWKWebView اللي Capacitor
+ * شغّال عليه على iPhone) بيكبّر الصفحة كلها تلقائياً لما المستخدم
+ * يدوس على أي input — وبعدين المستخدم مضطر يزوّم يدوي تاني بعد
+ * ما يخلّص الكتابة. ده حالياً بيحصل فعلياً في فورم الدخول
+ * (.input-field__input عندها 0.95rem)، والبحث عن صديق وOnboarding
+ * (كلاهم text-sm = 14px). !important هنا مقصودة: أي كلاس Tailwind
+ * زي text-sm/text-xs على input معيّن أولويته أعلى من سيلكتور
+ * العنصر العادي، فمن غيرها القاعدة دي مش هتتطبّق فعلياً على أي
+ * حقل حدد حجم خط بنفسه.
+ */
+input, select, textarea {
+  font-size: 16px !important;
+}
+
+
+
+/* =====================================================
+ * شريط التمرير المخصص (Custom Scrollbar)
+ * يُطبَّق على أي عنصر يحتوي على كلاس app-scroll
+ * ===================================================== */
+
+/* عرض شريط التمرير */
+.app-scroll::-webkit-scrollbar {
+  width: 3px;
+}
+
+/* مسار شريط التمرير (الخلفية) */
+.app-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* المؤشر المتحرك لشريط التمرير */
+.app-scroll::-webkit-scrollbar-thumb {
+  background: #C8922A; /* اللون الذهبي الفرعوني */
+  border-radius: 2px;
+}
+
+
+/* =====================================================
+ * كلاسات مساعدة مخصصة (@layer utilities)
+ * هذه الكلاسات تُضاف لطبقة Tailwind utilities
+ * لتجنب مشاكل الأولوية (Specificity)
+ * ===================================================== */
+@layer utilities {
+
+  /* فئة لإخفاء شريط التمرير مع الحفاظ على الإمكانية */
+  .scrollbar-hide {
+    -ms-overflow-style: none;   /* Internet Explorer */
+    scrollbar-width: none;       /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
+
+  /* منع التحديد عند اللمس - مفيد للأزرار وبطاقات الألعاب */
+  .no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+  }
+
+  /* منع تأثير الضغط الافتراضي على الموبايل (الأزرق) */
+  .no-tap-highlight {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* تأثير الضغط اللطيف على الأزرار */
+  .press-effect {
+    transition: transform 0.1s ease, opacity 0.1s ease;
+  }
+  .press-effect:active {
+    transform: scale(0.96);
+    opacity: 0.85;
+  }
+
+  /* تظليل ناعم لمؤثر Hover على الكروت */
+  .card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(61, 43, 31, 0.2);
+  }
+
+}
+
+
+/* =====================================================
+ * أنيميشن (Keyframes) إضافية غير مدعومة من Tailwind
+ * ===================================================== */
+
+/* نبضة الأيقونات المقفولة */
+@keyframes lockPulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.08); }
+}
+
+.animate-lock-pulse {
+  animation: lockPulse 2s ease-in-out infinite;
+}
+
+/* تأثير الإضاءة للعناصر المميزة */
+@keyframes glowPulse {
+  0%, 100% { filter: brightness(1); }
+  50%       { filter: brightness(1.15); }
+}
+
+.animate-glow {
+  animation: glowPulse 2s ease-in-out infinite;
+}

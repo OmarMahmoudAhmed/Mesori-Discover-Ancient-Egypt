@@ -1,0 +1,65 @@
+/* ============================================================
+   Mesori — Authentication Page
+   Design Tokens (CSS Custom Properties)
+   ============================================================ */
+
+:root {
+  /* ---------- Palette (Egyptian / Papyrus theme) ---------- */
+  --color-beige: #f2e1b8;              /* الخلفية الأساسية */
+  --color-beige-dark: #e7cd98;
+  --color-papyrus: #f7ecd3;            /* لون التبويب غير النشط */
+  --color-card-bg: #fbf3e1;            /* خلفية البطاقة */
+  --color-card-bg-soft: #f5e9cd;
+  --color-input-bg: #fffdf9;
+
+  --color-dark-brown: #4a2e14;         /* النصوص الرئيسية / اللوجو */
+  --color-dark-brown-soft: #6e4b28;
+  --color-text-muted: #9c8862;
+  --color-text-placeholder: #b3a483;
+
+  --color-gold: #cf9a3f;
+  --color-gold-light: #ecc879;
+  --color-gold-dark: #a8721f;
+  --color-gold-glow: rgba(207, 154, 63, 0.45);
+
+  --color-egyptian-blue: #2c7c93;      /* للعناصر الزخرفية فقط */
+  --color-egyptian-blue-dark: #1c4f61;
+
+  --color-white: #ffffff;
+  --color-facebook: #1877f2;
+  --color-apple: #1a1a1a;
+
+  /* ---------- Typography ---------- */
+  --font-heading: 'El Messiri', 'Cairo', sans-serif;
+  --font-body: 'Cairo', 'Tajawal', sans-serif;
+
+  /* ---------- Radii ---------- */
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 26px;
+  --radius-xl: 32px;
+  --radius-pill: 999px;
+
+  /* ---------- Shadows ---------- */
+  --shadow-soft: 0 8px 22px rgba(74, 46, 20, 0.12);
+  --shadow-card: 0 16px 42px rgba(74, 46, 20, 0.20);
+  --shadow-gold-glow: 0 10px 26px var(--color-gold-glow);
+  --shadow-input-focus: 0 0 0 3px rgba(207, 154, 63, 0.25);
+
+  /* ---------- Spacing ---------- */
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 14px;
+  --space-md: 20px;
+  --space-lg: 28px;
+  --space-xl: 40px;
+
+  /* ---------- Transitions ---------- */
+  --transition-fast: 0.2s ease;
+  --transition-medium: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ---------- Glass / blur ---------- */
+  --glass-blur: blur(14px);
+  --glass-blur-soft: blur(8px);
+}
