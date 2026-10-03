@@ -10,6 +10,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../../context/AppContext';
+import ReportModal from '../shared/ReportModal';
 
 function timeAgo(isoDate) {
   const seconds = Math.floor((Date.now() - new Date(isoDate).getTime()) / 1000);
@@ -25,6 +26,7 @@ function timeAgo(isoDate) {
 function NotificationBell() {
   const { notifications, unreadCount, markNotificationRead, markAllNotificationsRead, navigateTo } = useApp();
   const [isOpen, setIsOpen] = useState(false);
+  const [reportTarget, setReportTarget] = useState(null); // { userId, notificationId }
 
   return (
     <div className="relative">
@@ -85,46 +87,72 @@ function NotificationBell() {
                 </p>
               ) : (
                 notifications.map((n) => (
-                  <button
+                  <div
                     key={n.id}
-                    onClick={() => {
-                      markNotificationRead(n.id);
-                      if ((n.type === 'match_invite' || n.type === 'match_result') && n.related_id) {
-                        setIsOpen(false);
-                        navigateTo('vs-match', { matchId: n.related_id });
-                      }
-                    }}
-                    className="w-full flex items-start gap-2.5 px-4 py-3 text-right press-effect no-tap-highlight"
+                    className="w-full flex items-start"
                     style={{ borderBottom: '1px solid rgba(200,146,42,0.08)', backgroundColor: n.read_at ? 'transparent' : 'rgba(200,146,42,0.06)' }}
                   >
-                    <i
-                      className={`fi ${n.type === 'badge' ? 'fi-sr-medal' : n.type === 'match_invite' || n.type === 'match_result' ? 'fi-sr-sword' : 'fi-sr-envelope'}`}
-                      aria-hidden="true"
-                      style={{ fontSize: '14px', color: '#805D1B', marginTop: '2px' }}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-xs" style={{ fontFamily: "'Cairo', sans-serif", color: '#3D2B1F' }}>
-                        {n.title}
-                      </p>
-                      {n.body && (
-                        <p className="text-xs mt-0.5 truncate" style={{ fontFamily: "'Cairo', sans-serif", color: '#8B5A2B' }}>
-                          {n.body}
+                    <button
+                      onClick={() => {
+                        markNotificationRead(n.id);
+                        if ((n.type === 'match_invite' || n.type === 'match_result') && n.related_id) {
+                          setIsOpen(false);
+                          navigateTo('vs-match', { matchId: n.related_id });
+                        }
+                      }}
+                      className="flex-1 min-w-0 flex items-start gap-2.5 px-4 py-3 text-right press-effect no-tap-highlight"
+                    >
+                      <i
+                        className={`fi ${n.type === 'badge' ? 'fi-sr-medal' : n.type === 'match_invite' || n.type === 'match_result' ? 'fi-sr-sword' : 'fi-sr-envelope'}`}
+                        aria-hidden="true"
+                        style={{ fontSize: '14px', color: '#805D1B', marginTop: '2px' }}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-xs" style={{ fontFamily: "'Cairo', sans-serif", color: '#3D2B1F' }}>
+                          {n.title}
                         </p>
+                        {n.body && (
+                          <p className="text-xs mt-0.5 truncate" style={{ fontFamily: "'Cairo', sans-serif", color: '#8B5A2B' }}>
+                            {n.body}
+                          </p>
+                        )}
+                        <p className="text-[10px] mt-1" style={{ fontFamily: "'Cairo', sans-serif", color: '#686462' }}>
+                          {timeAgo(n.created_at)}
+                        </p>
+                      </div>
+                      {!n.read_at && (
+                        <span className="w-2 h-2 rounded-full flex-shrink-0 mt-1.5" style={{ backgroundColor: '#C8922A' }} />
                       )}
-                      <p className="text-[10px] mt-1" style={{ fontFamily: "'Cairo', sans-serif", color: '#686462' }}>
-                        {timeAgo(n.created_at)}
-                      </p>
-                    </div>
-                    {!n.read_at && (
-                      <span className="w-2 h-2 rounded-full flex-shrink-0 mt-1.5" style={{ backgroundColor: '#C8922A' }} />
+                    </button>
+
+                    {/* إبلاغ عن رسالة لاعب — زر منفصل (مش جوه زر الإشعار) */}
+                    {n.type === 'message' && n.related_id && (
+                      <button
+                        onClick={() => {
+                          setIsOpen(false);
+                          setReportTarget({ userId: n.related_id, notificationId: n.id });
+                        }}
+                        className="flex-shrink-0 w-11 h-11 mt-1 flex items-center justify-center press-effect no-tap-highlight"
+                        aria-label="إبلاغ عن هذه الرسالة"
+                      >
+                        <i className="fi fi-rr-flag" aria-hidden="true" style={{ fontSize: '14px', color: '#8B5A2B' }} />
+                      </button>
                     )}
-                  </button>
+                  </div>
                 ))
               )}
             </motion.div>
           </>
         )}
       </AnimatePresence>
+
+      {reportTarget && (
+        <ReportModal
+          reportedUserId={reportTarget.userId}
+          notificationId={reportTarget.notificationId}
+          onClose={() => setReportTarget(null)}
+        />
+      )}
     </div>
   );
 }

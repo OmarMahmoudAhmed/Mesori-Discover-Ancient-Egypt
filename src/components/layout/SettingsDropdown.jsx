@@ -3,23 +3,28 @@
  * SettingsDropdown.jsx - القائمة المنسدلة للإعدادات
  * =====================================================
  * تظهر عند الضغط على أيقونة الترس ⚙️ في Header.jsx.
- * تشمل: مستوى الصوت، معلومات عن المطوّر، رابط دعم، رابط استطلاع رأي.
+ * تشمل: مستوى الصوت، معلومات عن المطوّر، رابط دعم، السياسات والخصوصية،
+ * وحذف الحساب (للمسجّلين فقط).
  *
- * روابط الدعم والاستطلاع أدناه placeholders — بدّلها بروابطك
- * الحقيقية (GoFundMe/Patreon وGoogle Forms مثلاً) في SUPPORT_URL
- * وSURVEY_URL تحت.
+ * رابط سياسة الخصوصية: صفحة GitHub Pages الحيّة (مطلوب من Google Play
+ * إنها تكون متاحة من داخل التطبيق). تقدر تغيّره بدون تعديل الكود عن طريق
+ * متغيّر البيئة VITE_PRIVACY_POLICY_URL.
  * =====================================================
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../../context/AppContext';
+import DeleteAccountModal from '../shared/DeleteAccountModal';
 
 const SUPPORT_URL = 'https://buymeacoffee.com/omarmahmoudahmed'; // ⬅️ بدّله برابط الدعم الحقيقي (Patreon/GoFundMe)
-const SURVEY_URL  = 'https://91572590173260.sarhne.com'; // ⬅️ بدّله برابط استطلاع الرأي الحقيقي
+const PRIVACY_POLICY_URL =
+  import.meta.env.VITE_PRIVACY_POLICY_URL ||
+  'https://omarmahmoudahmed.github.io/Mesori-Discover-Ancient-Egypt/privacy-policy.html';
 
 function SettingsDropdown({ isOpen, onClose }) {
-  const { isSoundOn, toggleSound, navigateTo } = useApp();
+  const { isSoundOn, toggleSound, navigateTo, session } = useApp();
+  const [showDelete, setShowDelete] = useState(false);
 
   const menuItems = [
     {
@@ -42,14 +47,23 @@ function SettingsDropdown({ isOpen, onClose }) {
       onClick: () => window.open(SUPPORT_URL, '_blank', 'noopener,noreferrer'),
     },
     {
-      key: 'survey',
-      icon: 'fi-rr-comment-alt',
-      label: 'شاركنا رأيك',
-      onClick: () => window.open(SURVEY_URL, '_blank', 'noopener,noreferrer'),
+      key: 'privacy',
+      icon: 'fi-rr-shield-check',
+      label: 'السياسات والخصوصية',
+      onClick: () => window.open(PRIVACY_POLICY_URL, '_blank', 'noopener,noreferrer'),
     },
+    // حذف الحساب: للمسجّلين فقط، ولونه أحمر عشان يتميّز كإجراء خطير
+    ...(session?.user?.id ? [{
+      key: 'delete-account',
+      icon: 'fi-rr-trash',
+      label: 'حذف حسابي',
+      danger: true,
+      onClick: () => setShowDelete(true),
+    }] : []),
   ];
 
   return (
+    <>
     <AnimatePresence>
       {isOpen && (
         <>
@@ -82,8 +96,8 @@ function SettingsDropdown({ isOpen, onClose }) {
                 onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(200,146,42,0.08)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
               >
-                <i className={`fi ${item.icon}`} aria-hidden="true" style={{ fontSize: '18px', color: '#805D1B' }} />
-                <span className="font-bold text-sm" style={{ fontFamily: "'Cairo', sans-serif", color: '#3D2B1F' }}>
+                <i className={`fi ${item.icon}`} aria-hidden="true" style={{ fontSize: '18px', color: item.danger ? '#B91C1C' : '#805D1B' }} />
+                <span className="font-bold text-sm" style={{ fontFamily: "'Cairo', sans-serif", color: item.danger ? '#B91C1C' : '#3D2B1F' }}>
                   {item.label}
                 </span>
               </button>
@@ -92,6 +106,9 @@ function SettingsDropdown({ isOpen, onClose }) {
         </>
       )}
     </AnimatePresence>
+
+    {showDelete && <DeleteAccountModal onClose={() => setShowDelete(false)} />}
+    </>
   );
 }
 

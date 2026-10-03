@@ -42,6 +42,16 @@ export function saveLastSeenRank(userId, { rank, points }) {
   }
 }
 
+/** يمسح اللقطة المحفوظة لمستخدم (عند حذف حسابه) */
+export function clearLastSeenRank(userId) {
+  if (!userId) return;
+  try {
+    localStorage.removeItem(STORAGE_PREFIX + userId);
+  } catch {
+    /* تجاهل بأمان لو التخزين غير متاح */
+  }
+}
+
 /*
  * يحسب الفرق بين آخر حالة محفوظة (previous) والحالة الحالية
  * (current: { rank, points }).

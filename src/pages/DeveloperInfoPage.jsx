@@ -15,6 +15,11 @@ import BottomNav   from '../components/layout/BottomNav';
 
 const CONTACT_EMAIL = 'omar.mahmoud.ahmed.01@gmail.com'; // ⬅️ بدّله ببريدك الحقيقي
 
+// رابط صحيفة أعمال المطوّر (Portfolio). يتحدد من متغيّر البيئة
+// VITE_DEVELOPER_PORTFOLIO_URL (في .env محلياً وفي إعدادات Vercel) ومن غيره
+// الزر مبيظهرش — عشان ما يطلعش رابط فاضي/وهمي في نسخة Google Play.
+const PORTFOLIO_URL = import.meta.env.VITE_DEVELOPER_PORTFOLIO_URL || '';
+
 function DeveloperInfoPage() {
   return (
     <AppWrapper>
@@ -47,6 +52,21 @@ function DeveloperInfoPage() {
             تواصل معنا
           </span>
         </a>
+
+        {PORTFOLIO_URL && (
+          <a
+            href={PORTFOLIO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl press-effect no-tap-highlight mb-3"
+            style={{ backgroundColor: 'white', border: '1px solid rgba(200,146,42,0.2)' }}
+          >
+            <i className="fi fi-rr-briefcase" aria-hidden="true" style={{ fontSize: '16px', color: '#805D1B' }} />
+            <span className="font-bold text-sm" style={{ fontFamily: "'Cairo', sans-serif", color: '#3D2B1F' }}>
+              صحيفة أعمال المطوّر
+            </span>
+          </a>
+        )}
 
         <p className="text-center text-xs mt-4" style={{ fontFamily: "'Cairo', sans-serif", color: '#686462' }}>
           الإصدار 1.0

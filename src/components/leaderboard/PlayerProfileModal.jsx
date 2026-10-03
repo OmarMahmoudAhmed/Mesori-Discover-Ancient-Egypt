@@ -13,15 +13,19 @@ import { AvatarDisplay } from '../../data/avatars';
 import { BadgeIcon } from '../shared/BadgeIcon';
 import { useApp } from '../../context/AppContext';
 import { supabase } from '../../lib/supabaseClient';
+import { getSensitiveType, sensitiveWarningAr, sensitiveTypeFromServerError } from '../../lib/messageFilter';
+import ReportModal from '../shared/ReportModal';
 
 function PlayerProfileModal({ player, onClose }) {
-  const { sendMessage } = useApp();
+  const { sendMessage, session } = useApp();
 
   const [badges, setBadges] = useState([]);
   const [loadingBadges, setLoadingBadges] = useState(true);
   const [isComposing, setIsComposing] = useState(false);
   const [messageText, setMessageText] = useState('');
   const [sendState, setSendState] = useState('idle'); // idle | sending | sent | error
+  const [serverBlockType, setServerBlockType] = useState(null); // لو السيرفر رفض بسبب رقم/إيميل/رابط
+  const [showReport, setShowReport] = useState(false);
 
   useEffect(() => {
     if (!player) return;
@@ -39,11 +43,18 @@ function PlayerProfileModal({ player, onClose }) {
 
   if (!player) return null;
 
+  // فلتر الواجهة: بيمنع الإرسال لحظياً (السيرفر بيفحص تاني — migration 014)
+  const sensitiveType = getSensitiveType(messageText);
+  const warningText = sensitiveWarningAr(sensitiveType || serverBlockType);
+  const canReport = !!session?.user?.id && session.user.id !== player.id;
+
   const handleSend = async () => {
-    if (!messageText.trim()) return;
+    if (!messageText.trim() || getSensitiveType(messageText)) return;
     setSendState('sending');
+    setServerBlockType(null);
     const { error } = await sendMessage(player.id, messageText.trim());
     if (error) {
+      setServerBlockType(sensitiveTypeFromServerError(error));
       setSendState('error');
     } else {
       setSendState('sent');
@@ -130,6 +141,17 @@ function PlayerProfileModal({ player, onClose }) {
                 <i className="fi fi-rr-paper-plane" aria-hidden="true" style={{ fontSize: '14px' }} />
                 <span>إرسال رسالة</span>
               </button>
+
+              {canReport && (
+                <button
+                  onClick={() => setShowReport(true)}
+                  className="w-full flex items-center justify-center gap-2 mt-3 py-2.5 text-xs font-bold press-effect no-tap-highlight"
+                  style={{ color: '#8B5A2B' }}
+                >
+                  <i className="fi fi-rr-flag" aria-hidden="true" style={{ fontSize: '12px' }} />
+                  <span>إبلاغ عن هذا اللاعب</span>
+                </button>
+              )}
             </>
           ) : (
             <>
@@ -154,11 +176,15 @@ function PlayerProfileModal({ player, onClose }) {
                     className="w-full p-3 rounded-xl text-sm outline-none resize-none"
                     style={{ backgroundColor: 'white', border: '1px solid rgba(200,146,42,0.3)', color: '#3D2B1F' }}
                   />
-                  {sendState === 'error' && (
+                  {warningText ? (
+                    <p role="alert" className="text-xs font-bold text-center mt-2" style={{ color: '#B91C1C' }}>
+                      {warningText}
+                    </p>
+                  ) : sendState === 'error' ? (
                     <p className="text-xs font-bold text-center mt-2" style={{ color: '#DC2626' }}>
                       حصلت مشكلة في الإرسال، حاول تاني
                     </p>
-                  )}
+                  ) : null}
                   <div className="flex gap-3 mt-4">
                     <button
                       onClick={() => setIsComposing(false)}
@@ -169,9 +195,9 @@ function PlayerProfileModal({ player, onClose }) {
                     </button>
                     <button
                       onClick={handleSend}
-                      disabled={sendState === 'sending' || !messageText.trim()}
+                      disabled={sendState === 'sending' || !messageText.trim() || !!sensitiveType}
                       className="flex-1 py-3 rounded-xl font-bold text-white"
-                      style={{ backgroundColor: sendState === 'sending' ? '#A9793F' : '#2D6A3F' }}
+                      style={{ backgroundColor: sendState === 'sending' || sensitiveType ? '#A9793F' : '#2D6A3F' }}
                     >
                       {sendState === 'sending' ? 'جاري الإرسال...' : 'إرسال'}
                     </button>
@@ -181,6 +207,14 @@ function PlayerProfileModal({ player, onClose }) {
             </>
           )}
         </motion.div>
+
+        {showReport && (
+          <ReportModal
+            reportedUserId={player.id}
+            reportedName={player.name}
+            onClose={() => setShowReport(false)}
+          />
+        )}
       </motion.div>
     </AnimatePresence>
   );

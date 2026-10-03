@@ -141,7 +141,9 @@ function VsMatchPage() {
     if (matchState.status === 'declined' || isVoidNow) return;
 
     const wonNow = matchState.winner_id === userProfile.id;
-    const isDrawNow = !matchState.winner_id && matchState.status === 'finished';
+    // الخصم ممكن يكون حذف حسابه (player_x_id = NULL و winner_id = NULL لو هو كان الفائز): ده مش تعادل
+    const opponentGoneNow = !matchState.player_1_id || !matchState.player_2_id;
+    const isDrawNow = !matchState.winner_id && matchState.status === 'finished' && !opponentGoneNow;
 
     if (wonNow) playSound('win');
     else if (isDrawNow) playSound('draw');
@@ -420,7 +422,8 @@ function VsMatchPage() {
   if (phase === 'result') {
     const won = matchState.winner_id === userProfile.id;
     const isVoid = matchState.end_reason === 'void';
-    const isDraw = !matchState.winner_id && matchState.status === 'finished' && !isVoid;
+    const opponentGone = !matchState.player_1_id || !matchState.player_2_id;
+    const isDraw = !matchState.winner_id && matchState.status === 'finished' && !isVoid && !opponentGone;
     const isForfeit = matchState.end_reason === 'forfeit';
     const myChange = isPlayer1 ? matchState.player_1_rating_change : matchState.player_2_rating_change;
 

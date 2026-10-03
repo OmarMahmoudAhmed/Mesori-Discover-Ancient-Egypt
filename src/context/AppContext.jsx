@@ -43,6 +43,8 @@ import React, {
 } from 'react';
 import { levelsData as initialLevelsData } from '../data/levels';
 import { supabase } from '../lib/supabaseClient';
+import { clearLastSeenRank } from '../lib/rankTracking';
+import { cancelInactivityReminder } from '../lib/notifications';
 
 /*
  * تُعيد حساب حالة "مفتوحة/مقفولة" لكل مستوى ومرحلة من الصفر بناءً
@@ -706,6 +708,44 @@ export function AppProvider({ children }) {
     return { error };
   }, []);
 
+  /*
+   * الإبلاغ عن لاعب (ومعاه رسالة اختيارياً عن طريق notificationId).
+   * السيرفر هو اللي يأخذ نسخة من نص الرسالة ويتحقق إنها وصلتك فعلاً.
+   */
+  const reportUser = useCallback(async ({ reportedUserId, reason, details, notificationId }) => {
+    const { error } = await supabase.rpc('report_user', {
+      p_reported_user_id: reportedUserId,
+      p_reason: reason,
+      p_details: details || null,
+      p_notification_id: notificationId ?? null,
+    });
+    return { error };
+  }, []);
+
+  /*
+   * حذف الحساب نهائياً (مطلوب من Google Play). بيستدعي Edge Function
+   * `delete-user-account` — هوية المستخدم بتتحدد من الـ JWT على السيرفر،
+   * فمفيش طريقة نحذف بيها حساب حد تاني. بعد النجاح بننضّف الحالة المحلية
+   * ونعمل signOut محلي فقط (الجلسة بقت تابعة لمستخدم محذوف، فلا داعي لنداء السيرفر).
+   */
+  const deleteAccount = useCallback(async () => {
+    const userId = session?.user?.id;
+    if (!userId) return { error: new Error('لا يوجد مستخدم مسجّل دخول') };
+
+    const { data, error } = await supabase.functions.invoke('delete-user-account', { method: 'POST' });
+    if (error || !data?.success) {
+      return { error: error || new Error(data?.error || 'delete_failed') };
+    }
+
+    clearLastSeenRank(userId);
+    cancelInactivityReminder();
+    setNavHistory(['home']);
+    setCurrentPage('home');
+    setPageData(null);
+    await supabase.auth.signOut({ scope: 'local' });
+    return { error: null };
+  }, [session]);
+
   /* تُستدعى من زر "شارك على واتساب" */
   const trackShare = useCallback(async () => {
     if (!session?.user?.id) return;
@@ -816,6 +856,8 @@ export function AppProvider({ children }) {
     notifications,
     unreadCount,
     sendMessage,
+    reportUser,
+    deleteAccount,
     trackShare,
     markNotificationRead,
     markAllNotificationsRead,

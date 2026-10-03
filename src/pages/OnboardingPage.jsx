@@ -12,9 +12,11 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { AVATARS, AvatarDisplay } from '../data/avatars';
+import AgeBlockedScreen from '../components/shared/AgeBlockedScreen';
+import { MIN_AGE, MAX_AGE, markDeviceAgeBlocked } from '../lib/ageGate';
 
 function OnboardingPage() {
-  const { session, completeOnboarding } = useApp();
+  const { session, completeOnboarding, deleteAccount } = useApp();
 
   const [name, setName] = useState(session?.user?.user_metadata?.name || '');
   const [age, setAge] = useState('');
@@ -22,6 +24,21 @@ function OnboardingPage() {
   const [gender, setGender] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  // تحت الحد الأدنى للسن: نحذف الحساب اللي لسه متسجّل ونعرض شاشة "غير متاح"
+  const [underage, setUnderage] = useState(false);
+  const [removing, setRemoving] = useState(false);
+  const [removeError, setRemoveError] = useState('');
+
+  const removeUnderageAccount = async () => {
+    markDeviceAgeBlocked();
+    setUnderage(true);
+    setRemoving(true);
+    setRemoveError('');
+    const { error: delError } = await deleteAccount();
+    setRemoving(false);
+    // لو نجح، deleteAccount بيعمل signOut فالتطبيق بينقلنا لمسار غير المسجّلين تلقائياً
+    if (delError) setRemoveError('تعذّر إزالة بياناتك تلقائياً. حاول تاني، أو راسلنا من صفحة السياسات.');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,8 +51,12 @@ function OnboardingPage() {
       setError('من فضلك اكتب اسمك');
       return;
     }
-    if (!age || isNaN(ageNum) || ageNum < 5 || ageNum > 100) {
-      setError('من فضلك اكتب عمر صحيح (بين 5 و100 سنة)');
+    if (!age || isNaN(ageNum) || ageNum < 1 || ageNum > MAX_AGE) {
+      setError('من فضلك اكتب عمرك بالأرقام');
+      return;
+    }
+    if (ageNum < MIN_AGE) {
+      await removeUnderageAccount();
       return;
     }
     if (!gender) {
@@ -48,12 +69,20 @@ function OnboardingPage() {
     setSubmitting(false);
 
     if (submitError) {
+      if (String(submitError.message || '').includes('AGE_BELOW_MINIMUM')) {
+        await removeUnderageAccount();
+        return;
+      }
       setError('حصلت مشكلة في الحفظ، حاول تاني');
       console.error('❌ فشل حفظ بيانات Onboarding:', submitError);
     }
     // لو نجح: userProfile.onboardingCompleted بقت true تلقائياً،
     // وApp.jsx هينقل المستخدم لـ HomePage من غير أي navigate يدوي هنا
   };
+
+  if (underage) {
+    return <AgeBlockedScreen deleting={removing} error={removeError} onRetry={removeUnderageAccount} />;
+  }
 
   return (
     <div
@@ -135,8 +164,8 @@ function OnboardingPage() {
               inputMode="numeric"
               value={age}
               onChange={(e) => setAge(e.target.value)}
-              placeholder="مثال: 10"
-              min={5}
+              placeholder="اكتب عمرك"
+              min={1}
               max={100}
               className="w-full px-4 py-3 rounded-xl text-sm font-semibold outline-none"
               style={{ backgroundColor: '#FFFFFF', border: '1px solid rgba(200,146,42,0.3)', color: '#3D2B1F' }}

@@ -5,6 +5,8 @@ import { AppProvider, useApp } from './context/AppContext';
 import { supabase } from './lib/supabaseClient';
 import App from './App';
 import QuizPage from './pages/QuizPage';
+import SettingsDropdown from './components/layout/SettingsDropdown';
+import ReportModal from './components/shared/ReportModal';
 
 /*
  * =====================================================
@@ -21,7 +23,12 @@ import QuizPage from './pages/QuizPage';
  *    - زر "المرحلة التالية" بينقل لأسئلة جديدة فعلاً (نفس المستوى)
  *    - إنهاء آخر مرحلة في مستوى بينقل لمستوى جديد بالكامل
  *
- * ⚠️ لماذا المجموعتين في ملف واحد؟
+ * 3) سلامة المحتوى (Google Play) — حذف الحساب والإبلاغ
+ *    - قائمة الإعدادات: "السياسات والخصوصية" + "حذف حسابي" (للمسجّلين فقط)
+ *    - حذف الحساب بيطلب كتابة "حذف" وبينادي Edge Function، وبيعرض خطأ لو فشل
+ *    - الإبلاغ بيبعت القيم الصحيحة لـ report_user
+ *
+ * ⚠️ لماذا المجموعات في ملف واحد؟
  * في هذا الإعداد (vitest 4 + pool vmThreads) لا يُعزل الـ mock
  * لنفس المسار بين ملفات الاختبار: المكوّنات (App/AppContext) بتبقى
  * مقترنة بمثيل الـ mock اللي اتسجّل من أول ملف يشتغل، وملفات
@@ -70,7 +77,11 @@ function questionsFor(levelId, stageId) {
 // Mock وحيد لموديول Supabase (يغطي كل استعلامات التطبيق)
 // =============================================
 vi.mock('./lib/supabaseClient', () => {
-  const state = { session: null, profile: null, levels: null, questionsFor: null };
+  const state = {
+    session: null, profile: null, levels: null, questionsFor: null,
+    invokeResult: { data: { success: true }, error: null },
+    rpcCalls: [], invokeCalls: [],
+  };
 
   return {
     supabase: {
@@ -80,6 +91,10 @@ vi.mock('./lib/supabaseClient', () => {
         setProfile: (p) => { state.profile = p; },
         setLevels: (l) => { state.levels = l; },
         setQuestions: (fn) => { state.questionsFor = fn; },
+        setInvokeResult: (r) => { state.invokeResult = r; },
+        rpcCalls: state.rpcCalls,
+        invokeCalls: state.invokeCalls,
+        resetCalls: () => { state.rpcCalls.length = 0; state.invokeCalls.length = 0; },
       },
       auth: {
         getSession: () => Promise.resolve({ data: { session: state.session } }),
@@ -88,7 +103,10 @@ vi.mock('./lib/supabaseClient', () => {
         signInWithPassword: () => Promise.resolve({ error: null }),
         signOut: () => Promise.resolve({ error: null }),
       },
-      rpc: () => Promise.resolve({ error: null }),
+      rpc: (name, args) => { state.rpcCalls.push({ name, args }); return Promise.resolve({ error: null }); },
+      functions: {
+        invoke: (name, opts) => { state.invokeCalls.push({ name, opts }); return Promise.resolve(state.invokeResult); },
+      },
       channel: () => ({ on: () => ({ subscribe: () => {} }) }),
       removeChannel: () => {},
       from: (table) => {
@@ -148,6 +166,8 @@ beforeEach(() => {
   supabase.__test.setProfile(null);
   supabase.__test.setLevels(null);
   supabase.__test.setQuestions(null);
+  supabase.__test.setInvokeResult({ data: { success: true }, error: null });
+  supabase.__test.resetCalls();
 });
 
 // =============================================
@@ -156,11 +176,33 @@ beforeEach(() => {
 describe('App - بوابة تسجيل الدخول', () => {
   beforeEach(() => {
     supabase.__test.setProfile(fakeProfile);
+    localStorage.clear();
   });
 
-  it('يعرض صفحة تسجيل الدخول لو مفيش جلسة', async () => {
+  it('يعرض بوابة السن أولاً لو مفيش جلسة', async () => {
     render(<App />);
+    expect(await screen.findByText('كم عمرك؟', {}, { timeout: 5000 })).toBeInTheDocument();
+    expect(screen.queryByText('ابدأ الرحلة')).not.toBeInTheDocument();
+  });
+
+  it('يعرض صفحة تسجيل الدخول بعد عبور بوابة السن', async () => {
+    render(<App />);
+    fireEvent.change(await screen.findByPlaceholderText('اكتب عمرك', {}, { timeout: 5000 }), { target: { value: '15' } });
+    fireEvent.click(screen.getByText('متابعة'));
     expect(await screen.findByText('ابدأ الرحلة', {}, { timeout: 5000 })).toBeInTheDocument();
+  });
+
+  it('أقل من 13 في بوابة السن: شاشة "غير متاح" وتفضل بعد إعادة التحميل', async () => {
+    const { unmount } = render(<App />);
+    fireEvent.change(await screen.findByPlaceholderText('اكتب عمرك', {}, { timeout: 5000 }), { target: { value: '12' } });
+    fireEvent.click(screen.getByText('متابعة'));
+    expect(await screen.findByText(/غير متاح لك حالياً/)).toBeInTheDocument();
+    expect(screen.queryByText('ابدأ الرحلة')).not.toBeInTheDocument();
+    unmount();
+
+    render(<App />);
+    expect(await screen.findByText(/غير متاح لك حالياً/, {}, { timeout: 5000 })).toBeInTheDocument();
+    expect(screen.queryByText('كم عمرك؟')).not.toBeInTheDocument();
   });
 
   it('يعرض شاشة Onboarding لو فيه جلسة بس البروفايل لسه فاضي', async () => {
@@ -177,7 +219,7 @@ describe('App - بوابة تسجيل الدخول', () => {
     await screen.findByText('أهلاً بيك في ميسوري!', {}, { timeout: 5000 });
 
     fireEvent.change(screen.getByPlaceholderText('مثال: أحمد'), { target: { value: 'يوسف' } });
-    fireEvent.change(screen.getByPlaceholderText('مثال: 10'), { target: { value: '11' } });
+    fireEvent.change(screen.getByPlaceholderText('اكتب عمرك'), { target: { value: '15' } });
     fireEvent.click(screen.getByText('ذكر'));
     fireEvent.click(screen.getByText('ابدأ المغامرة 🚀'));
 
@@ -186,6 +228,31 @@ describe('App - بوابة تسجيل الدخول', () => {
     await waitFor(() => {
       expect(screen.queryByText('أهلاً بيك في ميسوري!')).not.toBeInTheDocument();
     }, { timeout: 5000 });
+  });
+});
+
+
+describe('Onboarding - الحد الأدنى للسن', () => {
+  beforeEach(() => {
+    supabase.__test.setProfile(fakeProfile);
+    localStorage.clear();
+  });
+
+  it('سن أقل من 13: بيحذف الحساب ويعرض "غير متاح" بدل ما يكمّل', async () => {
+    supabase.__test.setSession({ user: { id: FAKE_USER_ID, user_metadata: {} } });
+    render(<App />);
+    await screen.findByText('أهلاً بيك في ميسوري!', {}, { timeout: 5000 });
+
+    fireEvent.change(screen.getByPlaceholderText('مثال: أحمد'), { target: { value: 'يوسف' } });
+    fireEvent.change(screen.getByPlaceholderText('اكتب عمرك'), { target: { value: '12' } });
+    fireEvent.click(screen.getByText('ذكر'));
+    fireEvent.click(screen.getByText('ابدأ المغامرة 🚀'));
+
+    expect(await screen.findByText(/غير متاح لك حالياً/, {}, { timeout: 5000 })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(supabase.__test.invokeCalls.some((c) => c.name === 'delete-user-account')).toBe(true);
+    });
+    expect(localStorage.getItem('mesori_age_gate_blocked')).toBe('1');
   });
 });
 
@@ -269,5 +336,94 @@ describe('QuizPage - الانتقال من مرحلة لمرحلة', () => {
     await waitFor(() => {
       expect(screen.getByText('سؤال تجريبي للمستوى 2 / المرحلة 1')).toBeInTheDocument();
     }, { timeout: 5000 });
+  });
+});
+
+// =============================================
+// المجموعة 3: سلامة المحتوى — حذف الحساب والإبلاغ
+// =============================================
+describe('سلامة المحتوى - قائمة الإعدادات وحذف الحساب', () => {
+  const loggedIn = () => supabase.__test.setSession({ user: { id: FAKE_USER_ID, user_metadata: {} } });
+
+  it('فيه "السياسات والخصوصية" و"حذف حسابي" ومفيش "شاركنا رأيك"', async () => {
+    loggedIn();
+    render(<AppProvider><SettingsDropdown isOpen={true} onClose={() => {}} /></AppProvider>);
+    expect(await screen.findByText('حذف حسابي')).toBeInTheDocument();
+    expect(screen.getByText('السياسات والخصوصية')).toBeInTheDocument();
+    expect(screen.queryByText('شاركنا رأيك')).not.toBeInTheDocument();
+  });
+
+  it('رابط السياسات بيفتح صفحة github.io الحيّة', async () => {
+    const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+    render(<AppProvider><SettingsDropdown isOpen={true} onClose={() => {}} /></AppProvider>);
+    fireEvent.click(await screen.findByText('السياسات والخصوصية'));
+    expect(open).toHaveBeenCalledWith(
+      expect.stringMatching(/^https:\/\/.+\.github\.io\/.+\/privacy-policy\.html$/),
+      '_blank',
+      'noopener,noreferrer'
+    );
+    open.mockRestore();
+  });
+
+  it('مبيظهرش "حذف حسابي" لو مفيش جلسة', async () => {
+    render(<AppProvider><SettingsDropdown isOpen={true} onClose={() => {}} /></AppProvider>);
+    await screen.findByText('السياسات والخصوصية');
+    await new Promise((r) => setTimeout(r, 50)); // نسيب getSession تخلّص
+    expect(screen.queryByText('حذف حسابي')).not.toBeInTheDocument();
+  });
+
+  it('الحذف يتطلب كتابة "حذف" وبعدها ينادي Edge Function delete-user-account', async () => {
+    loggedIn();
+    render(<AppProvider><SettingsDropdown isOpen={true} onClose={() => {}} /></AppProvider>);
+    fireEvent.click(await screen.findByText('حذف حسابي'));
+
+    const confirmBtn = await screen.findByRole('button', { name: 'حذف نهائياً' });
+    expect(confirmBtn).toBeDisabled();
+    fireEvent.change(screen.getByLabelText(/للتأكيد اكتب/), { target: { value: 'حذف حسابي' } });
+    expect(confirmBtn).toBeDisabled(); // كلمة غلط
+    fireEvent.change(screen.getByLabelText(/للتأكيد اكتب/), { target: { value: 'حذف' } });
+    expect(confirmBtn).toBeEnabled();
+
+    fireEvent.click(confirmBtn);
+    await waitFor(() => expect(supabase.__test.invokeCalls).toHaveLength(1));
+    expect(supabase.__test.invokeCalls[0].name).toBe('delete-user-account');
+  });
+
+  it('لو الحذف فشل بيعرض رسالة خطأ ويرجّع الزر', async () => {
+    loggedIn();
+    supabase.__test.setInvokeResult({ data: null, error: new Error('boom') });
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    render(<AppProvider><SettingsDropdown isOpen={true} onClose={() => {}} /></AppProvider>);
+    fireEvent.click(await screen.findByText('حذف حسابي'));
+    fireEvent.change(await screen.findByLabelText(/للتأكيد اكتب/), { target: { value: 'حذف' } });
+    fireEvent.click(screen.getByRole('button', { name: 'حذف نهائياً' }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'حذف نهائياً' })).toBeEnabled();
+    spy.mockRestore();
+  });
+});
+
+describe('سلامة المحتوى - الإبلاغ', () => {
+  it('الإرسال معطّل من غير سبب، وبعد الاختيار بينادي report_user بالقيم الصحيحة', async () => {
+    supabase.__test.setSession({ user: { id: FAKE_USER_ID, user_metadata: {} } });
+    render(<AppProvider><ReportModal reportedUserId="bad-guy" notificationId={42} onClose={() => {}} /></AppProvider>);
+
+    const send = await screen.findByRole('button', { name: 'إرسال البلاغ' });
+    expect(send).toBeDisabled();
+
+    fireEvent.click(screen.getByRole('radio', { name: /إساءة أو تنمّر/ }));
+    fireEvent.change(screen.getByPlaceholderText(/تفاصيل إضافية/), { target: { value: '  تفاصيل  ' } });
+    expect(send).toBeEnabled();
+    fireEvent.click(send);
+
+    expect(await screen.findByText('وصلنا بلاغك')).toBeInTheDocument();
+    const call = supabase.__test.rpcCalls.find((c) => c.name === 'report_user');
+    expect(call.args).toEqual({
+      p_reported_user_id: 'bad-guy',
+      p_reason: 'harassment',
+      p_details: 'تفاصيل',
+      p_notification_id: 42,
+    });
   });
 });

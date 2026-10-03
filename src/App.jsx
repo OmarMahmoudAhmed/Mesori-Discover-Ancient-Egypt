@@ -31,7 +31,7 @@
  * =====================================================
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { App as CapacitorApp } from '@capacitor/app';
 
 /* استيراد مزود البيانات والـ Hook */
@@ -51,6 +51,9 @@ import VsLobbyPage         from './pages/VsLobbyPage';
 import VsMatchPage         from './pages/VsMatchPage';
 import DeveloperInfoPage   from './pages/DeveloperInfoPage';
 import LoadingAnkh          from './components/shared/LoadingAnkh';
+import AgeGate              from './components/shared/AgeGate';
+import AgeBlockedScreen     from './components/shared/AgeBlockedScreen';
+import { isAgeBlocked, hasPassedAgeGate } from './lib/ageGate';
 
 /*
  * شاشة تحميل بسيطة أثناء فحص الجلسة/البروفايل
@@ -79,6 +82,17 @@ function SplashLoader() {
  * switch/case = بنية شرطية تُقارن قيمة currentPage
  * مع قيم ثابتة وتُعيد الصفحة المقابلة
  */
+/*
+ * مسار غير المسجّلين: بوابة السن ← شاشة الدخول. الجهاز اللي أجاب بسن
+ * أقل من الحد بيفضل على شاشة "غير متاح" (راجع src/lib/ageGate.js).
+ */
+function LoggedOutFlow() {
+  const [step, setStep] = useState(() => (isAgeBlocked() ? 'blocked' : hasPassedAgeGate() ? 'login' : 'gate'));
+  if (step === 'blocked') return <AgeBlockedScreen />;
+  if (step === 'gate') return <AgeGate onPassed={() => setStep('login')} onBlocked={() => setStep('blocked')} />;
+  return <LoginPage />;
+}
+
 function AppContent() {
 
   const { currentPage, session, authLoading, profileLoading, userProfile, isSoundOn } = useApp();
@@ -121,7 +135,7 @@ function AppContent() {
    * 5) كل حاجة جاهزة → التطبيق المعتاد
    */
   if (authLoading) return <SplashLoader />;
-  if (!session) return <LoginPage />;
+  if (!session) return <LoggedOutFlow />;
   if (profileLoading) return <SplashLoader />;
   if (!userProfile.onboardingCompleted) return <OnboardingPage />;
 
