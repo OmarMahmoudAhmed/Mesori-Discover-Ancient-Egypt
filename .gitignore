@@ -3,8 +3,8 @@ node_modules/
 dist/
 
 # secrets (never commit)
-.env
-.env.*
+# .env
+# .env.*
 !.env.example
 *.keystore
 *.jks
