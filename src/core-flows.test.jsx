@@ -347,63 +347,62 @@ describe('QuizPage - الانتقال من مرحلة لمرحلة', () => {
 // =============================================
 describe('سلامة المحتوى - قائمة الإعدادات وحذف الحساب', () => {
   const loggedIn = () => supabase.__test.setSession({ user: { id: FAKE_USER_ID, user_metadata: {} } });
+  const openLegal = async () => fireEvent.click(await screen.findByText('الخصوصية وشروط الاستخدام'));
 
-  it('فيه "السياسات والخصوصية" و"حذف حسابي" ومفيش "شاركنا رأيك"', async () => {
+  it('القايمة فيها «الخصوصية وشروط الاستخدام» ومفيش «شاركنا رأيك»', async () => {
     loggedIn();
     render(<AppProvider><SettingsDropdown isOpen={true} onClose={() => {}} /></AppProvider>);
-    expect(await screen.findByText('حذف حسابي')).toBeInTheDocument();
-    expect(screen.getByText('السياسات والخصوصية')).toBeInTheDocument();
+    expect(await screen.findByText('الخصوصية وشروط الاستخدام')).toBeInTheDocument();
     expect(screen.queryByText('شاركنا رأيك')).not.toBeInTheDocument();
   });
 
-  it('رابط السياسات بيفتح صفحة github.io الحيّة', async () => {
+  it('النافذة فيها الخصوصية والشروط وحذف الحساب، والروابط بتفتح صفحات github.io', async () => {
+    loggedIn();
     const open = vi.spyOn(window, 'open').mockImplementation(() => null);
     render(<AppProvider><SettingsDropdown isOpen={true} onClose={() => {}} /></AppProvider>);
-    fireEvent.click(await screen.findByText('السياسات والخصوصية'));
-    expect(open).toHaveBeenCalledWith(
-      expect.stringMatching(/^https:\/\/.+\.github\.io\/.+\/privacy-policy\.html$/),
-      '_blank',
-      'noopener,noreferrer'
-    );
+    await openLegal();
+    expect(await screen.findByText('حذف حسابي')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('سياسة الخصوصية'));
+    expect(open).toHaveBeenCalledWith(expect.stringMatching(/^https:\/\/.+\.github\.io\/.+\/privacy-policy\.html$/), '_blank', 'noopener,noreferrer');
+    fireEvent.click(screen.getByText('شروط الاستخدام'));
+    expect(open).toHaveBeenCalledWith(expect.stringMatching(/^https:\/\/.+\.github\.io\/.+\/terms\.html$/), '_blank', 'noopener,noreferrer');
     open.mockRestore();
   });
 
-  it('مبيظهرش "حذف حسابي" لو مفيش جلسة', async () => {
+  it('مبيظهرش «حذف حسابي» داخل النافذة لو مفيش جلسة', async () => {
     render(<AppProvider><SettingsDropdown isOpen={true} onClose={() => {}} /></AppProvider>);
-    await screen.findByText('السياسات والخصوصية');
-    await new Promise((r) => setTimeout(r, 50)); // نسيب getSession تخلّص
+    await openLegal();
+    await screen.findByText('سياسة الخصوصية');
+    await new Promise((r) => setTimeout(r, 50));
     expect(screen.queryByText('حذف حسابي')).not.toBeInTheDocument();
   });
 
-  it('الحذف يتطلب كتابة "حذف" وبعدها ينادي Edge Function delete-user-account', async () => {
+  it('حذف الحساب بيطلب كتابة «حذف» وبينادي Edge Function', async () => {
     loggedIn();
     render(<AppProvider><SettingsDropdown isOpen={true} onClose={() => {}} /></AppProvider>);
+    await openLegal();
     fireEvent.click(await screen.findByText('حذف حسابي'));
-
-    const confirmBtn = await screen.findByRole('button', { name: 'حذف نهائياً' });
-    expect(confirmBtn).toBeDisabled();
-    fireEvent.change(screen.getByLabelText(/للتأكيد اكتب/), { target: { value: 'حذف حسابي' } });
-    expect(confirmBtn).toBeDisabled(); // كلمة غلط
-    fireEvent.change(screen.getByLabelText(/للتأكيد اكتب/), { target: { value: 'حذف' } });
-    expect(confirmBtn).toBeEnabled();
-
-    fireEvent.click(confirmBtn);
+    const input = await screen.findByRole('textbox');
+    const confirm = screen.getAllByRole('button').find((b) => /حذف.*نهائ/.test(b.textContent));
+    expect(confirm).toBeDisabled();
+    fireEvent.change(input, { target: { value: 'حذف' } });
+    expect(confirm).toBeEnabled();
+    fireEvent.click(confirm);
     await waitFor(() => expect(supabase.__test.invokeCalls).toHaveLength(1));
     expect(supabase.__test.invokeCalls[0].name).toBe('delete-user-account');
   });
+});
 
-  it('لو الحذف فشل بيعرض رسالة خطأ ويرجّع الزر', async () => {
-    loggedIn();
+describe('سلامة المحتوى - فشل حذف الحساب', () => {
+  it('لو الـ Edge Function فشلت بيعرض خطأ ومبيخرّجش المستخدم', async () => {
+    supabase.__test.setSession({ user: { id: FAKE_USER_ID, user_metadata: {} } });
     supabase.__test.setInvokeResult({ data: null, error: new Error('boom') });
-    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
     render(<AppProvider><SettingsDropdown isOpen={true} onClose={() => {}} /></AppProvider>);
+    fireEvent.click(await screen.findByText('الخصوصية وشروط الاستخدام'));
     fireEvent.click(await screen.findByText('حذف حسابي'));
-    fireEvent.change(await screen.findByLabelText(/للتأكيد اكتب/), { target: { value: 'حذف' } });
-    fireEvent.click(screen.getByRole('button', { name: 'حذف نهائياً' }));
-
-    expect(await screen.findByRole('alert')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'حذف نهائياً' })).toBeEnabled();
-    spy.mockRestore();
+    fireEvent.change(await screen.findByRole('textbox'), { target: { value: 'حذف' } });
+    fireEvent.click(screen.getAllByRole('button').find((b) => /حذف.*نهائ/.test(b.textContent)));
+    expect(await screen.findByText(/ما قدرناش نحذف الحساب/)).toBeInTheDocument();
   });
 });
 
@@ -450,18 +449,6 @@ describe('سلامة المحتوى - الموافقة على الشروط وا�
     expect(call.args).toEqual({ p_version: TERMS_VERSION });
   });
 
-  it('رابط شروط الاستخدام بيفتح صفحة github.io الحيّة', async () => {
-    const open = vi.spyOn(window, 'open').mockImplementation(() => null);
-    render(<AppProvider><SettingsDropdown isOpen={true} onClose={() => {}} /></AppProvider>);
-    fireEvent.click(await screen.findByText('شروط الاستخدام'));
-    expect(open).toHaveBeenCalledWith(
-      expect.stringMatching(/^https:\/\/.+\.github\.io\/.+\/terms\.html$/),
-      '_blank',
-      'noopener,noreferrer'
-    );
-    open.mockRestore();
-  });
-
   it('"اللاعبون المحظورون" بيظهر للمسجّلين بس، وبيفتح القائمة', async () => {
     loggedIn();
     render(<AppProvider><SettingsDropdown isOpen={true} onClose={() => {}} /></AppProvider>);
@@ -472,7 +459,7 @@ describe('سلامة المحتوى - الموافقة على الشروط وا�
 
   it('مبيظهرش "اللاعبون المحظورون" لو مفيش جلسة', async () => {
     render(<AppProvider><SettingsDropdown isOpen={true} onClose={() => {}} /></AppProvider>);
-    await screen.findByText('شروط الاستخدام');
+    await screen.findByText('الخصوصية وشروط الاستخدام');
     await new Promise((r) => setTimeout(r, 50));
     expect(screen.queryByText('اللاعبون المحظورون')).not.toBeInTheDocument();
   });

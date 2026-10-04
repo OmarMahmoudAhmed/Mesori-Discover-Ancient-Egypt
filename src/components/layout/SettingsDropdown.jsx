@@ -17,13 +17,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../../context/AppContext';
 import DeleteAccountModal from '../shared/DeleteAccountModal';
 import BlockedUsersModal from '../shared/BlockedUsersModal';
-import { PRIVACY_POLICY_URL, TERMS_URL } from '../../lib/legal';
+import LegalModal from '../shared/LegalModal';
 
 const SUPPORT_URL = 'https://buymeacoffee.com/omarmahmoudahmed'; // ⬅️ بدّله برابط الدعم الحقيقي (Patreon/GoFundMe)
 function SettingsDropdown({ isOpen, onClose }) {
   const { isSoundOn, toggleSound, navigateTo, session } = useApp();
   const [showDelete, setShowDelete] = useState(false);
   const [showBlocked, setShowBlocked] = useState(false);
+  const [showLegal, setShowLegal] = useState(false);
 
   const menuItems = [
     {
@@ -46,16 +47,10 @@ function SettingsDropdown({ isOpen, onClose }) {
       onClick: () => window.open(SUPPORT_URL, '_blank', 'noopener,noreferrer'),
     },
     {
-      key: 'privacy',
+      key: 'legal',
       icon: 'fi-rr-shield-check',
-      label: 'السياسات والخصوصية',
-      onClick: () => window.open(PRIVACY_POLICY_URL, '_blank', 'noopener,noreferrer'),
-    },
-    {
-      key: 'terms',
-      icon: 'fi-rr-document',
-      label: 'شروط الاستخدام',
-      onClick: () => window.open(TERMS_URL, '_blank', 'noopener,noreferrer'),
+      label: 'الخصوصية وشروط الاستخدام',
+      onClick: () => setShowLegal(true),
     },
     // اللاعبون المحظورون: للمسجّلين فقط
     ...(session?.user?.id ? [{
@@ -63,14 +58,6 @@ function SettingsDropdown({ isOpen, onClose }) {
       icon: 'fi-rr-user-slash',
       label: 'اللاعبون المحظورون',
       onClick: () => setShowBlocked(true),
-    }] : []),
-    // حذف الحساب: للمسجّلين فقط، ولونه أحمر عشان يتميّز كإجراء خطير
-    ...(session?.user?.id ? [{
-      key: 'delete-account',
-      icon: 'fi-rr-trash',
-      label: 'حذف حسابي',
-      danger: true,
-      onClick: () => setShowDelete(true),
     }] : []),
   ];
 
@@ -119,6 +106,7 @@ function SettingsDropdown({ isOpen, onClose }) {
       )}
     </AnimatePresence>
 
+    {showLegal && <LegalModal onClose={() => setShowLegal(false)} onDeleteAccount={() => { setShowLegal(false); setShowDelete(true); }} />}
     {showDelete && <DeleteAccountModal onClose={() => setShowDelete(false)} />}
     {showBlocked && <BlockedUsersModal onClose={() => setShowBlocked(false)} />}
     </>
