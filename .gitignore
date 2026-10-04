@@ -5,7 +5,7 @@ dist/
 # secrets (never commit)
 # .env
 # .env.*
-!.env.example
+# !.env.example
 *.keystore
 *.jks
 keystore.properties
