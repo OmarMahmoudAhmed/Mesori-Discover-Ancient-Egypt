@@ -15,9 +15,11 @@ import { useApp } from '../../context/AppContext';
 import { supabase } from '../../lib/supabaseClient';
 import { getSensitiveType, sensitiveWarningAr, sensitiveTypeFromServerError } from '../../lib/messageFilter';
 import ReportModal from '../shared/ReportModal';
+import TermsConsentModal from '../shared/TermsConsentModal';
+import { messageErrorCode, MESSAGE_ERRORS_AR } from '../../lib/serverErrors';
 
 function PlayerProfileModal({ player, onClose }) {
-  const { sendMessage, session } = useApp();
+  const { sendMessage, session, userProfile, blockUser } = useApp();
 
   const [badges, setBadges] = useState([]);
   const [loadingBadges, setLoadingBadges] = useState(true);
@@ -26,6 +28,9 @@ function PlayerProfileModal({ player, onClose }) {
   const [sendState, setSendState] = useState('idle'); // idle | sending | sent | error
   const [serverBlockType, setServerBlockType] = useState(null); // لو السيرفر رفض بسبب رقم/إيميل/رابط
   const [showReport, setShowReport] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  const [serverErrorText, setServerErrorText] = useState('');
+  const [blockState, setBlockState] = useState('idle'); // idle | confirm | blocking | blocked | error
 
   useEffect(() => {
     if (!player) return;
@@ -48,13 +53,33 @@ function PlayerProfileModal({ player, onClose }) {
   const warningText = sensitiveWarningAr(sensitiveType || serverBlockType);
   const canReport = !!session?.user?.id && session.user.id !== player.id;
 
+  const handleBlock = async () => {
+    setBlockState('blocking');
+    const { error } = await blockUser(player.id);
+    setBlockState(error ? 'error' : 'blocked');
+  };
+
+  // أول رسالة: لازم الموافقة على الشروط الأول (بعدها نفتح الكتابة مباشرة)
+  const handleStartCompose = () => {
+    if (userProfile?.termsAccepted) setIsComposing(true);
+    else setShowTerms(true);
+  };
+
   const handleSend = async () => {
     if (!messageText.trim() || getSensitiveType(messageText)) return;
     setSendState('sending');
     setServerBlockType(null);
+    setServerErrorText('');
     const { error } = await sendMessage(player.id, messageText.trim());
     if (error) {
-      setServerBlockType(sensitiveTypeFromServerError(error));
+      const code = messageErrorCode(error);
+      if (code === 'TERMS_NOT_ACCEPTED') {
+        setShowTerms(true);
+      } else if (code) {
+        setServerErrorText(MESSAGE_ERRORS_AR[code] || '');
+      } else {
+        setServerBlockType(sensitiveTypeFromServerError(error));
+      }
       setSendState('error');
     } else {
       setSendState('sent');
@@ -134,7 +159,7 @@ function PlayerProfileModal({ player, onClose }) {
               </div>
 
               <button
-                onClick={() => setIsComposing(true)}
+                onClick={handleStartCompose}
                 className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold text-white press-effect no-tap-highlight"
                 style={{ backgroundColor: '#C8922A' }}
               >
@@ -142,15 +167,48 @@ function PlayerProfileModal({ player, onClose }) {
                 <span>إرسال رسالة</span>
               </button>
 
-              {canReport && (
-                <button
-                  onClick={() => setShowReport(true)}
-                  className="w-full flex items-center justify-center gap-2 mt-3 py-2.5 text-xs font-bold press-effect no-tap-highlight"
-                  style={{ color: '#8B5A2B' }}
-                >
-                  <i className="fi fi-rr-flag" aria-hidden="true" style={{ fontSize: '12px' }} />
-                  <span>إبلاغ عن هذا اللاعب</span>
-                </button>
+              {canReport && blockState !== 'blocked' && (
+                <div className="flex items-center justify-center gap-2 mt-3">
+                  <button
+                    onClick={() => setShowReport(true)}
+                    className="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold press-effect no-tap-highlight"
+                    style={{ color: '#8B5A2B' }}
+                  >
+                    <i className="fi fi-rr-flag" aria-hidden="true" style={{ fontSize: '12px' }} />
+                    <span>إبلاغ</span>
+                  </button>
+                  <button
+                    onClick={() => setBlockState('confirm')}
+                    className="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold press-effect no-tap-highlight"
+                    style={{ color: '#B91C1C' }}
+                  >
+                    <i className="fi fi-rr-ban" aria-hidden="true" style={{ fontSize: '12px' }} />
+                    <span>حظر هذا اللاعب</span>
+                  </button>
+                </div>
+              )}
+
+              {blockState === 'confirm' && (
+                <div role="alertdialog" aria-label="تأكيد الحظر" className="mt-3 p-4 rounded-2xl" style={{ backgroundColor: 'white', border: '1px solid rgba(185,28,28,0.3)' }}>
+                  <p className="text-xs font-bold text-center mb-3" style={{ color: '#3D2B1F' }}>
+                    هتحظر {player.name}؟ مش هيقدر يبعتلك رسائل أو دعوات، ومش هتظهر له في البحث. تقدر ترفع الحظر من الإعدادات.
+                  </p>
+                  <div className="flex gap-3">
+                    <button onClick={() => setBlockState('idle')} className="flex-1 py-2.5 rounded-xl font-bold text-sm" style={{ backgroundColor: '#F3F4F6', color: '#4B5563' }}>إلغاء</button>
+                    <button onClick={handleBlock} className="flex-1 py-2.5 rounded-xl font-bold text-sm text-white" style={{ backgroundColor: '#B91C1C' }}>حظر</button>
+                  </div>
+                </div>
+              )}
+              {blockState === 'blocking' && (
+                <p className="text-xs font-bold text-center mt-3" style={{ color: '#8B5A2B' }}>جاري الحظر...</p>
+              )}
+              {blockState === 'blocked' && (
+                <p role="status" className="text-xs font-bold text-center mt-3" style={{ color: '#2D6A3F' }}>
+                  تم حظر {player.name}. تقدر ترفع الحظر من الإعدادات.
+                </p>
+              )}
+              {blockState === 'error' && (
+                <p role="alert" className="text-xs font-bold text-center mt-3" style={{ color: '#B91C1C' }}>تعذّر الحظر، حاول تاني</p>
               )}
             </>
           ) : (
@@ -176,7 +234,11 @@ function PlayerProfileModal({ player, onClose }) {
                     className="w-full p-3 rounded-xl text-sm outline-none resize-none"
                     style={{ backgroundColor: 'white', border: '1px solid rgba(200,146,42,0.3)', color: '#3D2B1F' }}
                   />
-                  {warningText ? (
+                  {serverErrorText ? (
+                    <p role="alert" className="text-xs font-bold text-center mt-2" style={{ color: '#B91C1C' }}>
+                      {serverErrorText}
+                    </p>
+                  ) : warningText ? (
                     <p role="alert" className="text-xs font-bold text-center mt-2" style={{ color: '#B91C1C' }}>
                       {warningText}
                     </p>
@@ -207,6 +269,13 @@ function PlayerProfileModal({ player, onClose }) {
             </>
           )}
         </motion.div>
+
+        {showTerms && (
+          <TermsConsentModal
+            onClose={() => setShowTerms(false)}
+            onAccepted={() => { setShowTerms(false); setIsComposing(true); setSendState('idle'); }}
+          />
+        )}
 
         {showReport && (
           <ReportModal

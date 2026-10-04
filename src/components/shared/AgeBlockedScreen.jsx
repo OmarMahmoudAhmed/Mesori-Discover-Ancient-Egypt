@@ -8,7 +8,12 @@ function AgeBlockedScreen({ deleting = false, error = '', onRetry = null }) {
   return (
     <div
       className="min-h-screen w-full flex flex-col items-center justify-center px-6 py-10"
-      style={{ backgroundColor: '#0F2D18', fontFamily: "'Cairo', sans-serif" }}
+      style={{
+        backgroundColor: '#0F2D18',
+        fontFamily: "'Cairo', sans-serif",
+        paddingTop: 'calc(2.5rem + env(safe-area-inset-top, 0px))',
+        paddingBottom: 'calc(2.5rem + env(safe-area-inset-bottom, 0px))',
+      }}
       dir="rtl"
     >
       <div className="w-full max-w-sm text-center">

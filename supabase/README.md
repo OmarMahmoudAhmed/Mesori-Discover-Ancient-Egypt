@@ -79,3 +79,9 @@ supabase functions deploy delete-user-account
 - `VITE_PRIVACY_POLICY_URL`: رابط صفحة السياسة (الافتراضي صفحة GitHub Pages).
 - `VITE_DEVELOPER_PORTFOLIO_URL`: رابط صحيفة أعمال المطوّر. من غيره الزر مبيظهرش في «عن المطوّر».
 
+**4) شغّل `migrations/016_blocks_terms_and_hardening.sql`:**
+- حظر اللاعبين (`user_blocks` + `block_user` / `unblock_user` / `list_blocked_users`) وموافقة الشروط (`profiles.terms_accepted_at` + `accept_terms`).
+- `send_message` بترفض بأكواد ثابتة: `TERMS_NOT_ACCEPTED`، `MESSAGE_BLOCKED_BY_ME`، `MESSAGE_UNAVAILABLE`، `RATE_LIMITED`، `CONTACT_INFO_*`.
+- **إغلاق صلاحيات:** `anon` ما ينفعش ينفّذ أي دالة، والدوال الداخلية (`finalize_match_as_forfeit`، `award_badge_if_new`، …) اتقفلت عن `authenticated`. وجدول `profiles` العميل يعدّل أعمدة الملف الشخصي بس (مش النقاط/التصنيف/`is_bot`/`terms_*`).
+- دوال جديدة لازم تتنادى من العميل: اعمل لها `GRANT EXECUTE ... TO authenticated` صراحةً (الافتراضي بقى مقفول).
+

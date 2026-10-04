@@ -16,15 +16,14 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../../context/AppContext';
 import DeleteAccountModal from '../shared/DeleteAccountModal';
+import BlockedUsersModal from '../shared/BlockedUsersModal';
+import { PRIVACY_POLICY_URL, TERMS_URL } from '../../lib/legal';
 
 const SUPPORT_URL = 'https://buymeacoffee.com/omarmahmoudahmed'; // ⬅️ بدّله برابط الدعم الحقيقي (Patreon/GoFundMe)
-const PRIVACY_POLICY_URL =
-  import.meta.env.VITE_PRIVACY_POLICY_URL ||
-  'https://omarmahmoudahmed.github.io/Mesori-Discover-Ancient-Egypt/privacy-policy.html';
-
 function SettingsDropdown({ isOpen, onClose }) {
   const { isSoundOn, toggleSound, navigateTo, session } = useApp();
   const [showDelete, setShowDelete] = useState(false);
+  const [showBlocked, setShowBlocked] = useState(false);
 
   const menuItems = [
     {
@@ -52,6 +51,19 @@ function SettingsDropdown({ isOpen, onClose }) {
       label: 'السياسات والخصوصية',
       onClick: () => window.open(PRIVACY_POLICY_URL, '_blank', 'noopener,noreferrer'),
     },
+    {
+      key: 'terms',
+      icon: 'fi-rr-document',
+      label: 'شروط الاستخدام',
+      onClick: () => window.open(TERMS_URL, '_blank', 'noopener,noreferrer'),
+    },
+    // اللاعبون المحظورون: للمسجّلين فقط
+    ...(session?.user?.id ? [{
+      key: 'blocked-users',
+      icon: 'fi-rr-user-slash',
+      label: 'اللاعبون المحظورون',
+      onClick: () => setShowBlocked(true),
+    }] : []),
     // حذف الحساب: للمسجّلين فقط، ولونه أحمر عشان يتميّز كإجراء خطير
     ...(session?.user?.id ? [{
       key: 'delete-account',
@@ -108,6 +120,7 @@ function SettingsDropdown({ isOpen, onClose }) {
     </AnimatePresence>
 
     {showDelete && <DeleteAccountModal onClose={() => setShowDelete(false)} />}
+    {showBlocked && <BlockedUsersModal onClose={() => setShowBlocked(false)} />}
     </>
   );
 }

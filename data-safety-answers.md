@@ -43,3 +43,24 @@
 
 ## النشر
 حط `privacy-policy.html` في `docs/` بالريبو → Settings → Pages → Source: `main` / `docs`.
+
+## إقرارات محتوى المستخدمين (UGC) والسن — محدّث 2026-10-03
+
+الحالة في الكود والسيرفر (migrations 014–016) وإيش تختاره في Play Console:
+
+| البند | الحالة | في Play Console |
+|---|---|---|
+| الفئة العمرية | حد أدنى 13 (بوابة سن + onboarding + trigger على السيرفر) | Target age: **13+ فقط**، والتطبيق **غير موجّه للأطفال** |
+| الإبلاغ داخل التطبيق | موجود (رسالة من الإشعارات، ولاعب من بروفايله) | يغطي سياسة UGC |
+| حظر مستخدم | موجود + قائمة «اللاعبون المحظورون» + رفع الحظر | يغطي سياسة UGC |
+| شروط تمنع المحتوى المسيء | `docs/terms.html` + موافقة إلزامية قبل أول رسالة (السيرفر بيرفض من غيرها) | يغطي سياسة UGC |
+| فلترة المحتوى | السيرفر بيرفض أرقام/إيميلات/روابط/حسابات تواصل + حد 30 رسالة/ساعة | — |
+| حذف الحساب | من الإعدادات + رابط ويب: `.../privacy-policy.html#delete-account` | Data safety ← «Account deletion» ← ضع الرابط ده |
+| مراجعة البلاغات | يدوي — راجع `docs/moderation-runbook.md` (الهدف 72 ساعة) | — |
+
+لازم تنفّذه بنفسك قبل الرفع:
+1. فعّل GitHub Pages (`main` / `docs`) وافتح الرابطين: `privacy-policy.html` و `terms.html`.
+2. App content ← Target audience: 13+ بس (ما تختارش فئات أصغر). وصف المتجر والصور ما يستهدفوش أطفالاً.
+3. App content ← «User generated content»: أجب بنعم، واذكر الإبلاغ + الحظر + الشروط + الفلترة.
+4. فعّل «Leaked password protection» من Supabase Dashboard ← Authentication ← Sign In / Providers ← Email.
+

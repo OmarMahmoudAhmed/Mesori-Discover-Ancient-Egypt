@@ -13,6 +13,7 @@ import Header      from '../components/layout/Header';
 import BottomNav   from '../components/layout/BottomNav';
 import { useApp }  from '../context/AppContext';
 import { supabase } from '../lib/supabaseClient';
+import { messageErrorTextAr } from '../lib/serverErrors';
 
 function VsLobbyPage() {
   const { userProfile, findRandomMatch, cancelMatchmaking, requestBotMatch, searchUsers, inviteFriendlyMatch, navigateTo } = useApp();
@@ -100,10 +101,16 @@ function VsLobbyPage() {
   }, []);
 
   const inviteChannelRef = useRef(null);
+  const [inviteError, setInviteError] = useState('');
 
   const handleInvite = async (opponentId, opponentName) => {
     const { matchId: invitedMatchId, error } = await inviteFriendlyMatch(opponentId);
-    if (error) { console.error('❌ خطأ في الدعوة:', error); return; }
+    if (error) {
+      console.error('❌ خطأ في الدعوة:', error);
+      setInviteError(messageErrorTextAr(error) || 'تعذّر إرسال الدعوة، حاول تاني');
+      return;
+    }
+    setInviteError('');
     setInviteSentTo(opponentName);
 
     // استماع فوري: لو الصديق قبل الدعوة، انتقل للمباراة فوراً
@@ -186,6 +193,12 @@ function VsLobbyPage() {
               className="w-full px-4 py-3 rounded-xl text-sm outline-none mb-3"
               style={{ backgroundColor: 'white', border: '1px solid rgba(200,146,42,0.3)', color: '#3D2B1F' }}
             />
+
+            {inviteError && (
+              <div role="alert" className="rounded-xl p-3 mb-3 text-center text-sm font-bold" style={{ backgroundColor: 'rgba(185,28,28,0.08)', color: '#B91C1C' }}>
+                {inviteError}
+              </div>
+            )}
 
             {inviteSentTo && (
               <div className="rounded-xl p-3 mb-3 text-center text-sm font-bold" style={{ backgroundColor: 'rgba(45,106,63,0.1)', color: '#2D6A3F' }}>

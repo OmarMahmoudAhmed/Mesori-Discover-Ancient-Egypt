@@ -43,6 +43,7 @@ import React, {
 } from 'react';
 import { levelsData as initialLevelsData } from '../data/levels';
 import { supabase } from '../lib/supabaseClient';
+import { TERMS_VERSION } from '../lib/legal';
 import { clearLastSeenRank } from '../lib/rankTracking';
 import { cancelInactivityReminder } from '../lib/notifications';
 
@@ -199,6 +200,7 @@ export function AppProvider({ children }) {
           gender:              data.gender,
           totalPoints:         data.total_points,
           onboardingCompleted: data.onboarding_completed,
+          termsAccepted:       !!data.terms_accepted_at,
           rating:              data.rating,
           vsWins:              data.vs_wins,
           vsLosses:            data.vs_losses,
@@ -723,6 +725,38 @@ export function AppProvider({ children }) {
   }, []);
 
   /*
+   * الموافقة على شروط الاستخدام (لازم قبل أول رسالة — السيرفر بيرفض من غيرها).
+   */
+  const acceptTerms = useCallback(async () => {
+    const { error } = await supabase.rpc('accept_terms', { p_version: TERMS_VERSION });
+    if (!error) setUserProfile(prev => ({ ...prev, termsAccepted: true }));
+    return { error };
+  }, []);
+
+  /*
+   * حظر لاعب / إلغاء الحظر / قائمة المحظورين (مطلوب من Google Play لميزة الرسائل).
+   * الحظر بيشيل رسائل ودعوات اللاعب من إشعاراتك فوراً (محلياً والسيرفر كمان).
+   */
+  const blockUser = useCallback(async (userId) => {
+    const { error } = await supabase.rpc('block_user', { p_user_id: userId });
+    if (!error) {
+      setNotifications(prev => prev.filter(n =>
+        !(String(n.related_id) === String(userId) && (n.type === 'message' || n.type === 'match_invite'))));
+    }
+    return { error };
+  }, []);
+
+  const unblockUser = useCallback(async (userId) => {
+    const { error } = await supabase.rpc('unblock_user', { p_user_id: userId });
+    return { error };
+  }, []);
+
+  const listBlockedUsers = useCallback(async () => {
+    const { data, error } = await supabase.rpc('list_blocked_users');
+    return { data: data || [], error };
+  }, []);
+
+  /*
    * حذف الحساب نهائياً (مطلوب من Google Play). بيستدعي Edge Function
    * `delete-user-account` — هوية المستخدم بتتحدد من الـ JWT على السيرفر،
    * فمفيش طريقة نحذف بيها حساب حد تاني. بعد النجاح بننضّف الحالة المحلية
@@ -857,6 +891,10 @@ export function AppProvider({ children }) {
     unreadCount,
     sendMessage,
     reportUser,
+    acceptTerms,
+    blockUser,
+    unblockUser,
+    listBlockedUsers,
     deleteAccount,
     trackShare,
     markNotificationRead,

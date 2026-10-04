@@ -7,6 +7,9 @@ import App from './App';
 import QuizPage from './pages/QuizPage';
 import SettingsDropdown from './components/layout/SettingsDropdown';
 import ReportModal from './components/shared/ReportModal';
+import TermsConsentModal from './components/shared/TermsConsentModal';
+import { messageErrorCode, messageErrorTextAr } from './lib/serverErrors';
+import { TERMS_VERSION } from './lib/legal';
 
 /*
  * =====================================================
@@ -425,5 +428,60 @@ describe('سلامة المحتوى - الإبلاغ', () => {
       p_details: 'تفاصيل',
       p_notification_id: 42,
     });
+  });
+});
+
+describe('سلامة المحتوى - الموافقة على الشروط والحظر', () => {
+  const loggedIn = () => supabase.__test.setSession({ user: { id: FAKE_USER_ID, user_metadata: {} } });
+
+  it('الموافقة معطّلة من غير تأشير الخانة، وبعدها بتنادي accept_terms بإصدار الشروط', async () => {
+    loggedIn();
+    const onAccepted = vi.fn();
+    render(<AppProvider><TermsConsentModal onAccepted={onAccepted} onClose={() => {}} /></AppProvider>);
+
+    const accept = await screen.findByRole('button', { name: 'أوافق' });
+    expect(accept).toBeDisabled();
+    fireEvent.click(screen.getByRole('checkbox'));
+    expect(accept).toBeEnabled();
+    fireEvent.click(accept);
+
+    await waitFor(() => expect(onAccepted).toHaveBeenCalled());
+    const call = supabase.__test.rpcCalls.find((c) => c.name === 'accept_terms');
+    expect(call.args).toEqual({ p_version: TERMS_VERSION });
+  });
+
+  it('رابط شروط الاستخدام بيفتح صفحة github.io الحيّة', async () => {
+    const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+    render(<AppProvider><SettingsDropdown isOpen={true} onClose={() => {}} /></AppProvider>);
+    fireEvent.click(await screen.findByText('شروط الاستخدام'));
+    expect(open).toHaveBeenCalledWith(
+      expect.stringMatching(/^https:\/\/.+\.github\.io\/.+\/terms\.html$/),
+      '_blank',
+      'noopener,noreferrer'
+    );
+    open.mockRestore();
+  });
+
+  it('"اللاعبون المحظورون" بيظهر للمسجّلين بس، وبيفتح القائمة', async () => {
+    loggedIn();
+    render(<AppProvider><SettingsDropdown isOpen={true} onClose={() => {}} /></AppProvider>);
+    fireEvent.click(await screen.findByText('اللاعبون المحظورون'));
+    expect(await screen.findByText('مفيش لاعبين محظورين')).toBeInTheDocument();
+    expect(supabase.__test.rpcCalls.some((c) => c.name === 'list_blocked_users')).toBe(true);
+  });
+
+  it('مبيظهرش "اللاعبون المحظورون" لو مفيش جلسة', async () => {
+    render(<AppProvider><SettingsDropdown isOpen={true} onClose={() => {}} /></AppProvider>);
+    await screen.findByText('شروط الاستخدام');
+    await new Promise((r) => setTimeout(r, 50));
+    expect(screen.queryByText('اللاعبون المحظورون')).not.toBeInTheDocument();
+  });
+
+  it('أكواد أخطاء السيرفر بتتحوّل لرسائل عربي من غير ما نكشف الحظر للمحظور', () => {
+    expect(messageErrorCode(new Error('TERMS_NOT_ACCEPTED'))).toBe('TERMS_NOT_ACCEPTED');
+    expect(messageErrorCode(new Error('boom'))).toBeNull();
+    expect(messageErrorTextAr(new Error('MESSAGE_BLOCKED_BY_ME'))).toMatch(/حاظر/);
+    expect(messageErrorTextAr(new Error('MESSAGE_UNAVAILABLE'))).not.toMatch(/حظر|محظور/);
+    expect(messageErrorTextAr(new Error('RATE_LIMITED'))).toBeTruthy();
   });
 });

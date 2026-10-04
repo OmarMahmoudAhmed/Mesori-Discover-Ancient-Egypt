@@ -10,6 +10,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../../context/AppContext';
+import { createPortal } from 'react-dom';
 import ReportModal from '../shared/ReportModal';
 
 function timeAgo(isoDate) {
@@ -24,9 +25,22 @@ function timeAgo(isoDate) {
 }
 
 function NotificationBell() {
-  const { notifications, unreadCount, markNotificationRead, markAllNotificationsRead, navigateTo } = useApp();
+  const { notifications, unreadCount, markNotificationRead, markAllNotificationsRead, navigateTo, blockUser } = useApp();
   const [isOpen, setIsOpen] = useState(false);
   const [reportTarget, setReportTarget] = useState(null); // { userId, notificationId }
+  const [blockTarget, setBlockTarget] = useState(null);   // { userId, name }
+  const [blockBusy, setBlockBusy] = useState(false);
+  const [blockError, setBlockError] = useState('');
+
+  const confirmBlock = async () => {
+    if (!blockTarget) return;
+    setBlockBusy(true);
+    setBlockError('');
+    const { error } = await blockUser(blockTarget.userId);
+    setBlockBusy(false);
+    if (error) setBlockError('تعذّر الحظر، حاول تاني');
+    else setBlockTarget(null);
+  };
 
   return (
     <div className="relative">
@@ -130,6 +144,19 @@ function NotificationBell() {
                       <button
                         onClick={() => {
                           setIsOpen(false);
+                          setBlockError('');
+                          setBlockTarget({ userId: n.related_id, name: (n.title || '').replace('رسالة جديدة من ', '') });
+                        }}
+                        className="flex-shrink-0 w-11 h-11 mt-1 flex items-center justify-center press-effect no-tap-highlight"
+                        aria-label="حظر هذا اللاعب"
+                      >
+                        <i className="fi fi-rr-ban" aria-hidden="true" style={{ fontSize: '14px', color: '#B91C1C' }} />
+                      </button>
+                    )}
+                    {n.type === 'message' && n.related_id && (
+                      <button
+                        onClick={() => {
+                          setIsOpen(false);
                           setReportTarget({ userId: n.related_id, notificationId: n.id });
                         }}
                         className="flex-shrink-0 w-11 h-11 mt-1 flex items-center justify-center press-effect no-tap-highlight"
@@ -145,6 +172,26 @@ function NotificationBell() {
           </>
         )}
       </AnimatePresence>
+
+      {blockTarget && createPortal(
+        <div className="fixed inset-0 z-[60] flex items-center justify-center px-6" role="alertdialog" aria-label="تأكيد الحظر">
+          <div className="absolute inset-0" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !blockBusy && setBlockTarget(null)} />
+          <div className="relative w-full max-w-sm rounded-3xl p-6" style={{ backgroundColor: '#FDF3E3', fontFamily: "'Cairo', sans-serif" }} dir="rtl">
+            <h2 className="font-black text-base mb-2 text-center" style={{ color: '#3D2B1F' }}>حظر {blockTarget.name || 'هذا اللاعب'}؟</h2>
+            <p className="text-xs text-center mb-4 leading-relaxed" style={{ color: '#6B4A1F' }}>
+              مش هيقدر يبعتلك رسائل أو دعوات، وهتتشال رسائله من إشعاراتك. تقدر ترفع الحظر من الإعدادات.
+            </p>
+            {blockError && <p role="alert" className="text-xs font-bold text-center mb-3" style={{ color: '#B91C1C' }}>{blockError}</p>}
+            <div className="flex gap-3">
+              <button onClick={() => setBlockTarget(null)} disabled={blockBusy} className="flex-1 py-3 rounded-xl font-bold" style={{ backgroundColor: '#F3F4F6', color: '#4B5563' }}>إلغاء</button>
+              <button onClick={confirmBlock} disabled={blockBusy} className="flex-1 py-3 rounded-xl font-bold text-white" style={{ backgroundColor: blockBusy ? '#A9793F' : '#B91C1C' }}>
+                {blockBusy ? 'جاري الحظر...' : 'حظر'}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
 
       {reportTarget && (
         <ReportModal
