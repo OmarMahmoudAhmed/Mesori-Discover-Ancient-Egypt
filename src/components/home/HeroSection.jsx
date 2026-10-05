@@ -45,7 +45,7 @@ function TypedWelcomeText() {
     if (prefersReducedMotion || !typedEl.current) return;
 
     typedInstance.current = new Typed(typedEl.current, {
-      strings: ['اختر معرفتك <span style="color:#8B4513;font-weight:700">بتاريخ مصر القديم!</span>'],
+      strings: ['اختبر معرفتك <span style="color:#8B4513;font-weight:700">بتاريخ مصر القديم!</span>'],
       typeSpeed: 32,
       startDelay: 200,
       showCursor: true,
