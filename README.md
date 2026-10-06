@@ -86,6 +86,9 @@ mesori-app/
 
 ---
 
+## 🤖 Android: جوجل والتوقيع والإشعارات
+راجع [docs/GOOGLE_SIGNIN_AND_RELEASE.md](docs/GOOGLE_SIGNIN_AND_RELEASE.md) (تسجيل الدخول بجوجل + توقيع الإصدار + النشر على Play)، و[docs/ADMOB_SETUP.md](docs/ADMOB_SETUP.md) (إعلانات AdMob). ولإعداد البيئة انسخ `.env.example` إلى `.env`.
+
 ## 🔮 الخطوات القادمة
 
 - [x] بناء صفحة الاختبار (QuizPage)

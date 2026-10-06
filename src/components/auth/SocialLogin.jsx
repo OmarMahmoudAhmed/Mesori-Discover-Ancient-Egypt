@@ -9,28 +9,34 @@ import { FcGoogle } from 'react-icons/fc';
  * SocialLogin
  * قسم "أو سجل الدخول باستخدام" + أزرار جوجل / فيسبوك / آبل
  *
- * ملاحظة مهمة: لم يتم ربط أي منطق مصادقة فعلي بعد (onClick فارغة/placeholder)
- * سيتم توصيلها بمزوّدي OAuth الحقيقيين (مثلًا عبر Supabase Auth) في مرحلة لاحقة.
+ * جوجل مفعّل (أصلي على Android / OAuth على الويب). فيسبوك وآبل متوقفان مؤقتاً.
  */
 
-import { supabase } from '../../lib/supabaseClient';
+import { useState } from 'react';
+import { signInWithGoogle, GoogleAuthError, GOOGLE_AUTH_ERRORS } from '../../lib/googleAuth';
 
 const SocialLogin = () => {
-  // TODO: استبدال هذه الدوال الفارغة بمنطق تسجيل الدخول الفعلي عبر كل مزوّد
-const handleGoogle = async () => {
-  try {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin + '/', // خلاص، مش محتاج /auth/callback
-      },
-    });
-    if (error) throw error;
-  } catch (error) {
-    console.error('خطأ في تسجيل الدخول بجوجل:', error.message);
-    alert('فشل تسجيل الدخول: ' + error.message);
-  }
-};
+  const [errorMsg, setErrorMsg] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  /*
+   * جوجل: على Android تسجيل دخول أصلي + signInWithIdToken، وعلى الويب redirect عادي.
+   * راجع src/lib/googleAuth.js. لا يُسجَّل أي token.
+   */
+  const handleGoogle = async () => {
+    if (busy) return;
+    setBusy(true);
+    setErrorMsg('');
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      const code = error instanceof GoogleAuthError ? error.code : 'UNKNOWN';
+      // الإلغاء من المستخدم ليس خطأً يستحق رسالة
+      if (code !== 'CANCELLED') setErrorMsg(GOOGLE_AUTH_ERRORS[code]);
+    } finally {
+      setBusy(false);
+    }
+  };
   /*
    * فيسبوك وآبل متوقفين مؤقتاً (مش محذوفين) — لسه ماجبناش الـ OAuth
    * API بتاعهم. لما تتوفر مفاتيحهم، رجّع السطرين دول وعنصريهم في
@@ -68,11 +74,18 @@ const handleGoogle = async () => {
             whileHover={{ y: -3 }}
             whileTap={{ scale: 0.92 }}
             aria-label={`تسجيل الدخول عبر ${label}`}
+            disabled={busy}
           >
             <Icon color={color} />
           </motion.button>
         ))}
       </div>
+
+      {errorMsg && (
+        <p className="social-login__error" role="alert">
+          {errorMsg}
+        </p>
+      )}
     </motion.div>
   );
 };

@@ -12,7 +12,7 @@
 | رابط سياسة الخصوصية | `https://omarmahmoudahmed.github.io/Mesori-Discover-Ancient-Egypt/privacy-policy.html` |
 
 ## أنواع البيانات
-"Shared" = **لا** في كل الصفوف: Supabase/Vercel مزوّدو خدمة بيعالجوا نيابةً عنك (مستثنون من تعريف المشاركة).
+"Shared" = **لا** لبيانات Supabase/Vercel (مزوّدو خدمة بيعالجوا نيابةً عنك ومستثنون من تعريف المشاركة)، و**نعم** لأنواع AdMob اللي تحت (Google بتتلقّاها مباشرة من الـ SDK).
 
 | الفئة في Play Console | النوع | Collected | Shared | إجباري/اختياري | الغرض |
 |---|---|---|---|---|---|
@@ -22,14 +22,35 @@
 | Personal info | Other info (العمر، الجنس، البلد) | نعم | لا | إجباري (العمر) | App functionality |
 | Messages | Other in-app messages | نعم | لا | اختياري | App functionality |
 | App activity | App interactions (تقدم، نقاط، إجابات، مباريات، مدة الاستخدام) | نعم | لا | إجباري | App functionality |
+| App activity | App interactions (تفاعلات الإعلانات: فتح التطبيق، النقرات، مشاهدات الفيديو — من AdMob) | **نعم** (AdMob) | **نعم** (Google) | اختياري | Advertising or marketing، Analytics، Fraud prevention |
 | App activity | Other user-generated content | لا (الرسائل مغطاة فوق) | — | — | — |
-| Location / Contacts / Photos / Audio / Files / Calendar | — | **لا** | — | — | — |
+| Location | Approximate location (تقدير من الـ IP بواسطة AdMob) | **نعم** (AdMob) | **نعم** (Google) | اختياري | Advertising or marketing، Analytics، Fraud prevention |
+| Contacts / Photos / Audio / Files / Calendar | — | **لا** | — | — | — |
 | Financial info | — | **لا** (رابط Buy Me a Coffee خارجي) | — | — | — |
-| Device or other IDs | — | **لا** (مفيش إعلانات/تحليلات) | — | — | — |
-| App info and performance | Crash logs / Diagnostics | **لا** | — | — | — |
+| Device or other IDs | Advertising ID + App set ID (+ معرّفات حسابات الجهاز إن وُجدت) | **نعم** (AdMob) | **نعم** (Google) | اختياري | Advertising or marketing، Analytics، Fraud prevention |
+| App info and performance | Diagnostics (زمن تشغيل التطبيق، hang rate، استهلاك الطاقة — من AdMob) | **نعم** (AdMob) | **نعم** (Google) | اختياري | Analytics، Fraud prevention |
+| App info and performance | Crash logs | **لا** | — | — | — |
 
 - **Independent security review:** لا.
-- **لو أضفت AdMob لاحقاً:** لازم تحدّث النموذج (Device IDs، Advertising ID، Shared = نعم) والسياسة، وتستخدم Families Self-Certified Ads SDK فقط.
+- **AdMob:** الكود فيه SDK الإعلانات دلوقتي (مقفول افتراضياً من Supabase بـ `enable_ads=false`)، لكن الإفصاح لازم يتحدّث من **أول نسخة** بتتضمّنه حتى لو الإعلانات مقفولة. راجع القسم التالي.
+
+## إعلانات AdMob — إجابات إضافية (محدّث 2026-10-06)
+
+مصدر الجدول: صفحة Google الرسمية «Google Play data disclosure» لـ Google Mobile Ads SDK (https://developers.google.com/admob/android/privacy/play-data-disclosure — راجعها قبل التقديم لأنها بتتحدّث مع إصدارات الـ SDK). الصفحة بتقول إن الـ SDK بيجمع ويشارك تلقائياً: **عنوان IP** (ممكن يُستخدم لتقدير الموقع التقريبي)، **تفاعلات المستخدم مع المنتج** (فتح التطبيق، نقرات، مشاهدات فيديو)، **معلومات التشخيص** (زمن التشغيل، hang rate، الطاقة)، **معرّفات الجهاز والحساب** (Advertising ID وApp set ID ومعرّفات حسابات الجهاز) — لأغراض الإعلان والتحليلات ومنع الاحتيال، وكلها مشفّرة أثناء النقل (TLS). جمع الـ Advertising ID اختياري (المستخدم يقدر يعيد ضبطه أو يحذفه). **القرار النهائي في الإجابة مسؤوليتك** (Google نفسها بتقول كده)؛ الجدول فوق هو الأسلم.
+
+في Play Console لازم تجاوب كمان:
+
+| الصفحة | الإجابة |
+|---|---|
+| App content ← Ads | **نعم، يحتوي على إعلانات** |
+| App content ← Advertising ID | **نعم** — الأغراض: Advertising or marketing + Analytics (+ Fraud prevention). والـ manifest فيه `com.google.android.gms.permission.AD_ID` |
+| App content ← Target audience | **13+ فقط** (زي ما هو). الإعلانات لازم تتوافق مع سياسة Ads في Google Play |
+| Data safety | الصفوف المضافة فوق، وتأكد إنها متطابقة مع `privacy-policy.html` (اتحدّثت 2026-10-06) |
+
+ملاحظات:
+- **مش بيطبَّق Families Self-Certified Ads SDK** طالما التطبيق 13+ وغير موجّه للأطفال. لكن لو المراجع اعتبره موجّه للأطفال هيطلب Families Policy، وساعتها الإعلانات الحالية مش مسموحة.
+- الكود بيحدّ محتوى الإعلانات لمستوى المراهقين (Teen) وبيبعت وسم TFUA لمن هم تحت 16 (سن الموافقة الافتراضي في أوروبا). وبيستخدم UMP (نموذج الموافقة من Google) — لازم تنشئ رسالة الموافقة في AdMob ← Privacy & messaging (راجع `docs/ADMOB_SETUP.md`).
+- ملف `App Marketing.md` فيه فقرة بتقول «لا إعلانات بينية في أي مكان» وإعلانات مكافأة فقط (حد أقصى 3 يومياً). ده بيتعارض مع الدليل الحالي (بيني + مكافئ). قرّر أي منهما هو الصحيح قبل النشر، وحدّث الملف.
 
 ## ⚠️ ثغرات لازم تتقفل قبل التقديم (من مراجعة الكود)
 1. ✅ **حذف الحساب داخل التطبيق: اتنفّذ في الكود** (الإعدادات ← «حذف حسابي» ← Edge Function `delete-user-account`). **مش شغّال على الإنتاج لحد ما تنشر الدالة** (`supabase functions deploy delete-user-account`) وتجرّب حذف حساب تجريبي من نسخة مبنية. الرابط الويب = قسم 6 في صفحة السياسة (`#delete-account`).

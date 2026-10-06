@@ -12,7 +12,7 @@ import '../styles/auth/login.css';
  * (لا تضع أي صور داخل src، ولا تستخدم import للصور إطلاقًا)
  */
 const APP_LOGO = '/assets/logo/logo.webp';
-const BACKGROUND_IMAGE = '/assets/backgrounds/app-background.png'; // أو .webp إذا كانت متوفرة بتلك الصيغة
+const BACKGROUND_IMAGE = '/assets/backgrounds/app-background.webp';
 
 /**
  * أيقونة زهرة اللوتس — مرسومة يدويًا كـ SVG (رمز مصري قديم غير متوفر في المكتبات الجاهزة)

@@ -18,6 +18,7 @@ import { useApp } from '../../context/AppContext';
 import DeleteAccountModal from '../shared/DeleteAccountModal';
 import BlockedUsersModal from '../shared/BlockedUsersModal';
 import LegalModal from '../shared/LegalModal';
+import { isPrivacyOptionsRequired, openPrivacyOptions } from '../../lib/ads';
 
 const SUPPORT_URL = 'https://buymeacoffee.com/omarmahmoudahmed'; // ⬅️ بدّله برابط الدعم الحقيقي (Patreon/GoFundMe)
 function SettingsDropdown({ isOpen, onClose }) {
@@ -52,6 +53,13 @@ function SettingsDropdown({ isOpen, onClose }) {
       label: 'الخصوصية وشروط الاستخدام',
       onClick: () => setShowLegal(true),
     },
+    // خيارات موافقة الإعلانات (UMP): بتظهر بس لو Google قالت إنها مطلوبة (أوروبا/UK)
+    ...(isPrivacyOptionsRequired() ? [{
+      key: 'ad-privacy',
+      icon: 'fi-rr-shield-check',
+      label: 'خيارات الإعلانات والخصوصية',
+      onClick: () => { void openPrivacyOptions(); },
+    }] : []),
     // اللاعبون المحظورون: للمسجّلين فقط
     ...(session?.user?.id ? [{
       key: 'blocked-users',

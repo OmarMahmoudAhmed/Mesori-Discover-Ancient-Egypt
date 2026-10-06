@@ -46,6 +46,7 @@ import { supabase } from '../lib/supabaseClient';
 import { TERMS_VERSION } from '../lib/legal';
 import { clearLastSeenRank } from '../lib/rankTracking';
 import { cancelInactivityReminder } from '../lib/notifications';
+import { signOutGoogleNative } from '../lib/googleAuth';
 
 /*
  * تُعيد حساب حالة "مفتوحة/مقفولة" لكل مستوى ومرحلة من الصفر بناءً
@@ -594,6 +595,7 @@ export function AppProvider({ children }) {
 
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
+    await signOutGoogleNative(); // خروج من حساب جوجل الأصلي داخل تطبيق Android (لا يفعل شيئاً على الويب)
   }, []);
 
   /* تُستدعى من شاشة Onboarding بعد اختيار الاسم/العمر/الشخصية/الجنس */
@@ -777,6 +779,7 @@ export function AppProvider({ children }) {
     setCurrentPage('home');
     setPageData(null);
     await supabase.auth.signOut({ scope: 'local' });
+    await signOutGoogleNative();
     return { error: null };
   }, [session]);
 

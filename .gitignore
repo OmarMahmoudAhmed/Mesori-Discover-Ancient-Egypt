@@ -3,9 +3,6 @@ node_modules/
 dist/
 
 # secrets (never commit)
-# .env
-# .env.*
-# !.env.example
 *.keystore
 *.jks
 keystore.properties
@@ -29,4 +26,8 @@ Thumbs.db
 .vscode/
 *.log
 .vercel
-.env*
+
+# env files — ignore everything except the placeholder template
+.env
+.env.*
+!.env.example

@@ -432,3 +432,12 @@
   outline: 2px solid var(--color-egyptian-blue);
   outline-offset: 2px;
 }
+
+/* رسالة خطأ تسجيل الدخول بجوجل */
+.social-login__error {
+  margin: 12px 0 0;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #fca5a5;
+}

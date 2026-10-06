@@ -85,3 +85,10 @@ supabase functions deploy delete-user-account
 - **إغلاق صلاحيات:** `anon` ما ينفعش ينفّذ أي دالة، والدوال الداخلية (`finalize_match_as_forfeit`، `award_badge_if_new`، …) اتقفلت عن `authenticated`. وجدول `profiles` العميل يعدّل أعمدة الملف الشخصي بس (مش النقاط/التصنيف/`is_bot`/`terms_*`).
 - دوال جديدة لازم تتنادى من العميل: اعمل لها `GRANT EXECUTE ... TO authenticated` صراحةً (الافتراضي بقى مقفول).
 
+## الإعلانات (AdMob) وإعدادات التطبيق عن بُعد
+
+**5) شغّل `migrations/017_app_config.sql`:**
+- بيضيف جدول `app_config` (Key-Value) — القراءة لـ `authenticated` بس، ومفيش كتابة من العميل. التعديل من Dashboard ← Table Editor.
+- القيم الابتدائية آمنة: `enable_ads = false` و`ads_test_mode = true` ومعرّفات اختبار Google. يعني الإعلانات **مقفولة** لحد ما تفعّلها (راجع `docs/ADMOB_SETUP.md`).
+- مفاتيح: `enable_ads` (Kill Switch)، `ads_test_mode`، `interstitial_ad_id`، `rewarded_ad_id`، `interstitial_cooldown_min`.
+- التطبيق بيخزّن الإعدادات ساعة. لو غيّرتها، التأثير الكامل خلال ساعة (أو عند الفتح التالي بعد انتهاء الـ cache).
