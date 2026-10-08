@@ -231,11 +231,11 @@ export function AppProvider({ children }) {
    * ثابتة لكل المستويات كما كانت — نفس القيم الأصلية من data/levels.js.
    */
   const LEVEL_PRESENTATION = {
-    1: { iconSrc: '/assets/icons/levels/level-1-pyramid.png',        bgColor: '#1B5E2E', headerBg: '#143F20', textColor: '#4ADE80', iconBg: '#0F2D18', badgeBg: '#0F2D18', badgeText: '#86EFAC' },
-    2: { iconSrc: '/assets/icons/levels/level-2-pharaoh-mask.png',   bgColor: '#0D7E72', headerBg: '#085E54', textColor: '#34D399', iconBg: '#054540', badgeBg: '#054540', badgeText: '#6EE7B7' },
-    3: { iconSrc: '/assets/icons/levels/level-3-pillar.png',         bgColor: '#1A3A6B', headerBg: '#122848', textColor: '#60A5FA', iconBg: '#0D1E3D', badgeBg: '#0D1E3D', badgeText: '#93C5FD' },
-    4: { iconSrc: '/assets/icons/levels/level-4-pharaoh-figure.png', bgColor: '#3B1A08', headerBg: '#2A1206', textColor: '#FB923C', iconBg: '#1E0D04', badgeBg: '#1E0D04', badgeText: '#FDBA74' },
-    5: { iconSrc: '/assets/icons/levels/level-5-ankh-shield.png',    bgColor: '#7A5200', headerBg: '#5A3C00', textColor: '#FBBF24', iconBg: '#3D2800', badgeBg: '#3D2800', badgeText: '#FCD34D' },
+    1: { iconSrc: '/assets/icons/levels/level-1-pyramid.webp',        bgColor: '#1B5E2E', headerBg: '#143F20', textColor: '#4ADE80', iconBg: '#0F2D18', badgeBg: '#0F2D18', badgeText: '#86EFAC' },
+    2: { iconSrc: '/assets/icons/levels/level-2-pharaoh-mask.webp',   bgColor: '#0D7E72', headerBg: '#085E54', textColor: '#34D399', iconBg: '#054540', badgeBg: '#054540', badgeText: '#6EE7B7' },
+    3: { iconSrc: '/assets/icons/levels/level-3-pillar.webp',         bgColor: '#1A3A6B', headerBg: '#122848', textColor: '#60A5FA', iconBg: '#0D1E3D', badgeBg: '#0D1E3D', badgeText: '#93C5FD' },
+    4: { iconSrc: '/assets/icons/levels/level-4-pharaoh-figure.webp', bgColor: '#3B1A08', headerBg: '#2A1206', textColor: '#FB923C', iconBg: '#1E0D04', badgeBg: '#1E0D04', badgeText: '#FDBA74' },
+    5: { iconSrc: '/assets/icons/levels/level-5-ankh-shield.webp',    bgColor: '#7A5200', headerBg: '#5A3C00', textColor: '#FBBF24', iconBg: '#3D2800', badgeBg: '#3D2800', badgeText: '#FCD34D' },
   };
   const FALLBACK_PRESENTATION = LEVEL_PRESENTATION[1];
 
