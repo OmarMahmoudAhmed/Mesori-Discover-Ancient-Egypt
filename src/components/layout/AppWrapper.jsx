@@ -86,40 +86,30 @@ function AppWrapper({ children }) {
           relative
           overflow-x-hidden
         "
-        style={{ backgroundColor: 'transparent' }}
+        style={{
+          backgroundColor: '#F4E2BC', /* لون الرمال الفرعونية — يظهر كخلفية احتياطية طالما الصورة غير مُضافة بعد */
+
+          /*
+           * 🖼️ صورة الخلفية الكاملة للتطبيق (أعمدة + عين حورس + هيروغليفية + مويجات + كثبان)
+           * WebP بدل PNG — نفس الشكل بالظبط، 456KB → 11KB (كانت بتتحمّل
+           * مع كل صفحة لأنها هنا في AppWrapper المشترك)
+           */
+          backgroundImage:    'url(/assets/backgrounds/app-background.webp)',
+          backgroundRepeat:   'repeat-y',   /* تتكرر عمودياً إن كان المحتوى أطول من الصورة (الصفحة قابلة للتمرير) */
+          backgroundPosition: 'top center',
+          backgroundSize:     '100% auto', /* تمتد بعرض التطبيق كاملاً */
+        }}
       >
 
         {/*
-          * طبقة الخلفية الثابتة: تغطي ارتفاع وعرض شاشة الهاتف بالكامل
-          * (fixed + top/bottom 0) بخاصية cover، فالصورة تتناسب دائماً
-          * مع حجم الشاشة ولا يظهر أي فراغ مهما طال المحتوى.
-          * max-width = عرض الحاوية، فتبقى في المنتصف على الشاشات الكبيرة.
+          * محتوى الصفحة:
+          * هنا يُحقن كل ما هو داخل AppWrapper:
+          * - Header
+          * - المحتوى الرئيسي (main)
+          * - BottomNav
           */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none"
-          style={{
-            position: 'fixed',
-            top: 0,
-            bottom: 0,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: '100%',
-            maxWidth: '448px',
-            zIndex: 0,
-            backgroundColor: '#F4E2BC',
-            backgroundImage: 'url(/assets/backgrounds/app-background.webp)',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'top center',
-            backgroundSize: 'cover',
-          }}
-        />
-
-        {/* محتوى الصفحة فوق طبقة الخلفية */}
-        <div className="relative flex flex-col flex-1 min-h-dvh" style={{ zIndex: 1 }}>
         {children}
 
-        </div>
       </div>
     </div>
   );
