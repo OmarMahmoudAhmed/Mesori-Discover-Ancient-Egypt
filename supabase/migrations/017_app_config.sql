@@ -65,6 +65,6 @@ INSERT INTO public.app_config (key, value, description) VALUES
    'معرّف وحدة الإعلان البيني (الافتراضي = معرّف اختبار Google). استبدله بمعرّفك الحقيقي'),
   ('rewarded_ad_id',           'ca-app-pub-3940256099942544/5224354917',
    'معرّف وحدة الإعلان المكافئ (الافتراضي = معرّف اختبار Google). استبدله بمعرّفك الحقيقي'),
-  ('interstitial_cooldown_min','3',
+  ('interstitial_cooldown_min','5',
    'الحد الأدنى بالدقائق بين إعلانين بينيين (يُحسب كمان من لحظة فتح التطبيق). الموصى به 3 إلى 5')
 ON CONFLICT (key) DO NOTHING;

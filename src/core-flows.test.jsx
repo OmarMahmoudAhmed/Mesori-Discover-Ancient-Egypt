@@ -1,6 +1,14 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+// الإعلانات مقفولة في اختبارات الواجهة (لا تتسرّب حالة وحدة الإعلانات بين الملفات)
+vi.mock('./lib/ads', () => ({
+  initAds: vi.fn(async () => false),
+  maybeShowInterstitial: vi.fn(async () => 'disabled'),
+  // canShowRewardedAd: vi.fn(async () => false), // معلّق مع الإعلان المكافئ
+  // showRewardedAd: vi.fn(async () => ({ rewarded: false })),
+  // grantAdFreeHour: vi.fn(),
+}));
 import { AppProvider, useApp } from './context/AppContext';
 import { supabase } from './lib/supabaseClient';
 import App from './App';

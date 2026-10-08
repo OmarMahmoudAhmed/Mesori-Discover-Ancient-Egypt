@@ -8,8 +8,8 @@
 | هل التطبيق يجمع أو يشارك بيانات مستخدم؟ | **نعم، يجمع** |
 | هل كل البيانات مشفّرة أثناء النقل؟ | **نعم** (HTTPS/Supabase) |
 | هل توفّر طريقة لطلب حذف البيانات؟ | **نعم** (حذف داخل التطبيق + رابط ويب، بشرط نشر migration 014 والـ Edge Function — راجع `supabase/README.md`) |
-| رابط حذف الحساب | `https://omarmahmoudahmed.github.io/Mesori-Discover-Ancient-Egypt/privacy-policy.html#delete-account` |
-| رابط سياسة الخصوصية | `https://omarmahmoudahmed.github.io/Mesori-Discover-Ancient-Egypt/privacy-policy.html` |
+| رابط حذف الحساب | `https://mesori.app/privacy-policy.html#delete-account` |
+| رابط سياسة الخصوصية | `https://mesori.app/privacy-policy.html` |
 
 ## أنواع البيانات
 "Shared" = **لا** لبيانات Supabase/Vercel (مزوّدو خدمة بيعالجوا نيابةً عنك ومستثنون من تعريف المشاركة)، و**نعم** لأنواع AdMob اللي تحت (Google بتتلقّاها مباشرة من الـ SDK).
@@ -43,14 +43,14 @@
 | الصفحة | الإجابة |
 |---|---|
 | App content ← Ads | **نعم، يحتوي على إعلانات** |
-| App content ← Advertising ID | **نعم** — الأغراض: Advertising or marketing + Analytics (+ Fraud prevention). والـ manifest فيه `com.google.android.gms.permission.AD_ID` |
-| App content ← Target audience | **13+ فقط** (زي ما هو). الإعلانات لازم تتوافق مع سياسة Ads في Google Play |
+| App content ← Advertising ID | **نعم** — الأغراض: Advertising or marketing + Analytics (+ Fraud prevention). والـ SDK بيضيف `com.google.android.gms.permission.AD_ID` تلقائياً عند دمج الـ manifest (تأكد منه في الـ AAB النهائي). ومعرّف AdMob (`APPLICATION_ID`) اتضاف للـ manifest بمعرّف اختبار لحد ما تستبدله بمعرّفك الحقيقي |
+| App content ← Target audience | **13–15 و16–17 و18+** فقط (Play Console ما فيهوش خيار "13+" مباشر — ما تختارش أي فئة أصغر). التطبيق **غير موجّه للأطفال** وغير مشارك في برنامج Families. الإعلانات لازم تتوافق مع سياسة Ads في Google Play |
 | Data safety | الصفوف المضافة فوق، وتأكد إنها متطابقة مع `privacy-policy.html` (اتحدّثت 2026-10-06) |
 
 ملاحظات:
-- **مش بيطبَّق Families Self-Certified Ads SDK** طالما التطبيق 13+ وغير موجّه للأطفال. لكن لو المراجع اعتبره موجّه للأطفال هيطلب Families Policy، وساعتها الإعلانات الحالية مش مسموحة.
+- **مش بيطبَّق Families Self-Certified Ads SDK** طالما التطبيق 13+ وغير موجّه للأطفال (وده الوضع المعتمد). لكن لو المراجع اعتبره موجّه للأطفال هيطلب Families Policy، وساعتها الإعلانات الحالية مش مسموحة.
 - الكود بيحدّ محتوى الإعلانات لمستوى المراهقين (Teen) وبيبعت وسم TFUA لمن هم تحت 16 (سن الموافقة الافتراضي في أوروبا). وبيستخدم UMP (نموذج الموافقة من Google) — لازم تنشئ رسالة الموافقة في AdMob ← Privacy & messaging (راجع `docs/ADMOB_SETUP.md`).
-- ملف `App Marketing.md` فيه فقرة بتقول «لا إعلانات بينية في أي مكان» وإعلانات مكافأة فقط (حد أقصى 3 يومياً). ده بيتعارض مع الدليل الحالي (بيني + مكافئ). قرّر أي منهما هو الصحيح قبل النشر، وحدّث الملف.
+- ملف `App Marketing.md` اتحدّث ليطابق القرار: التطبيق فيه إعلانات بينية (بين المراحل) فقط، وموجّه لعمر 13+ وليس للأطفال.
 
 ## ⚠️ ثغرات لازم تتقفل قبل التقديم (من مراجعة الكود)
 1. ✅ **حذف الحساب داخل التطبيق: اتنفّذ في الكود** (الإعدادات ← «حذف حسابي» ← Edge Function `delete-user-account`). **مش شغّال على الإنتاج لحد ما تنشر الدالة** (`supabase functions deploy delete-user-account`) وتجرّب حذف حساب تجريبي من نسخة مبنية. الرابط الويب = قسم 6 في صفحة السياسة (`#delete-account`).
@@ -71,12 +71,12 @@
 
 | البند | الحالة | في Play Console |
 |---|---|---|
-| الفئة العمرية | حد أدنى 13 (بوابة سن + onboarding + trigger على السيرفر) | Target age: **13+ فقط**، والتطبيق **غير موجّه للأطفال** |
+| الفئة العمرية | حد أدنى 13 (بوابة سن + onboarding + trigger على السيرفر) | Target age: **13–15، 16–17، 18+** (بدون أي فئة أصغر)، والتطبيق **غير موجّه للأطفال** وغير مشارك في Families |
 | الإبلاغ داخل التطبيق | موجود (رسالة من الإشعارات، ولاعب من بروفايله) | يغطي سياسة UGC |
 | حظر مستخدم | موجود + قائمة «اللاعبون المحظورون» + رفع الحظر | يغطي سياسة UGC |
 | شروط تمنع المحتوى المسيء | `docs/terms.html` + موافقة إلزامية قبل أول رسالة (السيرفر بيرفض من غيرها) | يغطي سياسة UGC |
 | فلترة المحتوى | السيرفر بيرفض أرقام/إيميلات/روابط/حسابات تواصل + حد 30 رسالة/ساعة | — |
-| حذف الحساب | من الإعدادات + رابط ويب: `.../privacy-policy.html#delete-account` | Data safety ← «Account deletion» ← ضع الرابط ده |
+| حذف الحساب | من الإعدادات + رابط ويب: `https://mesori.app/privacy-policy.html#delete-account` | Data safety ← «Account deletion» ← ضع الرابط ده |
 | مراجعة البلاغات | يدوي — راجع `docs/moderation-runbook.md` (الهدف 72 ساعة) | — |
 
 لازم تنفّذه بنفسك قبل الرفع:

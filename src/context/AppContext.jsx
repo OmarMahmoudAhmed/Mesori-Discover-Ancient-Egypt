@@ -44,6 +44,7 @@ import React, {
 import { levelsData as initialLevelsData } from '../data/levels';
 import { supabase } from '../lib/supabaseClient';
 import { TERMS_VERSION } from '../lib/legal';
+import { initAds } from '../lib/ads';
 import { clearLastSeenRank } from '../lib/rankTracking';
 import { cancelInactivityReminder } from '../lib/notifications';
 
@@ -207,6 +208,8 @@ export function AppProvider({ children }) {
           vsDraws:             data.vs_draws,
           rank,
         }));
+        // تهيئة الإعلانات بعد تحميل البروفايل (تمرير العمر لإعدادات الموافقة). لا تفعل شيئاً على الويب أو لو enable_ads=false
+        void initAds({ age: data.age });
       } catch (err) {
         console.error('❌ خطأ غير متوقع في تحميل البروفايل:', err);
       } finally {

@@ -33,7 +33,7 @@ export const SAFE_DEFAULTS = Object.freeze({
   testMode: true,
   interstitialAdId: GOOGLE_TEST_AD_IDS.interstitial,
   rewardedAdId: GOOGLE_TEST_AD_IDS.rewarded,
-  cooldownMinutes: 3,
+  cooldownMinutes: 5,
 });
 
 const toBool = (v, fallback) => {

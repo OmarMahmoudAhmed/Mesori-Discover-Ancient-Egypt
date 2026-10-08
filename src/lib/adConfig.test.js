@@ -34,7 +34,7 @@ describe('parseAdConfig', () => {
     expect(c.testMode).toBe(true);
     expect(c.interstitialAdId).toBe(GOOGLE_TEST_AD_IDS.interstitial);
     expect(c.rewardedAdId).toBe(GOOGLE_TEST_AD_IDS.rewarded);
-    expect(c.cooldownMinutes).toBe(3);
+    expect(c.cooldownMinutes).toBe(5);
   });
 
   it('في وضع الاختبار يتجاهل المعرّفات الحقيقية ويستخدم معرّفات Google', () => {
@@ -64,7 +64,7 @@ describe('parseAdConfig', () => {
     expect(parseAdConfig(rows({ interstitial_cooldown_min: '0' })).cooldownMinutes).toBe(1); // حد أدنى
     expect(parseAdConfig(rows({ interstitial_cooldown_min: '-9' })).cooldownMinutes).toBe(1);
     expect(parseAdConfig(rows({ interstitial_cooldown_min: '99999' })).cooldownMinutes).toBe(120);
-    expect(parseAdConfig(rows({ interstitial_cooldown_min: 'abc' })).cooldownMinutes).toBe(3);
+    expect(parseAdConfig(rows({ interstitial_cooldown_min: 'abc' })).cooldownMinutes).toBe(5);
   });
 
   it('isValidAdUnitId يرفض معرّف التطبيق (~) والقيم الفارغة', () => {

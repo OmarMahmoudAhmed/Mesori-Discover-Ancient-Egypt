@@ -31,7 +31,6 @@ vi.mock('@capacitor-community/admob', () => ({
   AdMob: h.AdMob,
   AdmobConsentStatus: { NOT_REQUIRED: 'NOT_REQUIRED', OBTAINED: 'OBTAINED', REQUIRED: 'REQUIRED', UNKNOWN: 'UNKNOWN' },
   InterstitialAdPluginEvents: { Dismissed: 'interstitialAdDismissed', FailedToShow: 'interstitialAdFailedToShow' },
-  RewardAdPluginEvents: { Rewarded: 'onRewardedVideoAdReward', Dismissed: 'onRewardedVideoAdDismissed', FailedToShow: 'onRewardedVideoAdFailedToShow' },
   MaxAdContentRating: { General: 'General', ParentalGuidance: 'ParentalGuidance', Teen: 'Teen', MatureAudience: 'MatureAudience' },
 }));
 vi.mock('./adConfig', () => ({ getAdConfig: h.getAdConfig }));
@@ -39,7 +38,6 @@ vi.mock('./adConfig', () => ({ getAdConfig: h.getAdConfig }));
 import {
   initAds,
   maybeShowInterstitial,
-  showRewardedAd,
   openPrivacyOptions,
   isPrivacyOptionsRequired,
   isUnderAgeOfConsent,
@@ -81,7 +79,6 @@ describe('ويب (غير native)', () => {
   it('كل شيء no-op ولا يلمس الـ plugin', async () => {
     expect(await initAds({ age: 20 })).toBe(false);
     expect(await maybeShowInterstitial()).toBe('not-native');
-    expect(await showRewardedAd()).toEqual({ rewarded: false, reason: 'not-native' });
     expect(await openPrivacyOptions()).toBe(false);
     expect(h.AdMob.initialize).not.toHaveBeenCalled();
     expect(h.AdMob.requestConsentInfo).not.toHaveBeenCalled();
@@ -227,68 +224,6 @@ describe('maybeShowInterstitial', () => {
   });
 });
 
-describe('showRewardedAd', () => {
-  it('المستخدم أكمل الإعلان → rewarded=true بالقيمة', async () => {
-    const p = showRewardedAd();
-    await flush();
-    h.emit('onRewardedVideoAdReward', { type: 'coins', amount: 10 });
-    h.emit('onRewardedVideoAdDismissed');
-    await expect(p).resolves.toEqual({ rewarded: true, amount: 10, type: 'coins' });
-    expect(h.AdMob.prepareRewardVideoAd).toHaveBeenCalledWith({ adId: ON.rewardedAdId, isTesting: true });
-  });
-
-  it('أغلقه قبل المكافأة → rewarded=false ولا يتعلّق (الـ promise الأصلي لا يُحلّ)', async () => {
-    const p = showRewardedAd();
-    await flush();
-    h.emit('onRewardedVideoAdDismissed');
-    await expect(p).resolves.toEqual({ rewarded: false, reason: 'dismissed' });
-  });
-
-  it('فشل عرض الإعلان → show-failed', async () => {
-    const p = showRewardedAd();
-    await flush();
-    h.emit('onRewardedVideoAdFailedToShow');
-    await expect(p).resolves.toEqual({ rewarded: false, reason: 'show-failed' });
-  });
-
-  it('فشل التحميل → load-failed', async () => {
-    h.AdMob.prepareRewardVideoAd.mockRejectedValue(new Error('no fill'));
-    await expect(showRewardedAd()).resolves.toEqual({ rewarded: false, reason: 'load-failed' });
-  });
-
-  it('Kill Switch / بدون معرّف / SDK غير جاهز', async () => {
-    h.getAdConfig.mockResolvedValue({ ...ON, enableAds: false });
-    expect(await showRewardedAd()).toEqual({ rewarded: false, reason: 'disabled' });
-    h.getAdConfig.mockResolvedValue({ ...ON, testMode: false, rewardedAdId: null });
-    expect(await showRewardedAd()).toEqual({ rewarded: false, reason: 'no-ad-unit' });
-    h.getAdConfig.mockResolvedValue({ ...ON });
-    h.AdMob.initialize.mockRejectedValue(new Error('sdk'));
-    expect(await showRewardedAd()).toEqual({ rewarded: false, reason: 'not-ready' });
-  });
-
-  it('لا يسمح بإعلانين متزامنين، وينظّف المستمعين بعد الانتهاء', async () => {
-    const p1 = showRewardedAd();
-    await flush();
-    expect(await showRewardedAd()).toEqual({ rewarded: false, reason: 'busy' });
-    h.emit('onRewardedVideoAdDismissed');
-    await p1;
-    expect(h.listeners.onRewardedVideoAdReward || []).toHaveLength(0);
-    expect(h.listeners.onRewardedVideoAdDismissed || []).toHaveLength(0);
-    // وبعد الانتهاء يمكن عرض غيره
-    const p2 = showRewardedAd();
-    await flush();
-    h.emit('onRewardedVideoAdDismissed');
-    expect((await p2).reason).toBe('dismissed');
-  });
-
-  it('مهلة أمان: لو لم يصل أي حدث لا يتعلّق للأبد', async () => {
-    const p = showRewardedAd();
-    await flush();
-    await vi.advanceTimersByTimeAsync(5 * MIN + 1000);
-    await expect(p).resolves.toEqual({ rewarded: false, reason: 'timeout' });
-  });
-});
-
 describe('خيارات الخصوصية', () => {
   it('openPrivacyOptions يعمل بعد التهيئة فقط ولا يرمي', async () => {
     expect(await openPrivacyOptions()).toBe(false); // قبل التهيئة
@@ -298,3 +233,105 @@ describe('خيارات الخصوصية', () => {
     expect(await openPrivacyOptions()).toBe(false);
   });
 });
+
+// ================================================================
+// اختبارات الإعلان المكافئ: معلّقة مؤقتاً مع الكود المقابل في ads.js
+// ================================================================
+// import { showRewardedAd, canShowRewardedAd, grantAdFreeHour, isAdFreeNow, rewardedUsedToday, REWARD_AD_FREE_MS, REWARDED_DAILY_CAP } from './ads';
+// describe('showRewardedAd', () => {
+//   it('المستخدم أكمل الإعلان → rewarded=true بالقيمة', async () => {
+//     const p = showRewardedAd();
+//     await flush();
+//     h.emit('onRewardedVideoAdReward', { type: 'coins', amount: 10 });
+//     h.emit('onRewardedVideoAdDismissed');
+//     await expect(p).resolves.toEqual({ rewarded: true, amount: 10, type: 'coins' });
+//     expect(h.AdMob.prepareRewardVideoAd).toHaveBeenCalledWith({ adId: ON.rewardedAdId, isTesting: true });
+//   });
+//
+//   it('أغلقه قبل المكافأة → rewarded=false ولا يتعلّق (الـ promise الأصلي لا يُحلّ)', async () => {
+//     const p = showRewardedAd();
+//     await flush();
+//     h.emit('onRewardedVideoAdDismissed');
+//     await expect(p).resolves.toEqual({ rewarded: false, reason: 'dismissed' });
+//   });
+//
+//   it('فشل عرض الإعلان → show-failed', async () => {
+//     const p = showRewardedAd();
+//     await flush();
+//     h.emit('onRewardedVideoAdFailedToShow');
+//     await expect(p).resolves.toEqual({ rewarded: false, reason: 'show-failed' });
+//   });
+//
+//   it('فشل التحميل → load-failed', async () => {
+//     h.AdMob.prepareRewardVideoAd.mockRejectedValue(new Error('no fill'));
+//     await expect(showRewardedAd()).resolves.toEqual({ rewarded: false, reason: 'load-failed' });
+//   });
+//
+//   it('Kill Switch / بدون معرّف / SDK غير جاهز', async () => {
+//     h.getAdConfig.mockResolvedValue({ ...ON, enableAds: false });
+//     expect(await showRewardedAd()).toEqual({ rewarded: false, reason: 'disabled' });
+//     h.getAdConfig.mockResolvedValue({ ...ON, testMode: false, rewardedAdId: null });
+//     expect(await showRewardedAd()).toEqual({ rewarded: false, reason: 'no-ad-unit' });
+//     h.getAdConfig.mockResolvedValue({ ...ON });
+//     h.AdMob.initialize.mockRejectedValue(new Error('sdk'));
+//     expect(await showRewardedAd()).toEqual({ rewarded: false, reason: 'not-ready' });
+//   });
+//
+//   it('لا يسمح بإعلانين متزامنين، وينظّف المستمعين بعد الانتهاء', async () => {
+//     const p1 = showRewardedAd();
+//     await flush();
+//     expect(await showRewardedAd()).toEqual({ rewarded: false, reason: 'busy' });
+//     h.emit('onRewardedVideoAdDismissed');
+//     await p1;
+//     expect(h.listeners.onRewardedVideoAdReward || []).toHaveLength(0);
+//     expect(h.listeners.onRewardedVideoAdDismissed || []).toHaveLength(0);
+//     // وبعد الانتهاء يمكن عرض غيره
+//     const p2 = showRewardedAd();
+//     await flush();
+//     h.emit('onRewardedVideoAdDismissed');
+//     expect((await p2).reason).toBe('dismissed');
+//   });
+//
+//   it('مهلة أمان: لو لم يصل أي حدث لا يتعلّق للأبد', async () => {
+//     const p = showRewardedAd();
+//     await flush();
+//     await vi.advanceTimersByTimeAsync(5 * MIN + 1000);
+//     await expect(p).resolves.toEqual({ rewarded: false, reason: 'timeout' });
+//   });
+// });
+//
+
+// describe('المكافأة: ساعة بدون إعلانات بينية', () => {
+//   beforeEach(() => {
+//     localStorage.clear();
+//     h.isNative.mockReturnValue(true);
+//     h.getAdConfig.mockResolvedValue({ ...ON });
+//   });
+//
+//   it('بعد المكافأة لا يظهر إعلان بيني حتى تنتهي الساعة', async () => {
+//     expect(isAdFreeNow()).toBe(false);
+//     grantAdFreeHour();
+//     expect(isAdFreeNow()).toBe(true);
+//     expect(await maybeShowInterstitial()).toBe('ad-free');
+//     expect(h.AdMob.showInterstitial).not.toHaveBeenCalled();
+//
+//     vi.setSystemTime(Date.now() + REWARD_AD_FREE_MS + 1000);
+//     expect(isAdFreeNow()).toBe(false);
+//   });
+//
+//   it('الزر المكافئ يظهر على الأندرويد ويختفي بعد الحد اليومي', async () => {
+//     expect(await canShowRewardedAd()).toBe(true);
+//     for (let i = 0; i < REWARDED_DAILY_CAP; i++) grantAdFreeHour();
+//     expect(rewardedUsedToday()).toBe(REWARDED_DAILY_CAP);
+//     expect(await canShowRewardedAd()).toBe(false);
+//   });
+//
+//   it('لا يظهر الزر على الويب أو لو الإعلانات مقفولة', async () => {
+//     h.isNative.mockReturnValue(false);
+//     expect(await canShowRewardedAd()).toBe(false);
+//     h.isNative.mockReturnValue(true);
+//     h.getAdConfig.mockResolvedValue({ ...ON, enableAds: false });
+//     expect(await canShowRewardedAd()).toBe(false);
+//   });
+// });
+//

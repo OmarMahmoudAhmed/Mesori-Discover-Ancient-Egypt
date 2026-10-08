@@ -69,6 +69,8 @@ import ExplorerCharacter from '../components/shared/ExplorerCharacter';
 import { useApp }        from '../context/AppContext';
 import { supabase }      from '../lib/supabaseClient';
 import { playSound }     from '../lib/sounds';
+import { maybeShowInterstitial } from '../lib/ads';
+// import RewardedAdButton from '../components/shared/RewardedAdButton'; // معلّق مؤقتاً
 import { shuffleArray, shuffleQuestionOptions } from '../lib/shuffle';
 
 
@@ -474,6 +476,8 @@ function QuizPage() {
        */
       const result = completeStage(levelId, stageId, correctCount * pointsPerQuestion);
       setCompletionResult(result);
+      // إعلان بيني بين المراحل (لحظة توقف طبيعية)، والـ lib بيحترم الفاصل وإعدادات Supabase
+      void maybeShowInterstitial();
       setIsFinished(true);
     } else {
       setCurrentQuestionIndex(prev => prev + 1);
@@ -648,6 +652,8 @@ function QuizPage() {
                 <i className="fi fi-rr-arrow-small-right" aria-hidden="true" style={{ fontSize: '14px' }} />
               </button>
             )}
+
+            {/* <RewardedAdButton /> معلّق مؤقتاً: الإعلان المكافئ غير مستخدم حالياً */}
 
             {justFinishedEverything && (
               <p
