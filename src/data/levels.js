@@ -36,7 +36,7 @@ export const levelsData = [
     id:          1,           /* معرّف المستوى الفريد */
     nameEn:      'Level 1',  /* الاسم بالإنجليزية - يظهر في رأس البطاقة */
     nameAr:      'سهل',      /* اسم الصعوبة بالعربية */
-    iconSrc:     '/assets/icons/levels/level-1-pyramid.webp', /* أيقونة الهرم — سيتم إضافتها لاحقاً */
+    iconSrc:     '/assets/icons/levels/level-1-pyramid.png', /* أيقونة الهرم — سيتم إضافتها لاحقاً */
     description: 'مثالي للمبتدئين في عالم مصر القديمة',
 
     /* ألوان البطاقة الكاملة */
@@ -125,7 +125,7 @@ export const levelsData = [
     id:          2,
     nameEn:      'Level 2',
     nameAr:      'متوسط',
-    iconSrc:     '/assets/icons/levels/level-2-pharaoh-mask.webp', /* أيقونة قناع الفرعون الذهبي — سيتم إضافتها لاحقاً */
+    iconSrc:     '/assets/icons/levels/level-2-pharaoh-mask.png', /* أيقونة قناع الفرعون الذهبي — سيتم إضافتها لاحقاً */
     description: 'تحدٍّ أكبر ومعرفة أعمق بالحضارة',
     bgColor:     '#0D7E72',
     headerBg:    '#085E54',
@@ -206,7 +206,7 @@ export const levelsData = [
     id:          3,
     nameEn:      'Level 3',
     nameAr:      'صعب',
-    iconSrc:     '/assets/icons/levels/level-3-pillar.webp', /* أيقونة العمود الفرعوني — سيتم إضافتها لاحقاً */
+    iconSrc:     '/assets/icons/levels/level-3-pillar.png', /* أيقونة العمود الفرعوني — سيتم إضافتها لاحقاً */
     description: 'اختبر نفسك بأسئلة متقدمة عن الحضارة',
     bgColor:     '#1A3A6B',
     headerBg:    '#122848',
@@ -287,7 +287,7 @@ export const levelsData = [
     id:          4,
     nameEn:      'Level 4',
     nameAr:      'صعب جداً',
-    iconSrc:     '/assets/icons/levels/level-4-pharaoh-figure.webp', /* أيقونة تمثال الفرعون — سيتم إضافتها لاحقاً */
+    iconSrc:     '/assets/icons/levels/level-4-pharaoh-figure.png', /* أيقونة تمثال الفرعون — سيتم إضافتها لاحقاً */
     description: 'للمتحدين فقط - أسئلة صعبة جداً!',
     bgColor:     '#3B1A08',
     headerBg:    '#2A1206',
@@ -368,7 +368,7 @@ export const levelsData = [
     id:          5,
     nameEn:      'Level 5',
     nameAr:      'متقدم',
-    iconSrc:     '/assets/icons/levels/level-5-ankh-shield.webp', /* أيقونة الدرع والعنخ — سيتم إضافتها لاحقاً */
+    iconSrc:     '/assets/icons/levels/level-5-ankh-shield.png', /* أيقونة الدرع والعنخ — سيتم إضافتها لاحقاً */
     description: 'المستوى النهائي - مكان الخبراء الحقيقيين!',
     bgColor:     '#7A5200',
     headerBg:    '#5A3C00',

@@ -56,7 +56,7 @@ function LevelCard({ level }) {
 
         {!level.isUnlocked && (
           <img
-            src="/assets/icons/badges/lock.webp"
+            src="/assets/icons/badges/lock.png"
             alt="مقفول"
             width={14}
             height={14}

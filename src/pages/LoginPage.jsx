@@ -11,8 +11,8 @@ import '../styles/auth/login.css';
  * مسارات الصور — يجب وضع الملفات الفعلية داخل public/assets
  * (لا تضع أي صور داخل src، ولا تستخدم import للصور إطلاقًا)
  */
-const APP_LOGO = '/assets/logo/logo.webp';
-const BACKGROUND_IMAGE = '/assets/backgrounds/app-background.webp';
+const APP_LOGO = '/assets/logo/logo.png';
+const BACKGROUND_IMAGE = '/assets/backgrounds/app-background.png';
 
 /**
  * أيقونة زهرة اللوتس — مرسومة يدويًا كـ SVG (رمز مصري قديم غير متوفر في المكتبات الجاهزة)

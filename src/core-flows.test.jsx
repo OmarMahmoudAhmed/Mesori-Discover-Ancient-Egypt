@@ -356,16 +356,16 @@ describe('سلامة المحتوى - قائمة الإعدادات وحذف ا�
     expect(screen.queryByText('شاركنا رأيك')).not.toBeInTheDocument();
   });
 
-  it('النافذة فيها الخصوصية والشروط وحذف الحساب، والروابط بتفتح صفحات github.io', async () => {
+  it('النافذة فيها الخصوصية والشروط وحذف الحساب، والروابط بتفتح صفحات mesori.app', async () => {
     loggedIn();
     const open = vi.spyOn(window, 'open').mockImplementation(() => null);
     render(<AppProvider><SettingsDropdown isOpen={true} onClose={() => {}} /></AppProvider>);
     await openLegal();
     expect(await screen.findByText('حذف حسابي')).toBeInTheDocument();
     fireEvent.click(screen.getByText('سياسة الخصوصية'));
-    expect(open).toHaveBeenCalledWith(expect.stringMatching(/^https:\/\/.+\.github\.io\/.+\/privacy-policy\.html$/), '_blank', 'noopener,noreferrer');
+    expect(open).toHaveBeenCalledWith(expect.stringMatching(/^https:\/\/mesori\.app\/privacy-policy\.html$/), '_blank', 'noopener,noreferrer');
     fireEvent.click(screen.getByText('شروط الاستخدام'));
-    expect(open).toHaveBeenCalledWith(expect.stringMatching(/^https:\/\/.+\.github\.io\/.+\/terms\.html$/), '_blank', 'noopener,noreferrer');
+    expect(open).toHaveBeenCalledWith(expect.stringMatching(/^https:\/\/mesori\.app\/terms\.html$/), '_blank', 'noopener,noreferrer');
     open.mockRestore();
   });
 

@@ -38,7 +38,6 @@ import { App as CapacitorApp } from '@capacitor/app';
 import { AppProvider, useApp } from './context/AppContext';
 import { setSoundEnabled } from './lib/sounds';
 import { scheduleInactivityReminder, cancelInactivityReminder } from './lib/notifications';
-import { initAds } from './lib/ads';
 
 /* استيراد جميع الصفحات */
 import LoginPage        from './pages/LoginPage';
@@ -126,16 +125,6 @@ function AppContent() {
       listenerPromise.then((listener) => listener.remove());
     };
   }, [session]);
-
-  /*
-   * الإعلانات (AdMob — بينية ومكافئة فقط): تهيئة بعد تسجيل الدخول واكتمال الـ onboarding
-   * (عشان سن المستخدم يبقى معروف لوسم الموافقة في أوروبا). على الويب أو لو الإعلانات
-   * مقفولة من Supabase (enable_ads=false) مفيش أي تهيئة للـ SDK. راجع src/lib/ads.js.
-   */
-  useEffect(() => {
-    if (!session || !userProfile.onboardingCompleted) return;
-    initAds({ age: userProfile.age });
-  }, [session, userProfile.onboardingCompleted, userProfile.age]);
 
   /*
    * بوابة تسجيل الدخول: بالترتيب —

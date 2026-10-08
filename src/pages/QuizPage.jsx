@@ -67,7 +67,6 @@ import AppWrapper        from '../components/layout/AppWrapper';
 import Header            from '../components/layout/Header';
 import ExplorerCharacter from '../components/shared/ExplorerCharacter';
 import { useApp }        from '../context/AppContext';
-import { maybeShowInterstitial } from '../lib/ads';
 import { supabase }      from '../lib/supabaseClient';
 import { playSound }     from '../lib/sounds';
 import { shuffleArray, shuffleQuestionOptions } from '../lib/shuffle';
@@ -496,8 +495,6 @@ function QuizPage() {
 
   /* العودة لقائمة مراحل نفس المستوى */
   const handleBackToStages = () => {
-    // لحظة توقف طبيعية (خلّصنا المرحلة وبنرجع للقائمة) — الإعلان البيني اختياري ومقيّد بالفاصل الزمني
-    void maybeShowInterstitial();
     navigateTo('quiz-group', { levelId });
   };
 
@@ -508,8 +505,6 @@ function QuizPage() {
    */
   const handleGoToNext = () => {
     if (completionResult?.nextStage) {
-      // انتقال بين المراحل = لحظة توقف طبيعية للإعلان البيني (لا يظهر إلا لو الظروف مناسبة)
-      void maybeShowInterstitial();
       navigateTo('quiz', completionResult.nextStage);
     }
   };
