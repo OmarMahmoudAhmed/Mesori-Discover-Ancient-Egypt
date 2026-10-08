@@ -43,7 +43,6 @@ export const levelsData = [
     bgColor:     '#1B5E2E',  /* خلفية البطاقة الرئيسية */
     headerBg:    '#143F20',  /* خلفية رأس البطاقة (أغمق) */
     textColor:   '#4ADE80',  /* لون نص اسم الصعوبة العربي */
-    textDark:    '#1F7A3F',  /* لون نص وحدود مطابق للتباين (WCAG AA على الأبيض) */
     iconBg:      '#0F2D18',  /* خلفية دائرة الأيقونة */
     badgeBg:     '#0F2D18',  /* خلفية شارات الإحصائيات */
     badgeText:   '#86EFAC',  /* لون نص الإحصائيات */
@@ -131,7 +130,6 @@ export const levelsData = [
     bgColor:     '#0D7E72',
     headerBg:    '#085E54',
     textColor:   '#34D399',
-    textDark:    '#1E7A5A',  /* لون نص وحدود مطابق للتباين (WCAG AA على الأبيض) */
     iconBg:      '#054540',
     badgeBg:     '#054540',
     badgeText:   '#6EE7B7',
@@ -213,7 +211,6 @@ export const levelsData = [
     bgColor:     '#1A3A6B',
     headerBg:    '#122848',
     textColor:   '#60A5FA',
-    textDark:    '#1D4ED8',  /* لون نص وحدود مطابق للتباين (WCAG AA على الأبيض) */
     iconBg:      '#0D1E3D',
     badgeBg:     '#0D1E3D',
     badgeText:   '#93C5FD',
@@ -295,7 +292,6 @@ export const levelsData = [
     bgColor:     '#3B1A08',
     headerBg:    '#2A1206',
     textColor:   '#FB923C',
-    textDark:    '#C2410C',  /* لون نص وحدود مطابق للتباين (WCAG AA على الأبيض) */
     iconBg:      '#1E0D04',
     badgeBg:     '#1E0D04',
     badgeText:   '#FDBA74',
@@ -377,7 +373,6 @@ export const levelsData = [
     bgColor:     '#7A5200',
     headerBg:    '#5A3C00',
     textColor:   '#FBBF24',
-    textDark:    '#A16207',  /* لون نص وحدود مطابق للتباين (WCAG AA على الأبيض) */
     iconBg:      '#3D2800',
     badgeBg:     '#3D2800',
     badgeText:   '#FCD34D',

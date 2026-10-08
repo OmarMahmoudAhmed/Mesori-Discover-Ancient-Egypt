@@ -63,7 +63,7 @@ function TypedWelcomeText() {
       className="text-center font-semibold px-4"
       style={{
         fontFamily: "'Cairo', sans-serif",
-        fontSize: '14px',
+        fontSize: '13px',
         color: '#3D2B1F',
         lineHeight: 1.5,
         marginTop: '4px',
@@ -91,13 +91,13 @@ function HeroSection() {
 
       <span
         className="font-black mt-1"
-        style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: '#3D2B1F', letterSpacing: '0.5px' }}
+        style={{ fontFamily: "'Cinzel', serif", fontSize: '20px', color: '#3D2B1F', letterSpacing: '0.5px' }}
       >
         Mesori
       </span>
       <span
         className="font-bold"
-        style={{ fontFamily: "'Cairo', sans-serif", fontSize: '14px', color: '#805D1B' }}
+        style={{ fontFamily: "'Cairo', sans-serif", fontSize: '12px', color: '#805D1B' }}
       >
         ميسوري
       </span>
@@ -113,9 +113,9 @@ function HeroSection() {
 
       {/* فاصل بصري صغير (نقاط ذهبية) */}
       <div className="flex items-center justify-center gap-2 mt-3 opacity-40">
-        <span style={{ color: '#C8922A', fontSize: '12px' }}>◆</span>
-        <span style={{ color: '#C8922A', fontSize: '12px' }}>◆</span>
-        <span style={{ color: '#C8922A', fontSize: '12px' }}>◆</span>
+        <span style={{ color: '#C8922A', fontSize: '7px' }}>◆</span>
+        <span style={{ color: '#C8922A', fontSize: '10px' }}>◆</span>
+        <span style={{ color: '#C8922A', fontSize: '7px' }}>◆</span>
       </div>
 
     </section>

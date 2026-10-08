@@ -37,7 +37,9 @@ function LevelCard({ level }) {
         cursor-pointer select-none transition-shadow duration-200
       "
       style={{
-        border: `2px solid ${level.textDark ?? level.textColor}`,
+        border: `2px solid ${level.textColor}`,
+        opacity: level.isUnlocked ? 1 : 0.6,
+        filter: level.isUnlocked ? 'none' : 'grayscale(0.5)',
       }}
     >
       {/* ===== رأس البطاقة: اسم المستوى بالإنجليزية على خلفية ملوّنة ===== */}
@@ -47,7 +49,7 @@ function LevelCard({ level }) {
       >
         <span
           className="font-bold text-white tracking-wide truncate"
-          style={{ fontFamily: "'Cinzel', serif", fontSize: '12px' }}
+          style={{ fontFamily: "'Cinzel', serif", fontSize: '11px' }}
         >
           {level.nameEn}
         </span>
@@ -67,7 +69,7 @@ function LevelCard({ level }) {
       <div className="flex-1 min-h-0 flex flex-col items-center px-1.5 pt-0.5 pb-0">
         <span
           className="font-black truncate max-w-full"
-          style={{ fontFamily: "'Cairo', sans-serif", fontSize: '14px', color: level.textDark ?? level.textColor }}
+          style={{ fontFamily: "'Cairo', sans-serif", fontSize: '13px', color: level.textColor }}
         >
           {level.nameAr}
         </span>
@@ -78,11 +80,7 @@ function LevelCard({ level }) {
             src={level.iconSrc}
             alt={level.nameAr}
             className="max-w-[86%] max-h-full w-auto h-auto"
-            style={{
-              objectFit: 'contain',
-              opacity: level.isUnlocked ? 1 : 0.5,
-              filter: level.isUnlocked ? 'none' : 'grayscale(0.6)',
-            }}
+            style={{ objectFit: 'contain' }}
           />
         </div>
       </div>
@@ -90,24 +88,24 @@ function LevelCard({ level }) {
       {/* ===== ذيل الإحصائيات: عدد الاختبارات + النقاط الممكنة، سطر لكل واحد ===== */}
       <div className="flex flex-col items-center gap-0.5 pb-1 pt-0 flex-shrink-0">
         <div className="flex items-center gap-1">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="#8B5A3C" className="flex-shrink-0">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="#8B5A3C" className="flex-shrink-0">
             <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v1.2c0 .7.5 1.2 1.2 1.2h16.8c.7 0 1.2-.5 1.2-1.2v-1.2c0-3.2-6.4-4.8-9.6-4.8z" />
           </svg>
           <span
-            className="font-semibold leading-tight text-center"
-            style={{ fontFamily: "'Cairo', sans-serif", fontSize: '12px', color: '#5C4530' }}
+            className="font-semibold truncate"
+            style={{ fontFamily: "'Cairo', sans-serif", fontSize: '9px', color: '#5C4530' }}
           >
             {level.quizCount} اختبارات
           </span>
         </div>
 
         <div className="flex items-center gap-1">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="#8B5A3C" className="flex-shrink-0">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="#8B5A3C" className="flex-shrink-0">
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
           </svg>
           <span
-            className="font-semibold leading-tight text-center"
-            style={{ fontFamily: "'Cairo', sans-serif", fontSize: '12px', color: '#5C4530' }}
+            className="font-semibold truncate"
+            style={{ fontFamily: "'Cairo', sans-serif", fontSize: '9px', color: '#5C4530' }}
           >
             {level.maxPoints} نقطة ممكنة
           </span>
