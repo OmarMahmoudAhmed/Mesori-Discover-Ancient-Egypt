@@ -1,0 +1,29 @@
+@tailwind base; @tailwind components; @tailwind utilities;
+@layer base {
+  html { scroll-behavior: smooth }
+  body { @apply bg-sand-50 text-lapis-900 font-sans leading-loose antialiased overflow-x-hidden }
+  :focus-visible { @apply outline outline-2 outline-offset-2 outline-gold-400 }
+}
+@layer components {
+  .wrap { @apply mx-auto w-full max-w-5xl px-5 }
+  .btn { @apply inline-flex items-center justify-center rounded-full px-6 py-3 font-bold transition duration-300 hover:-translate-y-0.5 }
+  .btn-gold { @apply btn text-lapis-900 bg-gradient-to-r from-gold-300 via-gold-400 to-gold-300 bg-[length:200%_100%] hover:bg-right shadow-lg shadow-gold-400/30 }
+  .btn-ghost { @apply btn border border-gold-300/60 text-sand-100 hover:bg-white/10 }
+  .chip { @apply rounded-full border border-gold-300/40 bg-white/5 px-4 py-1 text-sm text-sand-100 backdrop-blur }
+  .h2 { @apply font-kufi text-3xl md:text-4xl font-bold text-lapis-800 mb-6 }
+  .sec { @apply py-14 md:py-20 }
+  .card { @apply relative rounded-2xl border border-gold-400/30 bg-white p-6 shadow-md transition-shadow duration-300 hover:shadow-xl hover:shadow-gold-400/25;
+    transform: perspective(800px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)); }
+  .card::after { content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; opacity:0; transition:opacity .3s;
+    background: radial-gradient(240px circle at var(--mx,50%) var(--my,50%), rgba(224,167,58,.25), transparent 60%) }
+  .card:hover::after { opacity:1 }
+  .reveal { opacity:0; transform:translateY(28px); transition:opacity .8s, transform .8s cubic-bezier(.2,.7,.2,1) }
+  .reveal.in { opacity:1; transform:none }
+  .shimmer { background:linear-gradient(100deg,#B07F1E 20%,#F6E3A1 45%,#E0A73A 55%,#B07F1E 80%); background-size:200% 100%;
+    -webkit-background-clip:text; background-clip:text; color:transparent; animation:sh 6s linear infinite }
+  .rise { animation:up .9s cubic-bezier(.2,.7,.2,1) both; animation-delay:var(--d,0s) }
+  .stair { @apply w-full rounded-t-lg bg-gradient-to-t from-gold-800 to-gold-400 transition-transform duration-300 origin-bottom hover:scale-y-105 }
+}
+@keyframes sh { to { background-position:-200% 0 } }
+@keyframes up { from { opacity:0; transform:translateY(24px) } to { opacity:1; transform:none } }
+@media (prefers-reduced-motion:reduce) { *,*::after { animation:none !important; transition:none !important } .reveal { opacity:1; transform:none } .shimmer { color:#B07F1E; background:none } }
