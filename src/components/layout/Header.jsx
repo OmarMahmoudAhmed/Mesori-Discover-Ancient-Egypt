@@ -43,13 +43,14 @@ function Header({ showBack = false, showNotifications = false, showVsIcon = fals
     <header
       dir="ltr"
       className="
-        flex items-center justify-between
+        grid grid-cols-3 items-center
         px-4 pb-3
         relative z-10
       "
       style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 0.75rem)' }}
     >
       {/* ===== الزر الأيسر (رجوع أو جرس الإشعارات) ===== */}
+      <div className="justify-self-start">
       {showBack ? (
         <button
           onClick={handleBack}
@@ -65,8 +66,10 @@ function Header({ showBack = false, showNotifications = false, showVsIcon = fals
       ) : (
         <div className="w-12 h-12" />
       )}
+      </div>
 
       {/* ===== المنتصف: أيقونة "1 ضد 1" (الصفحة الرئيسية فقط) ===== */}
+      <div className="justify-self-center">
       {showVsIcon ? (
         <button
           onClick={() => navigateTo('vs-lobby')}
@@ -79,9 +82,10 @@ function Header({ showBack = false, showNotifications = false, showVsIcon = fals
       ) : (
         <div />
       )}
+      </div>
 
       {/* ===== الزر الأيمن: الإعدادات (⚙️) ===== */}
-      <div className="relative">
+      <div className="relative justify-self-end">
         <button
           className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-card press-effect no-tap-highlight transition-transform duration-100"
           aria-label="الإعدادات"
