@@ -95,9 +95,10 @@ function AppWrapper({ children }) {
            * مع كل صفحة لأنها هنا في AppWrapper المشترك)
            */
           backgroundImage:    'url(/assets/backgrounds/app-background.webp)',
-          backgroundRepeat:   'repeat-y',   /* تتكرر عمودياً إن كان المحتوى أطول من الصورة (الصفحة قابلة للتمرير) */
+          backgroundRepeat:   'no-repeat',
           backgroundPosition: 'top center',
-          backgroundSize:     '100% auto', /* تمتد بعرض التطبيق كاملاً */
+          /* cover: تملأ الخلفية كامل ارتفاع وعرض الحاوية (بدون فراغ أسفل الصورة) مع الحفاظ على النسب */
+          backgroundSize:     'cover',
         }}
       >
 
